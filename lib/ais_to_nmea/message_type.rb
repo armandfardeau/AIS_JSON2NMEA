@@ -1,14 +1,14 @@
 module AisToNmea
   # Utility module for detecting and working with AIS message types
   module MessageType
-    SUPPORTED_TYPES = [1, 2, 3].freeze
+    SUPPORTED_TYPES = [1, 2, 3, 14].freeze
 
     # Detect message type from JSON string or Hash
     # 
     # @param input [String, Hash] JSON string or Ruby Hash
-    # @return [Integer] Message type (1, 2, or 3)
+    # @return [Integer] Supported message type
     # @raise [InvalidJsonError] if input is invalid JSON
-    # @raise [UnsupportedMessageTypeError] if message type is not 1, 2, or 3
+    # @raise [UnsupportedMessageTypeError] if message type is not supported
     def self.detect(input)
       data = parse_input(input)
       
@@ -25,7 +25,7 @@ module AisToNmea
       msg_id = msg_id.to_i
       unless SUPPORTED_TYPES.include?(msg_id)
         raise UnsupportedMessageTypeError, 
-              "MessageID must be 1, 2, or 3, got: #{msg_id}"
+              "MessageID must be one of #{SUPPORTED_TYPES.join(', ')}, got: #{msg_id}"
       end
 
       msg_id

@@ -11,11 +11,14 @@ module AisToNmea
   # Raised when an AIS message field has an invalid value
   class InvalidFieldError < Error; end
 
-  # Raised when the message type is not supported (must be 1, 2, or 3)
+  # Raised when the message type is not supported
   class UnsupportedMessageTypeError < Error; end
 
   # Raised when AIS encoding fails
   class EncodingError < Error; end
+
+  # Raised when an unexpected internal encoding exception occurs
+  class EncodingFailureError < EncodingError; end
 
   # Raised when memory allocation fails
   class MemoryError < Error; end

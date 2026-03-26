@@ -11,8 +11,8 @@ describe AisToNmea do
         "UserID" => 123456789,
         "Latitude" => 48.8566,
         "Longitude" => 2.3522,
-        "SpeedOverGround" => 12.3,
-        "CourseOverGround" => 254.8,
+        "Sog" => 12.3,
+        "Cog" => 254.8,
         "TrueHeading" => 255
       }
 
@@ -20,9 +20,95 @@ describe AisToNmea do
       expect(result).to be_a(String)
       expect(result).to start_with('!AIVDM')
     end
+
+    it 'uses encoder factory with explicit encoder key' do
+      input = {
+        "MessageID" => 1,
+        "UserID" => 123456789,
+        "Latitude" => 48.8566,
+        "Longitude" => 2.3522,
+        "Sog" => 12.3,
+        "Cog" => 254.8,
+        "TrueHeading" => 255
+      }
+
+      expect(AisToNmea::EncoderFactory.registered).to include(:position_report)
+      result = AisToNmea.to_nmea(input, encoder: :position_report)
+      expect(result).to start_with('!AIVDM')
+    end
+
+    it 'routes MessageID 14 to SafetyBroadcastMessage encoder' do
+      input = {
+        "MessageID" => 14,
+        "UserID" => 123456789,
+        "Text" => 'SECURITE NAVIGATION'
+      }
+
+      result = AisToNmea.to_nmea(input)
+      expect(result).to start_with('!AIVDM')
+    end
+  end
+
+  describe AisToNmea::EncoderFactory do
+    it 'builds default encoder (position report)' do
+      encoder = described_class.build
+      expect(encoder).to be_a(AisToNmea::PositionReportEncoder)
+    end
+
+    it 'builds safety broadcast encoder' do
+      encoder = described_class.build(encoder: :safety_broadcast_message)
+      expect(encoder).to be_a(AisToNmea::SafetyBroadcastMessageEncoder)
+    end
+
+    it 'supports custom registered encoder' do
+      custom = Class.new do
+        def encode(_input, _options = {})
+          '!AIVDM,1,1,0,A,CUSTOMPAYLOAD,0*00\n'
+        end
+      end
+
+      described_class.register(:custom, custom)
+      encoder = described_class.build(encoder: :custom)
+      expect(encoder.encode({})).to start_with('!AIVDM')
+    end
+
+    it 'raises for unknown encoder key' do
+      expect { described_class.build(encoder: :unknown) }
+        .to raise_error(AisToNmea::InvalidFieldError)
+    end
   end
 
   describe AisToNmea::Encoder do
+    subject { described_class.new }
+
+    it 'routes Position Report message types' do
+      input = {
+        "MessageID" => 1,
+        "UserID" => 123456789,
+        "Latitude" => 48.8566,
+        "Longitude" => 2.3522,
+        "Sog" => 12.3,
+        "Cog" => 254.8,
+        "TrueHeading" => 255
+      }
+
+      result = subject.encode(input)
+      expect(result).to start_with('!AIVDM')
+    end
+
+    it 'routes Safety Broadcast messages' do
+      input = {
+        "MessageID" => 14,
+        "UserID" => 123456789,
+        "Text" => 'SECURITE NAVIGATION'
+      }
+
+      result = subject.encode(input)
+      expect(result).to start_with('!AIVDM')
+    end
+  end
+
+  describe AisToNmea::PositionReportEncoder do
     subject { described_class.new }
 
     describe '#encode' do
@@ -72,8 +158,8 @@ describe AisToNmea do
             "UserID" => 123456789,
             "Latitude" => 48.8566,
             "Longitude" => 2.3522,
-            "SpeedOverGround" => 12.3,
-            "CourseOverGround" => 254.8,
+            "Sog" => 12.3,
+            "Cog" => 254.8,
             "TrueHeading" => 255
           }
         end
@@ -132,8 +218,8 @@ describe AisToNmea do
             "UserID" => 123456789,
             "Latitude" => 48.8566,
             "Longitude" => 2.3522,
-            "SpeedOverGround" => 12.3,
-            "CourseOverGround" => 254.8,
+            "Sog" => 12.3,
+            "Cog" => 254.8,
             "TrueHeading" => 255
           }
 
@@ -169,6 +255,11 @@ describe AisToNmea do
       it 'detects message type 3' do
         input = { "MessageID" => 3 }
         expect(described_class.detect(input)).to eq(3)
+      end
+
+      it 'detects message type 14' do
+        input = { "MessageID" => 14 }
+        expect(described_class.detect(input)).to eq(14)
       end
 
       it 'raises UnsupportedMessageTypeError for type 4' do
@@ -217,6 +308,50 @@ describe AisToNmea do
         expect do
           described_class.parse_input(123)
         end.to raise_error(AisToNmea::InvalidJsonError)
+      end
+    end
+  end
+
+  describe AisToNmea::SafetyBroadcastMessageEncoder do
+    subject { described_class.new }
+
+    describe '#encode' do
+      it 'encodes a valid SafetyBroadcastMessage' do
+        input = {
+          "MessageID" => 14,
+          "RepeatIndicator" => 0,
+          "UserID" => 123456789,
+          "Spare" => 0,
+          "Text" => 'SECURITE NAVIGATION'
+        }
+
+        result = subject.encode(input)
+        expect(result).to be_a(String)
+        expect(result).to start_with('!AIVDM')
+        expect(result).to match(/\*[0-9A-F]{2}$/)
+      end
+
+      it 'raises MissingFieldError when Text is missing' do
+        input = {
+          "MessageID" => 14,
+          "UserID" => 123456789
+        }
+
+        expect do
+          subject.encode(input)
+        end.to raise_error(AisToNmea::MissingFieldError)
+      end
+
+      it 'raises InvalidFieldError for unsupported characters' do
+        input = {
+          "MessageID" => 14,
+          "UserID" => 123456789,
+          "Text" => 'ALERTE~'
+        }
+
+        expect do
+          subject.encode(input)
+        end.to raise_error(AisToNmea::InvalidFieldError)
       end
     end
   end

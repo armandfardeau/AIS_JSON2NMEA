@@ -7,8 +7,8 @@
         "UserID": 123456789,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
-        "CourseOverGround": 254.8,
+        "Sog": 12.3,
+        "Cog": 254.8,
         "TrueHeading": 255
       }
     },
@@ -21,8 +21,8 @@
           "UserID": 987654321,
           "Latitude": 51.5074,
           "Longitude": -0.1278,
-          "SpeedOverGround": 8.5,
-          "CourseOverGround": 123.4,
+          "Sog": 8.5,
+          "Cog": 123.4,
           "TrueHeading": 120
         }
       }
@@ -34,8 +34,8 @@
         "UserID": 111111111,
         "Latitude": 40.7128,
         "Longitude": -74.0060,
-        "SpeedOverGround": 15.8,
-        "CourseOverGround": 45.5,
+        "Sog": 15.8,
+        "Cog": 45.5,
         "TrueHeading": 46
       }
     },
@@ -46,8 +46,8 @@
         "UserID": 222222222,
         "Latitude": 35.6762,
         "Longitude": 139.6503,
-        "SpeedOverGround": 0.0,
-        "CourseOverGround": 0.0,
+        "Sog": 0.0,
+        "Cog": 0.0,
         "TrueHeading": 511
       }
     },
@@ -58,8 +58,8 @@
         "UserID": 333333333,
         "Latitude": 0.0,
         "Longitude": 0.0,
-        "SpeedOverGround": 0.1,
-        "CourseOverGround": 180.0,
+        "Sog": 0.1,
+        "Cog": 180.0,
         "TrueHeading": 180
       }
     },
@@ -70,8 +70,8 @@
         "UserID": 444444444,
         "Latitude": 60.0,
         "Longitude": 25.0,
-        "SpeedOverGround": 102.2,
-        "CourseOverGround": 359.9,
+        "Sog": 102.2,
+        "Cog": 359.9,
         "TrueHeading": 359
       }
     }
@@ -83,8 +83,8 @@
         "MessageID": 1,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
-        "CourseOverGround": 254.8,
+        "Sog": 12.3,
+        "Cog": 254.8,
         "TrueHeading": 255
       },
       "error_type": "MissingFieldError"
@@ -95,8 +95,8 @@
         "MessageID": 1,
         "UserID": 123456789,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
-        "CourseOverGround": 254.8,
+        "Sog": 12.3,
+        "Cog": 254.8,
         "TrueHeading": 255
       },
       "error_type": "MissingFieldError"
@@ -108,8 +108,8 @@
         "UserID": 123456789,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
-        "CourseOverGround": 254.8,
+        "Sog": 12.3,
+        "Cog": 254.8,
         "TrueHeading": 255
       },
       "error_type": "UnsupportedMessageTypeError"
@@ -121,8 +121,8 @@
         "UserID": 123456789,
         "Latitude": 95.0,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
-        "CourseOverGround": 254.8,
+        "Sog": 12.3,
+        "Cog": 254.8,
         "TrueHeading": 255
       },
       "error_type": "InvalidFieldError"
@@ -134,8 +134,8 @@
         "UserID": 123456789,
         "Latitude": 48.8566,
         "Longitude": 190.0,
-        "SpeedOverGround": 12.3,
-        "CourseOverGround": 254.8,
+        "Sog": 12.3,
+        "Cog": 254.8,
         "TrueHeading": 255
       },
       "error_type": "InvalidFieldError"

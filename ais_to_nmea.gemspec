@@ -3,8 +3,8 @@ require_relative "lib/ais_to_nmea/version"
 Gem::Specification.new do |spec|
   spec.name          = "ais_to_nmea"
   spec.version       = AisToNmea::VERSION
-  spec.authors       = ["AIS Developer"]
-  spec.email         = ["dev@example.com"]
+  spec.authors       = ["Armand Fardeau"]
+  spec.email         = ["fardeau@example.com"]
 
   spec.summary       = "Convert AIS JSON messages to NMEA 0183 sentences"
   spec.description   = "A Ruby gem that converts AIS Position Report JSON (types 1, 2, 3) into raw NMEA 0183 AIS sentences using a pure Ruby encoder"
