@@ -1,7 +1,7 @@
 module AisToNmea
   # Utility module for detecting and working with AIS message types
   module MessageType
-    SUPPORTED_TYPES = [1, 2, 3, 14].freeze
+    SUPPORTED_TYPES = [1, 2, 3, 5, 14].freeze
 
     # Detect message type from JSON string or Hash
     # 

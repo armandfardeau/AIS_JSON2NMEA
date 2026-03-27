@@ -2,6 +2,7 @@ module AisToNmea
   class EncoderFactory
     @registry = {
       position_report: AisToNmea::PositionReportEncoder,
+      ship_static_data: AisToNmea::ShipStaticDataEncoder,
       safety_broadcast_message: AisToNmea::SafetyBroadcastMessageEncoder
     }
 
@@ -9,6 +10,7 @@ module AisToNmea
       1 => :position_report,
       2 => :position_report,
       3 => :position_report,
+      5 => :ship_static_data,
       14 => :safety_broadcast_message
     }
 

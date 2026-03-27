@@ -47,6 +47,28 @@ describe AisToNmea do
       result = AisToNmea.to_nmea(input)
       expect(result).to start_with('!AIVDM')
     end
+
+    it 'routes MessageID 5 to ShipStaticData encoder' do
+      input = {
+        "MessageID" => 5,
+        "UserID" => 123456789,
+        "AisVersion" => 0,
+        "ImoNumber" => 9876543,
+        "CallSign" => 'FRA1234',
+        "Name" => 'TEST VESSEL',
+        "Type" => 70,
+        "Dimension" => { "A" => 50, "B" => 20, "C" => 5, "D" => 5 },
+        "FixType" => 1,
+        "Eta" => { "Month" => 12, "Day" => 31, "Hour" => 23, "Minute" => 59 },
+        "MaximumStaticDraught" => 7.4,
+        "Destination" => 'LE HAVRE',
+        "Dte" => false,
+        "Spare" => false
+      }
+
+      result = AisToNmea.to_nmea(input)
+      expect(result).to start_with('!AIVDM')
+    end
   end
 
   describe AisToNmea::EncoderFactory do
@@ -58,6 +80,11 @@ describe AisToNmea do
     it 'builds safety broadcast encoder' do
       encoder = described_class.build(encoder: :safety_broadcast_message)
       expect(encoder).to be_a(AisToNmea::SafetyBroadcastMessageEncoder)
+    end
+
+    it 'builds ship static data encoder' do
+      encoder = described_class.build(encoder: :ship_static_data)
+      expect(encoder).to be_a(AisToNmea::ShipStaticDataEncoder)
     end
 
     it 'supports custom registered encoder' do
@@ -101,6 +128,28 @@ describe AisToNmea do
         "MessageID" => 14,
         "UserID" => 123456789,
         "Text" => 'SECURITE NAVIGATION'
+      }
+
+      result = subject.encode(input)
+      expect(result).to start_with('!AIVDM')
+    end
+
+    it 'routes ShipStaticData messages' do
+      input = {
+        "MessageID" => 5,
+        "UserID" => 123456789,
+        "AisVersion" => 0,
+        "ImoNumber" => 9876543,
+        "CallSign" => 'FRA1234',
+        "Name" => 'TEST VESSEL',
+        "Type" => 70,
+        "Dimension" => { "A" => 50, "B" => 20, "C" => 5, "D" => 5 },
+        "FixType" => 1,
+        "Eta" => { "Month" => 12, "Day" => 31, "Hour" => 23, "Minute" => 59 },
+        "MaximumStaticDraught" => 7.4,
+        "Destination" => 'LE HAVRE',
+        "Dte" => false,
+        "Spare" => false
       }
 
       result = subject.encode(input)
@@ -262,6 +311,11 @@ describe AisToNmea do
         expect(described_class.detect(input)).to eq(14)
       end
 
+      it 'detects message type 5' do
+        input = { "MessageID" => 5 }
+        expect(described_class.detect(input)).to eq(5)
+      end
+
       it 'raises UnsupportedMessageTypeError for type 4' do
         input = { "MessageID" => 4 }
         expect do
@@ -352,6 +406,49 @@ describe AisToNmea do
         expect do
           subject.encode(input)
         end.to raise_error(AisToNmea::InvalidFieldError)
+      end
+    end
+  end
+
+  describe AisToNmea::ShipStaticDataEncoder do
+    subject { described_class.new }
+
+    describe '#encode' do
+      it 'encodes a valid ShipStaticData message' do
+        input = {
+          "MessageID" => 5,
+          "UserID" => 123456789,
+          "AisVersion" => 0,
+          "ImoNumber" => 9876543,
+          "CallSign" => 'FRA1234',
+          "Name" => 'TEST VESSEL',
+          "Type" => 70,
+          "Dimension" => { "A" => 50, "B" => 20, "C" => 5, "D" => 5 },
+          "FixType" => 1,
+          "Eta" => { "Month" => 12, "Day" => 31, "Hour" => 23, "Minute" => 59 },
+          "MaximumStaticDraught" => 7.4,
+          "Destination" => 'LE HAVRE',
+          "Dte" => false,
+          "Spare" => false
+        }
+
+        result = subject.encode(input)
+        expect(result).to be_a(String)
+        expect(result).to start_with('!AIVDM')
+        expect(result).to match(/\*[0-9A-F]{2}$/)
+      end
+
+      it 'raises MissingFieldError when Name is missing' do
+        input = {
+          "MessageID" => 5,
+          "UserID" => 123456789,
+          "CallSign" => 'FRA1234',
+          "Destination" => 'LE HAVRE'
+        }
+
+        expect do
+          subject.encode(input)
+        end.to raise_error(AisToNmea::MissingFieldError)
       end
     end
   end

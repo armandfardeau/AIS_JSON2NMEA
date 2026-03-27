@@ -4,6 +4,7 @@ require_relative 'ais_to_nmea/errors'
 require_relative 'ais_to_nmea/message_type'
 require_relative 'ais_to_nmea/utils'
 require_relative 'ais_to_nmea/position_report_encoder'
+require_relative 'ais_to_nmea/ship_static_data_encoder'
 require_relative 'ais_to_nmea/safety_broadcast_message_encoder'
 require_relative 'ais_to_nmea/encoder'
 require_relative 'ais_to_nmea/encoder_factory'
@@ -66,6 +67,61 @@ module AisToNmea
 
       payload, fill_bits = Utils::SixBit.encode(bits)
       Utils::Nmea.build_sentences(payload, fill_bits)
+    end
+
+    def self.encode_ship_static_data(message_type, data)
+      mmsi = Utils::Input.required_int(data, 'UserID')
+      ais_version = Integer(data.fetch('AisVersion', 0))
+      imo_number = Integer(data.fetch('ImoNumber', 0))
+      call_sign_bits = Utils::Text.encode_ais_text_fixed(data['CallSign'], length: 7, field_name: 'CallSign')
+      name_bits = Utils::Text.encode_ais_text_fixed(data['Name'], length: 20, field_name: 'Name')
+      ship_type = Integer(data.fetch('Type', 0))
+
+      dimension = data['Dimension'] || {}
+      to_bow = Integer(dimension.fetch('A', 0))
+      to_stern = Integer(dimension.fetch('B', 0))
+      to_port = Integer(dimension.fetch('C', 0))
+      to_starboard = Integer(dimension.fetch('D', 0))
+
+      fix_type = Integer(data.fetch('FixType', 0))
+      eta = data['Eta'] || {}
+      eta_month = Integer(eta.fetch('Month', 0))
+      eta_day = Integer(eta.fetch('Day', 0))
+      eta_hour = Integer(eta.fetch('Hour', 24))
+      eta_minute = Integer(eta.fetch('Minute', 60))
+
+      draught_dm = (Float(data.fetch('MaximumStaticDraught', 0.0)) * 10).round
+      destination_bits = Utils::Text.encode_ais_text_fixed(data['Destination'], length: 20, field_name: 'Destination')
+      dte = data.fetch('Dte', false) ? 1 : 0
+      spare = data.fetch('Spare', false) ? 1 : 0
+
+      bits = +''
+      bits << Utils::BitPacking.pack_uint(message_type, 6)
+      bits << Utils::BitPacking.pack_uint(0, 2)
+      bits << Utils::BitPacking.pack_uint(mmsi, 30)
+      bits << Utils::BitPacking.pack_uint(ais_version, 2)
+      bits << Utils::BitPacking.pack_uint(imo_number, 30)
+      bits << call_sign_bits
+      bits << name_bits
+      bits << Utils::BitPacking.pack_uint(ship_type, 8)
+      bits << Utils::BitPacking.pack_uint(to_bow, 9)
+      bits << Utils::BitPacking.pack_uint(to_stern, 9)
+      bits << Utils::BitPacking.pack_uint(to_port, 6)
+      bits << Utils::BitPacking.pack_uint(to_starboard, 6)
+      bits << Utils::BitPacking.pack_uint(fix_type, 4)
+      bits << Utils::BitPacking.pack_uint(eta_month, 4)
+      bits << Utils::BitPacking.pack_uint(eta_day, 5)
+      bits << Utils::BitPacking.pack_uint(eta_hour, 5)
+      bits << Utils::BitPacking.pack_uint(eta_minute, 6)
+      bits << Utils::BitPacking.pack_uint(draught_dm, 8)
+      bits << destination_bits
+      bits << Utils::BitPacking.pack_uint(dte, 1)
+      bits << Utils::BitPacking.pack_uint(spare, 1)
+
+      payload, fill_bits = Utils::SixBit.encode(bits)
+      Utils::Nmea.build_sentences(payload, fill_bits)
+    rescue ArgumentError, TypeError
+      raise InvalidFieldError, 'Invalid numeric value in ShipStaticData payload'
     end
   end
 
