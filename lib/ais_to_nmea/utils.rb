@@ -2,17 +2,29 @@ module AisToNmea
   module AisEncoder
     module Utils
       module Input
-        def self.first_available(data, *keys)
-          key = keys.find { |k| data.key?(k) }
-          return [nil, nil] if key.nil?
+        def self.value_for_key(data, key)
+          return [true, data[key]] if data.key?(key)
 
-          [key, data[key]]
+          symbol_key = key.to_sym
+          return [true, data[symbol_key]] if data.key?(symbol_key)
+
+          [false, nil]
+        end
+
+        def self.first_available(data, *keys)
+          keys.each do |key|
+            present, value = value_for_key(data, key)
+            return [key, value] if present
+          end
+
+          [nil, nil]
         end
 
         def self.required_int(data, key)
-          raise MissingFieldError, "Missing required field: #{key}" unless data.key?(key)
+          present, value = value_for_key(data, key)
+          raise MissingFieldError, "Missing required field: #{key}" unless present
 
-          Integer(data[key])
+          Integer(value)
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid integer value for #{key}"
         end
@@ -36,9 +48,10 @@ module AisToNmea
         end
 
         def self.required_float(data, key)
-          raise MissingFieldError, "Missing required field: #{key}" unless data.key?(key)
+          present, value = value_for_key(data, key)
+          raise MissingFieldError, "Missing required field: #{key}" unless present
 
-          Float(data[key])
+          Float(value)
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid numeric value for #{key}"
         end

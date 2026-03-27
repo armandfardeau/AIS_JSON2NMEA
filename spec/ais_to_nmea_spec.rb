@@ -161,6 +161,29 @@ describe AisToNmea do
     subject { described_class.new }
 
     describe '#encode' do
+      it 'raises UnsupportedMessageTypeError for non-position-report message IDs' do
+        input = {
+          "MessageID" => 5,
+          "UserID" => 636024245,
+          "AisVersion" => 2,
+          "ImoNumber" => 9221827,
+          "CallSign" => '5LRR4',
+          "Name" => 'MSC SOPHIE VII',
+          "Type" => 71,
+          "Dimension" => { "A" => 243, "B" => 57, "C" => 26, "D" => 14 },
+          "FixType" => 1,
+          "Eta" => { "Day" => 26, "Hour" => 12, "Minute" => 0, "Month" => 3 },
+          "MaximumStaticDraught" => 14.6,
+          "Destination" => 'ZACPT',
+          "Dte" => false,
+          "Spare" => false
+        }
+
+        expect do
+          subject.encode(input)
+        end.to raise_error(AisToNmea::UnsupportedMessageTypeError, /PositionReport/)
+      end
+
       context 'with valid Position Report messages' do
         fixtures['messages'].each do |test_case|
           it "handles #{test_case['name']}" do
@@ -190,6 +213,22 @@ describe AisToNmea do
             "CourseOverGround" => 182.3,
             "NavigationalStatus" => 8,
             "TrueHeading" => 180
+          }
+
+          result = subject.encode(input)
+          expect(result).to start_with('!AIVDM')
+        end
+
+        it 'accepts symbol keys from upstream pipelines' do
+          input = {
+            MessageID: 1,
+            UserID: 601600400,
+            Latitude: -33.904673333333335,
+            Longitude: 18.422055,
+            Sog: 0,
+            Cog: 262.8,
+            NavigationalStatus: 0,
+            TrueHeading: 511
           }
 
           result = subject.encode(input)

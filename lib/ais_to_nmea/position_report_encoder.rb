@@ -19,6 +19,11 @@ module AisToNmea
       message_type = MessageType.detect(data)
       message_data = data.key?('Message') ? data['Message'] : data
 
+      unless [1, 2, 3].include?(message_type)
+        raise UnsupportedMessageTypeError,
+              "MessageID must be 1, 2, or 3 for PositionReport, got: #{message_type}"
+      end
+
       AisEncoder.encode_position_report(message_type, message_data)
     rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
       raise

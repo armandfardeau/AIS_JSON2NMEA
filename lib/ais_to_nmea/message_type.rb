@@ -13,10 +13,13 @@ module AisToNmea
       data = parse_input(input)
       
       # Try direct MessageID
-      msg_id = data["MessageID"]
+      msg_id = data['MessageID'] || data[:MessageID]
       
       # Try nested Message.MessageID
-      msg_id = data.dig("Message", "MessageID") if msg_id.nil?
+      if msg_id.nil?
+        nested = data['Message'] || data[:Message]
+        msg_id = nested['MessageID'] || nested[:MessageID] if nested.is_a?(Hash)
+      end
       
       if msg_id.nil?
         raise MissingFieldError, "Missing required field: MessageID"
