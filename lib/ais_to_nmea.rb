@@ -15,10 +15,15 @@ module AisToNmea
       mmsi = Utils::Input.required_int(data, 'UserID')
       lat = Utils::Input.required_float(data, 'Latitude')
       lon = Utils::Input.required_float(data, 'Longitude')
-      sog = Utils::Input.required_float(data, 'Sog')
-      cog = Utils::Input.required_float(data, 'Cog')
+      sog = Utils::Input.required_float_from(data, ['Sog', 'SpeedOverGround'], field_name: 'Sog/SpeedOverGround')
+      cog = Utils::Input.required_float_from(data, ['Cog', 'CourseOverGround'], field_name: 'Cog/CourseOverGround')
       heading = Utils::Input.required_int(data, 'TrueHeading')
-      nav_status = data.fetch('NavigationStatus', 0).to_i
+      nav_status = Utils::Input.optional_int_from(
+        data,
+        ['NavigationStatus', 'NavigationalStatus'],
+        field_name: 'NavigationStatus/NavigationalStatus',
+        default: 0
+      )
 
       Utils::Validation.validate_ranges!(lat, lon, sog, cog, heading, nav_status)
 

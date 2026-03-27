@@ -2,12 +2,37 @@ module AisToNmea
   module AisEncoder
     module Utils
       module Input
+        def self.first_available(data, *keys)
+          key = keys.find { |k| data.key?(k) }
+          return [nil, nil] if key.nil?
+
+          [key, data[key]]
+        end
+
         def self.required_int(data, key)
           raise MissingFieldError, "Missing required field: #{key}" unless data.key?(key)
 
           Integer(data[key])
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid integer value for #{key}"
+        end
+
+        def self.required_int_from(data, keys, field_name:)
+          key, value = first_available(data, *keys)
+          raise MissingFieldError, "Missing required field: #{field_name}" if key.nil?
+
+          Integer(value)
+        rescue ArgumentError, TypeError
+          raise InvalidFieldError, "Invalid integer value for #{field_name}"
+        end
+
+        def self.optional_int_from(data, keys, field_name:, default:)
+          key, value = first_available(data, *keys)
+          return default if key.nil?
+
+          Integer(value)
+        rescue ArgumentError, TypeError
+          raise InvalidFieldError, "Invalid integer value for #{field_name}"
         end
 
         def self.required_float(data, key)
@@ -17,17 +42,26 @@ module AisToNmea
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid numeric value for #{key}"
         end
+
+        def self.required_float_from(data, keys, field_name:)
+          key, value = first_available(data, *keys)
+          raise MissingFieldError, "Missing required field: #{field_name}" if key.nil?
+
+          Float(value)
+        rescue ArgumentError, TypeError
+          raise InvalidFieldError, "Invalid numeric value for #{field_name}"
+        end
       end
 
       module Validation
         def self.validate_ranges!(lat, lon, sog, cog, heading, nav_status)
           raise InvalidFieldError, 'Latitude must be between -90 and 90' unless lat.between?(-90.0, 90.0)
           raise InvalidFieldError, 'Longitude must be between -180 and 180' unless lon.between?(-180.0, 180.0)
-          raise InvalidFieldError, 'SpeedOverGround must be between 0 and 102.2' unless sog.between?(0.0, 102.2)
-          raise InvalidFieldError, 'CourseOverGround must be between 0 and 359.9' unless cog.between?(0.0, 359.9)
+          raise InvalidFieldError, 'Sog/SpeedOverGround must be between 0 and 102.2' unless sog.between?(0.0, 102.2)
+          raise InvalidFieldError, 'Cog/CourseOverGround must be between 0 and 359.9' unless cog.between?(0.0, 359.9)
           valid_heading = heading.between?(0, 359) || heading == 511
           raise InvalidFieldError, 'TrueHeading must be between 0 and 359 (or 511 for unavailable)' unless valid_heading
-          raise InvalidFieldError, 'NavigationStatus must be between 0 and 15' unless nav_status.between?(0, 15)
+          raise InvalidFieldError, 'NavigationStatus/NavigationalStatus must be between 0 and 15' unless nav_status.between?(0, 15)
         end
       end
 

@@ -179,6 +179,22 @@ describe AisToNmea do
             expect(result).to match(/^!AIVDM/)
           end
         end
+
+        it 'accepts legacy aliased keys for speed, course and navigation status' do
+          input = {
+            "MessageID" => 1,
+            "UserID" => 601967000,
+            "Latitude" => -34.14586666666666,
+            "Longitude" => 18.230756666666665,
+            "SpeedOverGround" => 6.3,
+            "CourseOverGround" => 182.3,
+            "NavigationalStatus" => 8,
+            "TrueHeading" => 180
+          }
+
+          result = subject.encode(input)
+          expect(result).to start_with('!AIVDM')
+        end
       end
 
       context 'with invalid input' do
@@ -189,6 +205,23 @@ describe AisToNmea do
               subject.encode(test_case['input'])
             end.to raise_error(error_class)
           end
+        end
+
+        it 'raises clear COG alias range error when course is invalid' do
+          input = {
+            "MessageID" => 1,
+            "UserID" => 123456789,
+            "Latitude" => 48.8566,
+            "Longitude" => 2.3522,
+            "Cog" => 400.0,
+            "Sog" => 12.3,
+            "TrueHeading" => 255,
+            "NavigationStatus" => 0
+          }
+
+          expect do
+            subject.encode(input)
+          end.to raise_error(AisToNmea::InvalidFieldError, /Cog\/CourseOverGround/)
         end
       end
 
