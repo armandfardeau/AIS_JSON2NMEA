@@ -74,17 +74,17 @@ describe AisToNmea do
   describe AisToNmea::EncoderFactory do
     it 'builds default encoder (position report)' do
       encoder = described_class.build
-      expect(encoder).to be_a(AisToNmea::PositionReportEncoder)
+      expect(encoder).to be_a(AisToNmea::Encoders::PositionReport)
     end
 
     it 'builds safety broadcast encoder' do
       encoder = described_class.build(encoder: :safety_broadcast_message)
-      expect(encoder).to be_a(AisToNmea::SafetyBroadcastMessageEncoder)
+      expect(encoder).to be_a(AisToNmea::Encoders::SafetyBroadcastMessage)
     end
 
     it 'builds ship static data encoder' do
       encoder = described_class.build(encoder: :ship_static_data)
-      expect(encoder).to be_a(AisToNmea::ShipStaticDataEncoder)
+      expect(encoder).to be_a(AisToNmea::Encoders::ShipStaticData)
     end
 
     it 'supports custom registered encoder' do
@@ -157,7 +157,7 @@ describe AisToNmea do
     end
   end
 
-  describe AisToNmea::PositionReportEncoder do
+  describe AisToNmea::Encoders::PositionReport do
     subject { described_class.new }
 
     describe '#encode' do
@@ -438,7 +438,7 @@ describe AisToNmea do
     end
   end
 
-  describe AisToNmea::SafetyBroadcastMessageEncoder do
+  describe AisToNmea::Encoders::SafetyBroadcastMessage do
     subject { described_class.new }
 
     describe '#encode' do
@@ -482,7 +482,7 @@ describe AisToNmea do
     end
   end
 
-  describe AisToNmea::ShipStaticDataEncoder do
+  describe AisToNmea::Encoders::ShipStaticData do
     subject { described_class.new }
 
     describe '#encode' do

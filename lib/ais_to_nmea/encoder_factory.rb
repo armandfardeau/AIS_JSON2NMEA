@@ -1,9 +1,9 @@
 module AisToNmea
   class EncoderFactory
     @registry = {
-      position_report: AisToNmea::PositionReportEncoder,
-      ship_static_data: AisToNmea::ShipStaticDataEncoder,
-      safety_broadcast_message: AisToNmea::SafetyBroadcastMessageEncoder
+      position_report: AisToNmea::Encoders::PositionReport,
+      ship_static_data: AisToNmea::Encoders::ShipStaticData,
+      safety_broadcast_message: AisToNmea::Encoders::SafetyBroadcastMessage
     }
 
     @message_type_map = {
