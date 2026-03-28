@@ -7,8 +7,8 @@ RSpec.describe AisToNmea do
     expect(defined?(AisToNmea::AisEncoder::Utils::BitPacking)).to eq('constant')
   end
 
-  it 'autoloads Input utility constant' do
-    expect(defined?(AisToNmea::AisEncoder::Utils::Input)).to eq('constant')
+  it 'autoloads StrictValidation utility constant' do
+    expect(defined?(AisToNmea::AisEncoder::Utils::StrictValidation)).to eq('constant')
   end
 
   it 'autoloads Nmea utility constant' do

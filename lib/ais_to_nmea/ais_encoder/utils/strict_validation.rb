@@ -26,15 +26,6 @@ module AisToNmea
           raise MissingFieldError,
                 "Missing required field(s) for #{context_name}: #{missing_fields.join(', ')}"
         end
-
-        def self.validate_required_true_flag!(value, field_name)
-          raise MissingFieldError, "Missing required field(s) for #{field_name}: Valid" unless value
-
-          valid = Input.normalize_boolean(value, 'Valid')
-          return if valid
-
-          raise InvalidFieldError, "Valid must be true for #{field_name} encoding"
-        end
       end
     end
   end
