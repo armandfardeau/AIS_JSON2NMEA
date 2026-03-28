@@ -4,39 +4,22 @@ module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Position Report messages (types 1, 2, 3)
     class PositionReport < Base
-      PART_KEYS_IN_ORDER = %i[
-        repeat_indicator
-        mmsi
-        nav_status
-        rot
-        sog
-        position_accuracy
-        lon
-        lat
-        cog
-        heading
-        timestamp
-        maneuver
-        spare
-        raim
-        radio_status
-      ].freeze
-
-      POSITION_PART_CLASS_NAMES = {
-        lat: 'Latitude',
-        lon: 'Longitude',
-        sog: 'Sog',
-        cog: 'Cog',
-        heading: 'Heading',
-        nav_status: 'NavigationStatus',
-        repeat_indicator: 'RepeatIndicator',
-        rot: 'Rot',
-        position_accuracy: 'PositionAccuracy',
-        timestamp: 'Timestamp',
-        maneuver: 'Maneuver',
-        spare: 'Spare',
-        raim: 'Raim',
-        radio_status: 'RadioStatus'
+      PART_CLASSES_IN_ORDER = {
+        repeat_indicator: AisToNmea::MessageParts::PositionReport::RepeatIndicator,
+        mmsi: AisToNmea::MessageParts::Common::Mmsi,
+        nav_status: AisToNmea::MessageParts::PositionReport::NavigationStatus,
+        rot: AisToNmea::MessageParts::PositionReport::Rot,
+        sog: AisToNmea::MessageParts::PositionReport::Sog,
+        position_accuracy: AisToNmea::MessageParts::PositionReport::PositionAccuracy,
+        lon: AisToNmea::MessageParts::PositionReport::Longitude,
+        lat: AisToNmea::MessageParts::PositionReport::Latitude,
+        cog: AisToNmea::MessageParts::PositionReport::Cog,
+        heading: AisToNmea::MessageParts::PositionReport::Heading,
+        timestamp: AisToNmea::MessageParts::PositionReport::Timestamp,
+        maneuver: AisToNmea::MessageParts::PositionReport::Maneuver,
+        spare: AisToNmea::MessageParts::PositionReport::Spare,
+        raim: AisToNmea::MessageParts::PositionReport::Raim,
+        radio_status: AisToNmea::MessageParts::PositionReport::RadioStatus
       }.freeze
 
       # Convert AIS JSON message to NMEA 0183 sentence(s)
@@ -76,9 +59,7 @@ module AisToNmea
       end
 
       def extract_position_parts(data)
-        extract_parts_from(data, position_part_classes).merge(
-          mmsi: extract_validated_part(AisToNmea::MessageParts::Common::Mmsi, data)
-        )
+        extract_parts_from(data, PART_CLASSES_IN_ORDER)
       end
 
       def validate_position_ranges!(parts)
@@ -94,8 +75,8 @@ module AisToNmea
 
       def add_position_report_parts(message_id_part, parts)
         ordered_parts = [message_id_part]
-        ordered_parts.concat(PART_KEYS_IN_ORDER.map { |key| parts.fetch(key) })
-        ordered_parts.each { |part| add_part(part.pack) }
+        ordered_parts.concat(PART_CLASSES_IN_ORDER.keys.map { |key| parts.fetch(key) })
+        add_parts(ordered_parts.map(&:pack))
       end
 
       def extract_validated_part(part_class, data)
@@ -104,11 +85,6 @@ module AisToNmea
 
       def extract_parts_from(data, part_classes)
         part_classes.transform_values { |part_class| extract_validated_part(part_class, data) }
-      end
-
-      def position_part_classes
-        position_parts = AisToNmea::MessageParts::PositionReport
-        POSITION_PART_CLASS_NAMES.transform_values { |name| position_parts.const_get(name) }
       end
 
       def validated_payload(data)

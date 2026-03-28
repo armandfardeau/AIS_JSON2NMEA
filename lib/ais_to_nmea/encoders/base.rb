@@ -15,6 +15,10 @@ module AisToNmea
       def add_part(part)
         @message << part
       end
+
+      def add_parts(parts)
+        parts.each { |part| add_part(part) }
+      end
     end
   end
 end

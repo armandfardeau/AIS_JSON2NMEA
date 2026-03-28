@@ -4,6 +4,13 @@ module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Safety Broadcast Message (type 14)
     class SafetyBroadcastMessage < Base
+      PART_CLASSES_IN_ORDER = {
+        repeat_indicator: AisToNmea::MessageParts::SafetyBroadcastMessage::RepeatIndicator,
+        mmsi: AisToNmea::MessageParts::Common::Mmsi,
+        spare: AisToNmea::MessageParts::SafetyBroadcastMessage::Spare,
+        text: AisToNmea::MessageParts::SafetyBroadcastMessage::Text
+      }.freeze
+
       def encode(input, _options = {})
         data = MessageType.parse_input(input)
         message_type, message_data = validated_payload(data)
@@ -26,27 +33,21 @@ module AisToNmea
       end
 
       def extract_safety_broadcast_parts(data)
-        message_parts = AisToNmea::MessageParts::SafetyBroadcastMessage
-        common_parts = AisToNmea::MessageParts::Common
-
-        {
-          repeat_indicator: extract_validated_part(message_parts::RepeatIndicator, data),
-          spare: extract_validated_part(message_parts::Spare, data),
-          text: extract_validated_part(message_parts::Text, data),
-          mmsi: extract_validated_part(common_parts::Mmsi, data)
-        }
+        extract_parts_from(data, PART_CLASSES_IN_ORDER)
       end
 
       def add_safety_broadcast_parts(message_id_part, parts)
-        add_part(message_id_part.pack)
-        add_part(parts[:repeat_indicator].pack)
-        add_part(parts[:mmsi].pack)
-        add_part(parts[:spare].pack)
-        add_part(parts[:text].pack)
+        ordered_parts = [message_id_part]
+        ordered_parts.concat(PART_CLASSES_IN_ORDER.keys.map { |key| parts.fetch(key) })
+        add_parts(ordered_parts.map(&:pack))
       end
 
       def extract_validated_part(part_class, data)
         part_class.new(data).extract.validate!
+      end
+
+      def extract_parts_from(data, part_classes)
+        part_classes.transform_values { |part_class| extract_validated_part(part_class, data) }
       end
 
       def validated_payload(data)
