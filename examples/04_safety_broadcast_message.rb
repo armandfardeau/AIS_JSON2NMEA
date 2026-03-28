@@ -24,4 +24,8 @@ safety_message_json = <<~JSON
 JSON
 
 ExampleHelper.print_case('Safety broadcast message - flat payload', safety_message)
-ExampleHelper.print_case('Safety broadcast message - JSON string payload', safety_message_json)
+ExampleHelper.print_case(
+  'Safety broadcast message - JSON string payload (explicit encoder)',
+  safety_message_json,
+  encoder: :safety_broadcast_message
+)

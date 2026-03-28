@@ -33,15 +33,15 @@ json_string_input = <<~JSON
   }
 JSON
 
-symbol_key_input = ExampleHelper.base_position_report(
+hash_with_explicit_encoder = ExampleHelper.base_position_report(
   user_id: 444_444_444,
   latitude: -33.8688,
   longitude: 151.2093,
   speed_over_ground: 20.1,
   course_over_ground: 270.0,
   true_heading: 270
-).transform_keys(&:to_sym)
+)
 
 ExampleHelper.print_case('Input format - Ruby hash', hash_input)
-ExampleHelper.print_case('Input format - JSON string', json_string_input)
-ExampleHelper.print_case('Input format - symbol keys hash', symbol_key_input)
+ExampleHelper.print_case('Input format - JSON string (explicit encoder)', json_string_input, encoder: :position_report)
+ExampleHelper.print_case('Input format - hash with explicit encoder', hash_with_explicit_encoder, encoder: :position_report)

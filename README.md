@@ -240,7 +240,7 @@ end
 Examples are split by use case in the [examples](examples) directory:
 
 - [examples/01_position_reports.rb](examples/01_position_reports.rb) - Message types 1, 2, 3
-- [examples/02_input_formats.rb](examples/02_input_formats.rb) - Hash, JSON string, symbol-key hash
+- [examples/02_input_formats.rb](examples/02_input_formats.rb) - Hash and JSON string inputs (with explicit encoder for JSON)
 - [examples/03_ship_static_data.rb](examples/03_ship_static_data.rb) - Message type 5
 - [examples/04_safety_broadcast_message.rb](examples/04_safety_broadcast_message.rb) - Message type 14
 - [examples/05_error_handling.rb](examples/05_error_handling.rb) - Missing field and invalid value cases

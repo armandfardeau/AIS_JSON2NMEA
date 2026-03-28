@@ -20,5 +20,6 @@ puts JSON.pretty_generate(message)
 
 result = AisToNmea::Encoder.new(data: message).encode
 
-puts '\nOutput (NMEA 0183):'
+puts
+puts 'Output (NMEA 0183):'
 puts result

@@ -32,16 +32,17 @@ module ExampleHelper
     }
   end
 
-  def print_case(title, payload)
+  def print_case(title, payload, **kwargs)
     puts "\n#{'=' * 70}"
     puts title
     puts "#{'=' * 70}"
     puts 'Input:'
     puts payload.is_a?(String) ? payload : JSON.pretty_generate(payload)
 
-    output = AisToNmea.to_nmea(payload)
+    output = AisToNmea.to_nmea(payload, **kwargs)
 
-    puts '\nOutput (NMEA 0183):'
+    puts
+    puts 'Output (NMEA 0183):'
     puts output
   end
 

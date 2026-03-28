@@ -9,7 +9,7 @@ module AisToNmea
     class Base
       include AisToNmea::AisEncoder::Utils::OutputValidator
 
-      PARTS_MAPPING_CONFIG_PATH = File.expand_path('../config/parts_mapping.yml', __dir__).freeze
+      MAPPING_CONFIG_PATH = File.expand_path('../config/mapping.yml', __dir__).freeze
 
       class << self
         def parts_mapping
@@ -30,7 +30,7 @@ module AisToNmea
 
         def all_parts_mappings
           @all_parts_mappings ||= YAML.safe_load(
-            File.read(PARTS_MAPPING_CONFIG_PATH),
+            File.read(MAPPING_CONFIG_PATH),
             aliases: true
           )
         rescue Psych::SyntaxError => e
