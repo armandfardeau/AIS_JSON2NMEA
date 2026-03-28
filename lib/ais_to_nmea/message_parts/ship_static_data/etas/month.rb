@@ -3,8 +3,16 @@ module AisToNmea
     module ShipStaticData
       module Etas
         class Month < Eta
-          def self.extract(data)
-            extract_component(data, 'Month', 0)
+          def extract
+            extract_component('Month', 0)
+          end
+
+          def validate!
+            validate_component!(min: 0, max: 12, key: 'Month')
+          end
+
+          def pack
+            AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 4)
           end
         end
       end

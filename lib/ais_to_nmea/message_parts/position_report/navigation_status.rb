@@ -2,17 +2,29 @@ module AisToNmea
   module MessageParts
     module PositionReport
       class NavigationStatus
-        def self.extract(value, packed: false)
-          if packed
-            AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(value, 4)
-          else
-            AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-              value,
-              ['NavigationStatus', 'NavigationalStatus'],
-              field_name: 'NavigationStatus/NavigationalStatus',
-              default: 0
-            )
-          end
+        attr_reader :value
+
+        def initialize(data = nil, value = nil)
+          @data = data
+          @value = value
+        end
+
+        def extract
+          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
+            @data,
+            ['NavigationStatus', 'NavigationalStatus'],
+            field_name: 'NavigationStatus/NavigationalStatus',
+            default: 0
+          )
+          self
+        end
+
+        def validate!
+          self
+        end
+
+        def pack
+          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 4)
         end
       end
     end

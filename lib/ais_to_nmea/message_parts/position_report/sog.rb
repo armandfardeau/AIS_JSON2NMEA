@@ -2,16 +2,28 @@ module AisToNmea
   module MessageParts
     module PositionReport
       class Sog
-        def self.extract(value, packed: false)
-          if packed
-            AisToNmea::AisEncoder::Utils::BitPacking.pack_uint((value * 10).round, 10)
-          else
-            AisToNmea::AisEncoder::Utils::Input.required_float_from(
-              value,
-              ['Sog', 'SpeedOverGround'],
-              field_name: 'Sog/SpeedOverGround'
-            )
-          end
+        attr_reader :value
+
+        def initialize(data = nil, value = nil)
+          @data = data
+          @value = value
+        end
+
+        def extract
+          @value = AisToNmea::AisEncoder::Utils::Input.required_float_from(
+            @data,
+            ['Sog', 'SpeedOverGround'],
+            field_name: 'Sog/SpeedOverGround'
+          )
+          self
+        end
+
+        def validate!
+          self
+        end
+
+        def pack
+          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint((@value * 10).round, 10)
         end
       end
     end

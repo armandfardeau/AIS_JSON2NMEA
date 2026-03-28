@@ -35,31 +35,42 @@ module AisToNmea
       private
 
       def encode_position_report(message_type, data)
-        lat = AisToNmea::MessageParts::PositionReport::Latitude.extract(data)
-        lon = AisToNmea::MessageParts::PositionReport::Longitude.extract(data)
-        sog = AisToNmea::MessageParts::PositionReport::Sog.extract(data)
-        cog = AisToNmea::MessageParts::PositionReport::Cog.extract(data)
-        heading = AisToNmea::MessageParts::PositionReport::Heading.extract(data)
-        nav_status = AisToNmea::MessageParts::PositionReport::NavigationStatus.extract(data)
+        lat_part = AisToNmea::MessageParts::PositionReport::Latitude.new(data).extract.validate!
+        lon_part = AisToNmea::MessageParts::PositionReport::Longitude.new(data).extract.validate!
+        sog_part = AisToNmea::MessageParts::PositionReport::Sog.new(data).extract.validate!
+        cog_part = AisToNmea::MessageParts::PositionReport::Cog.new(data).extract.validate!
+        heading_part = AisToNmea::MessageParts::PositionReport::Heading.new(data).extract.validate!
+        nav_status_part = AisToNmea::MessageParts::PositionReport::NavigationStatus.new(data).extract.validate!
+        repeat_indicator_part = AisToNmea::MessageParts::PositionReport::RepeatIndicator.new.extract.validate!
+        rot_part = AisToNmea::MessageParts::PositionReport::Rot.new.extract.validate!
+        position_accuracy_part = AisToNmea::MessageParts::PositionReport::PositionAccuracy.new.extract.validate!
+        timestamp_part = AisToNmea::MessageParts::PositionReport::Timestamp.new.extract.validate!
+        maneuver_part = AisToNmea::MessageParts::PositionReport::Maneuver.new.extract.validate!
+        spare_part = AisToNmea::MessageParts::PositionReport::Spare.new.extract.validate!
+        raim_part = AisToNmea::MessageParts::PositionReport::Raim.new.extract.validate!
+        radio_status_part = AisToNmea::MessageParts::PositionReport::RadioStatus.new(data).extract.validate!
+        mmsi_part = AisToNmea::MessageParts::Common::Mmsi.new(data).extract.validate!
 
-        AisToNmea::AisEncoder::Utils::Validation.validate_ranges!(lat, lon, sog, cog, heading, nav_status)
+        AisToNmea::AisEncoder::Utils::Validation.validate_ranges!(lat_part.value, lon_part.value, sog_part.value, cog_part.value, heading_part.value, nav_status_part.value)
 
-        add_part(AisToNmea::MessageParts::Common::MessageId.extract(message_type))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 2)) # repeat indicator
-        add_part(AisToNmea::MessageParts::Common::Mmsi.extract(data))
-        add_part(AisToNmea::MessageParts::PositionReport::NavigationStatus.extract(nav_status, packed: true))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(128, 8)) # ROT unavailable
-        add_part(AisToNmea::MessageParts::PositionReport::Sog.extract(sog, packed: true))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 1)) # position accuracy
-        add_part(AisToNmea::MessageParts::PositionReport::Longitude.extract(lon, packed: true))
-        add_part(AisToNmea::MessageParts::PositionReport::Latitude.extract(lat, packed: true))
-        add_part(AisToNmea::MessageParts::PositionReport::Cog.extract(cog, packed: true))
-        add_part(AisToNmea::MessageParts::PositionReport::Heading.extract(heading, packed: true))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 6)) # timestamp
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 2)) # maneuver
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 3)) # spare
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 1)) # RAIM
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 19)) # radio status
+        message_id_part = AisToNmea::MessageParts::Common::MessageId.new(message_type).extract.validate!
+
+        add_part(message_id_part.pack)
+        add_part(repeat_indicator_part.pack)
+        add_part(mmsi_part.pack)
+        add_part(nav_status_part.pack)
+        add_part(rot_part.pack)
+        add_part(sog_part.pack)
+        add_part(position_accuracy_part.pack)
+        add_part(lon_part.pack)
+        add_part(lat_part.pack)
+        add_part(cog_part.pack)
+        add_part(heading_part.pack)
+        add_part(timestamp_part.pack)
+        add_part(maneuver_part.pack)
+        add_part(spare_part.pack)
+        add_part(raim_part.pack)
+        add_part(radio_status_part.pack)
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)

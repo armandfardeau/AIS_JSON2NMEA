@@ -1,7 +1,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
-      class Heading
+      class Rot
         attr_reader :value
 
         def initialize(data = nil, value = nil)
@@ -10,16 +10,18 @@ module AisToNmea
         end
 
         def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_int(@data, 'TrueHeading')
+          @value = 128
           self
         end
 
         def validate!
-          self
+          return self if @value.between?(0, 255)
+
+          raise InvalidFieldError, "Rot must be between 0 and 255 (got: #{@value.inspect})"
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 9)
+          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 8)
         end
       end
     end

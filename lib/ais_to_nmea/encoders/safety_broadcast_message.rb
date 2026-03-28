@@ -21,13 +21,17 @@ module AisToNmea
       private
 
       def encode_safety_broadcast_message(message_type, data)
-        text_bits = AisToNmea::AisEncoder::Utils::Text.encode_ais_text(data['Text'], max_length: 156)
+        message_id_part = AisToNmea::MessageParts::Common::MessageId.new(message_type).extract.validate!
+        repeat_indicator_part = AisToNmea::MessageParts::SafetyBroadcastMessage::RepeatIndicator.new(data).extract.validate!
+        spare_part = AisToNmea::MessageParts::SafetyBroadcastMessage::Spare.new(data).extract.validate!
+        text_part = AisToNmea::MessageParts::SafetyBroadcastMessage::Text.new(data).extract.validate!
+        mmsi_part = AisToNmea::MessageParts::Common::Mmsi.new(data).extract.validate!
 
-        add_part(AisToNmea::MessageParts::Common::MessageId.extract(message_type))
-        add_part(AisToNmea::MessageParts::SafetyBroadcastMessage::RepeatIndicator.extract(data))
-        add_part(AisToNmea::MessageParts::Common::Mmsi.extract(data))
-        add_part(AisToNmea::MessageParts::SafetyBroadcastMessage::Spare.extract(data))
-        add_part(text_bits)
+        add_part(message_id_part.pack)
+        add_part(repeat_indicator_part.pack)
+        add_part(mmsi_part.pack)
+        add_part(spare_part.pack)
+        add_part(text_part.pack)
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)

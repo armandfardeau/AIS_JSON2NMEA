@@ -1,7 +1,7 @@
 module AisToNmea
   module MessageParts
-    module SafetyBroadcastMessage
-      class RepeatIndicator
+    module ShipStaticData
+      class AisVersion
         attr_reader :value
 
         def initialize(data = nil, value = nil)
@@ -12,8 +12,8 @@ module AisToNmea
         def extract
           @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
             @data,
-            ['RepeatIndicator'],
-            field_name: 'RepeatIndicator',
+            ['AisVersion'],
+            field_name: 'AisVersion',
             default: 0
           )
           self
@@ -22,7 +22,7 @@ module AisToNmea
         def validate!
           return self if @value.between?(0, 3)
 
-          raise InvalidFieldError, 'RepeatIndicator must be between 0 and 3'
+          raise InvalidFieldError, "AisVersion must be between 0 and 3 (got: #{@value.inspect})"
         end
 
         def pack

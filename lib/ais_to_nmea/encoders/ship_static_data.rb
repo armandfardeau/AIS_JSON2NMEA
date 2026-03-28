@@ -21,53 +21,50 @@ module AisToNmea
       private
 
       def encode_ship_static_data(message_type, data)
-        ais_version = Integer(data.fetch('AisVersion', 0))
-        imo_number = Integer(data.fetch('ImoNumber', 0))
-        call_sign_bits = AisToNmea::MessageParts::ShipStaticData::CallSign.extract(data)
-        name_bits = AisToNmea::MessageParts::ShipStaticData::Name.extract(data)
-        ship_type = Integer(data.fetch('Type', 0))
+        message_id_part = AisToNmea::MessageParts::Common::MessageId.new(message_type).extract.validate!
+        repeat_indicator_part = AisToNmea::MessageParts::ShipStaticData::RepeatIndicator.new.extract.validate!
+        mmsi_part = AisToNmea::MessageParts::Common::Mmsi.new(data).extract.validate!
+        ais_version_part = AisToNmea::MessageParts::ShipStaticData::AisVersion.new(data).extract.validate!
+        imo_number_part = AisToNmea::MessageParts::ShipStaticData::ImoNumber.new(data).extract.validate!
+        call_sign_part = AisToNmea::MessageParts::ShipStaticData::CallSign.new(data).extract.validate!
+        name_part = AisToNmea::MessageParts::ShipStaticData::Name.new(data).extract.validate!
+        ship_type_part = AisToNmea::MessageParts::ShipStaticData::ShipType.new(data).extract.validate!
+        dimensions_part = AisToNmea::MessageParts::ShipStaticData::Dimensions.new(data).extract.validate!
+        fix_type_part = AisToNmea::MessageParts::ShipStaticData::FixType.new(data).extract.validate!
+        eta_month_part = AisToNmea::MessageParts::ShipStaticData::Etas::Month.new(data).extract.validate!
+        eta_day_part = AisToNmea::MessageParts::ShipStaticData::Etas::Day.new(data).extract.validate!
+        eta_hour_part = AisToNmea::MessageParts::ShipStaticData::Etas::Hour.new(data).extract.validate!
+        eta_minute_part = AisToNmea::MessageParts::ShipStaticData::Etas::Minute.new(data).extract.validate!
+        maximum_static_draught_part = AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught.new(data).extract.validate!
+        destination_part = AisToNmea::MessageParts::ShipStaticData::Destination.new(data).extract.validate!
+        dte_part = AisToNmea::MessageParts::ShipStaticData::Dte.new(data).extract.validate!
+        spare_part = AisToNmea::MessageParts::ShipStaticData::Spare.new(data).extract.validate!
+        packed_dimensions = dimensions_part.pack
 
-        dimension = data['Dimension'] || {}
-        to_bow = Integer(dimension.fetch('A', 0))
-        to_stern = Integer(dimension.fetch('B', 0))
-        to_port = Integer(dimension.fetch('C', 0))
-        to_starboard = Integer(dimension.fetch('D', 0))
-
-        fix_type = Integer(data.fetch('FixType', 0))
-        eta_month = AisToNmea::MessageParts::ShipStaticData::Etas::Month.extract(data)
-        eta_day = AisToNmea::MessageParts::ShipStaticData::Etas::Day.extract(data)
-        eta_hour = AisToNmea::MessageParts::ShipStaticData::Etas::Hour.extract(data)
-        eta_minute = AisToNmea::MessageParts::ShipStaticData::Etas::Minute.extract(data)
-
-        draught_dm = (Float(data.fetch('MaximumStaticDraught', 0.0)) * 10).round
-        destination_bits = AisToNmea::MessageParts::ShipStaticData::Destination.extract(data)
-
-        add_part(AisToNmea::MessageParts::Common::MessageId.extract(message_type))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(0, 2))
-        add_part(AisToNmea::MessageParts::Common::Mmsi.extract(data))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(ais_version, 2))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(imo_number, 30))
-        add_part(call_sign_bits)
-        add_part(name_bits)
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(ship_type, 8))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(to_bow, 9))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(to_stern, 9))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(to_port, 6))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(to_starboard, 6))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(fix_type, 4))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(eta_month, 4))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(eta_day, 5))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(eta_hour, 5))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(eta_minute, 6))
-        add_part(AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(draught_dm, 8))
-        add_part(destination_bits)
-        add_part(AisToNmea::MessageParts::ShipStaticData::Dte.extract(data))
-        add_part(AisToNmea::MessageParts::ShipStaticData::Spare.extract(data))
+        add_part(message_id_part.pack)
+        add_part(repeat_indicator_part.pack)
+        add_part(mmsi_part.pack)
+        add_part(ais_version_part.pack)
+        add_part(imo_number_part.pack)
+        add_part(call_sign_part.pack)
+        add_part(name_part.pack)
+        add_part(ship_type_part.pack)
+        add_part(packed_dimensions[:a])
+        add_part(packed_dimensions[:b])
+        add_part(packed_dimensions[:c])
+        add_part(packed_dimensions[:d])
+        add_part(fix_type_part.pack)
+        add_part(eta_month_part.pack)
+        add_part(eta_day_part.pack)
+        add_part(eta_hour_part.pack)
+        add_part(eta_minute_part.pack)
+        add_part(maximum_static_draught_part.pack)
+        add_part(destination_part.pack)
+        add_part(dte_part.pack)
+        add_part(spare_part.pack)
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
-      rescue ArgumentError, TypeError
-        raise InvalidFieldError, 'Invalid numeric value in ShipStaticData payload'
       end
     end
   end

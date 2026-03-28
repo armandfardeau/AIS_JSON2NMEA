@@ -1,7 +1,7 @@
 module AisToNmea
   module MessageParts
-    module PositionReport
-      class Heading
+    module SafetyBroadcastMessage
+      class Text
         attr_reader :value
 
         def initialize(data = nil, value = nil)
@@ -10,7 +10,8 @@ module AisToNmea
         end
 
         def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_int(@data, 'TrueHeading')
+          present, value = AisToNmea::AisEncoder::Utils::Input.value_for_key(@data, 'Text')
+          @value = present ? value : nil
           self
         end
 
@@ -19,7 +20,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 9)
+          AisToNmea::AisEncoder::Utils::Text.encode_ais_text(@value, max_length: 156)
         end
       end
     end

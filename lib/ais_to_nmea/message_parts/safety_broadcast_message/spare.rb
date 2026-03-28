@@ -2,15 +2,31 @@ module AisToNmea
   module MessageParts
     module SafetyBroadcastMessage
       class Spare
-        def self.extract(data)
-          spare = Integer(data.fetch('Spare', 0))
-          unless spare.between?(0, 3)
-            raise InvalidFieldError, 'Spare must be between 0 and 3'
-          end
+        attr_reader :value
 
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(spare, 2)
-        rescue ArgumentError, TypeError
+        def initialize(data = nil, value = nil)
+          @data = data
+          @value = value
+        end
+
+        def extract
+          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
+            @data,
+            ['Spare'],
+            field_name: 'Spare',
+            default: 0
+          )
+          self
+        end
+
+        def validate!
+          return self if @value.between?(0, 3)
+
           raise InvalidFieldError, 'Spare must be between 0 and 3'
+        end
+
+        def pack
+          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 2)
         end
       end
     end

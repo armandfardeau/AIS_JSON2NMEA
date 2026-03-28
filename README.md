@@ -255,6 +255,24 @@ The gem includes tests for:
 - Error cases (missing fields, out-of-range values)
 - Input validation
 
+## Linting
+
+This project uses [RuboCop](https://rubocop.org/) and [rubocop-rspec](https://github.com/rubocop/rubocop-rspec) for code style enforcement.
+
+Run the linter:
+
+```bash
+bundle exec rake lint
+```
+
+Auto-fix all correctable offenses:
+
+```bash
+bundle exec rake lint:fix
+```
+
+Linting is also enforced automatically on every push and pull request via GitHub Actions.
+
 ## Building from Source
 
 ### Prerequisites
