@@ -14,7 +14,47 @@ AllCops:
     - "*.gemspec"
 
 Capybara/RSpec/PredicateMatcher:
-  Enabled: false
+  Enabled: false  
+Capybara/CurrentPathExpectation:
+  Enabled: true
+Capybara/MatchStyle:
+  Enabled: true
+Capybara/NegationMatcher:
+  Enabled: true
+Capybara/SpecificActions:
+  Enabled: true
+Capybara/SpecificFinders:
+  Enabled: true
+Capybara/SpecificMatcher:
+  Enabled: true
+Capybara/VisibilityMatcher:
+  Enabled: true
+FactoryBot/AttributeDefinedStatically:
+  Enabled: true
+FactoryBot/ConsistentParenthesesStyle:
+  Enabled: true
+FactoryBot/CreateList:
+  Enabled: true
+FactoryBot/FactoryClassName:
+  Enabled: true
+FactoryBot/FactoryNameStyle:
+  Enabled: true
+FactoryBot/SyntaxMethods:
+  Enabled: true
+RSpecRails/AvoidSetupHook:
+  Enabled: true
+RSpecRails/HaveHttpStatus:
+  Enabled: true
+RSpecRails/HttpStatus:
+  Enabled: true
+RSpecRails/InferredSpecType:
+  Enabled: true
+RSpecRails/MinitestAssertions:
+  Enabled: true
+RSpecRails/NegationBeValid:
+  Enabled: true
+RSpecRails/TravelAround:
+  Enabled: true
 
 Style/Documentation:
   Exclude:
