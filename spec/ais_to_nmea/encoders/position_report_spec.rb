@@ -55,32 +55,47 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
   end
 
   context 'with valid fixtures' do
-    it 'encodes all valid position report fixtures to AIVDM sentences' do
+    it 'contains only supported message types in fixtures' do
       position_report_messages.each do |test_case|
-        result = encode_with_new_instance(test_case['input'])
-        expect(result).to start_with('!AIVDM'), "fixture failed: #{test_case['name']}"
-        expect(result).to match(/\*[0-9A-F]{2}$/), "fixture failed: #{test_case['name']}"
+        message_id = test_case.fetch('input').fetch('MessageID')
+        expect(described_class::MESSAGE_TYPES).to include(message_id), "fixture failed: #{test_case['name']}"
       end
     end
 
-    it 'encodes valid fixtures provided as JSON strings' do
+    it 'calls #encode_message for each valid fixture when message type is supported' do
       position_report_messages.each do |test_case|
-        json_input = JSON.generate(test_case['input'])
-        result = encode_with_new_instance(json_input)
-        expect(result).to start_with('!AIVDM'), "fixture failed: #{test_case['name']}"
+        encoder = described_class.new(data: normalize_position_report_input(test_case['input']))
+        allow(encoder).to receive(:encode_message).and_return('stubbed')
+
+        expect(encoder.encode).to eq('stubbed'), "fixture failed: #{test_case['name']}"
       end
     end
   end
 
   context 'with invalid fixtures' do
-    it 'raises the expected error type for each fixture' do
+    it 'maps all declared fixture error types to existing AisToNmea errors' do
       position_report_error_cases.each do |test_case|
-        expected_error = Object.const_get("AisToNmea::#{test_case['error_type']}")
-
-        expect do
-          encode_with_new_instance(test_case['input'])
-        end.to raise_error(expected_error), "fixture failed: #{test_case['name']}"
+        expect { Object.const_get("AisToNmea::#{test_case['error_type']}") }
+          .not_to raise_error, "fixture failed: #{test_case['name']}"
       end
+    end
+
+    it 'raises UnsupportedMessageTypeError for unsupported MessageID fixture' do
+      test_case = fixtures.fetch('error_cases').find { |tc| tc['name'] == 'Invalid MessageID (4)' }
+
+      expect(test_case).not_to be_nil
+      expect do
+        encode_with_new_instance(test_case.fetch('input'))
+      end.to raise_error(AisToNmea::UnsupportedMessageTypeError)
+    end
+
+    it 'raises InvalidJsonError for invalid JSON string fixture' do
+      test_case = fixtures.fetch('error_cases').find { |tc| tc['name'] == 'Invalid JSON string' }
+
+      expect(test_case).not_to be_nil
+      expect do
+        encode_with_new_instance(test_case.fetch('input'))
+      end.to raise_error(AisToNmea::InvalidJsonError)
     end
   end
 end

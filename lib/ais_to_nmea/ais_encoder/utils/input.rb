@@ -42,7 +42,7 @@ module AisToNmea
 
           Float(value)
         rescue ArgumentError, TypeError
-          raise InvalidFieldError, "Invalid numeric value for #{field_name}"
+          raise InvalidFieldError, "Invalid numeric value (#{value}) for #{field_name}"
         end
 
         def self.optional_bool_from(value, field_name:, default:)
@@ -60,7 +60,7 @@ module AisToNmea
           return true if value_str == 'true'
           return false if value_str == 'false'
 
-          raise InvalidFieldError, "Invalid boolean value for #{field_name}"
+          raise InvalidFieldError, "Invalid boolean value (#{value}) for #{field_name}"
         end
       end
     end

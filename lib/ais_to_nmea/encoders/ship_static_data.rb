@@ -112,18 +112,6 @@ module AisToNmea
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
       end
-
-      private
-
-      def add_ship_static_parts(parts)
-        packed_parts = []
-        PARTS_MAPPING.each_key do |key|
-          part = parts.fetch(key)
-            packed_parts << part.pack
-          end
-        end
-        add_parts(packed_parts)
-      end
     end
   end
 end
