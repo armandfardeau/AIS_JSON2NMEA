@@ -102,21 +102,10 @@ module AisToNmea
         AisToNmea::AisEncoder::Utils::StrictValidation.raise_missing_fields!('ShipStaticData', missing_fields.uniq)
       end
 
-      private
-
       def collect_nested_field_errors(data)
-        errors = []
-        errors.concat(
-          AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_nested_fields(
-            data, 'Dimension', REQUIRED_DIMENSION_KEYS
-          )
-        )
-        errors.concat(
-          AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_nested_fields(
-            data, 'Eta', REQUIRED_ETA_KEYS
-          )
-        )
-        errors
+        utils = AisToNmea::AisEncoder::Utils::StrictValidation
+        utils.missing_required_nested_fields(data, 'Dimension', REQUIRED_DIMENSION_KEYS) +
+          utils.missing_required_nested_fields(data, 'Eta', REQUIRED_ETA_KEYS)
       end
 
       def validate_valid_flag!(data)

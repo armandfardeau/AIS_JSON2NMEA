@@ -4,9 +4,9 @@ module AisToNmea
   # Registry and builder for encoder implementations.
   class EncoderFactory
     @registry = {
-      position_report: AisToNmea::Encoders::PositionReport,
-      ship_static_data: AisToNmea::Encoders::ShipStaticData,
-      safety_broadcast_message: AisToNmea::Encoders::SafetyBroadcastMessage
+      position_report: -> { AisToNmea::Encoders::PositionReport },
+      ship_static_data: -> { AisToNmea::Encoders::ShipStaticData },
+      safety_broadcast_message: -> { AisToNmea::Encoders::SafetyBroadcastMessage }
     }
 
     @message_type_map = {
@@ -26,9 +26,11 @@ module AisToNmea
 
       def build(options = {})
         key = options.fetch(:encoder, :position_report).to_sym
-        encoder_class = @registry[key]
-        raise InvalidFieldError, "Unknown encoder: #{key}" unless encoder_class
+        encoder_klass = @registry[key]
+        raise InvalidFieldError, "Unknown encoder: #{key}" unless encoder_klass
 
+        # Resolve lambda if present (lazy-loaded encoder)
+        encoder_class = encoder_klass.is_a?(Proc) ? encoder_klass.call : encoder_klass
         encoder_class.new
       end
 
