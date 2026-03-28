@@ -24,7 +24,7 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
 
   it 'declares the expected mapping keys' do
     expect(described_class.parts_mapping.keys).to eq(
-      %i[message_id repeat_indicator mmsi spare text valid]
+      %i[message_id repeat_indicator mmsi spare text]
     )
   end
 
@@ -34,9 +34,15 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
       repeat_indicator: 'RepeatIndicator',
       mmsi: 'UserID',
       spare: 'Spare',
-      text: 'Text',
-      valid: 'Valid'
+      text: 'Text'
     )
+  end
+
+  it 'preserves the decoded safety text' do
+    output = described_class.new(data: valid_input).encode
+    decoded = NMEAPlus::Decoder.new.parse(output).ais
+
+    expect(decoded.text.strip).to eq(valid_input['Text'])
   end
 
   it 'resolves mapping classes from YAML' do

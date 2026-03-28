@@ -1,0 +1,72 @@
+position_report:
+  message_id:
+    actual: message_type
+  repeat_indicator:
+    actual: repeat_indicator
+  mmsi:
+    actual: source_mmsi
+  nav_status:
+    actual: navigational_status
+  sog:
+    actual: speed_over_ground
+    comparator: float_tolerance
+  position_accuracy:
+    actual: position_10m_accuracy?
+    comparator: bool_int
+  lon:
+    actual: longitude
+    comparator: float_tolerance
+  lat:
+    actual: latitude
+    comparator: float_tolerance
+  cog:
+    actual: course_over_ground
+    comparator: float_tolerance
+  heading:
+    actual: true_heading
+    comparator: heading_sentinel
+  timestamp:
+    actual: time_stamp
+    comparator: timestamp_sentinel
+  maneuver:
+    actual: special_manoeuvre
+  raim:
+    actual: raim?
+    comparator: bool_int
+
+ship_static_data:
+  message_id:
+    actual: message_type
+  repeat_indicator:
+    actual: repeat_indicator
+  mmsi:
+    actual: source_mmsi
+  ais_version:
+    actual: ais_version
+  imo_number:
+    actual: imo_number
+  call_sign:
+    actual: callsign
+    comparator: normalized_string
+  name:
+    actual: name
+    comparator: normalized_string
+  ship_type:
+    actual: ship_cargo_type
+  maximum_static_draught:
+    actual: static_draught
+    comparator: float_tolerance
+  destination:
+    actual: destination
+    comparator: normalized_string
+
+safety_broadcast_message:
+  message_id:
+    actual: message_type
+  repeat_indicator:
+    actual: repeat_indicator
+  mmsi:
+    actual: source_mmsi
+  text:
+    actual: text
+    comparator: normalized_string

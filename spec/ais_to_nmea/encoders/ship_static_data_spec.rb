@@ -40,10 +40,10 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
   it 'loads parts mapping from YAML including nested sections' do
     mapping = described_class.parts_mapping
 
-    expect(mapping.keys).to include(:eta, :dimension, :valid)
+    expect(mapping.keys).to include(:eta, :dimension, :dte)
     expect(mapping[:message_id][:field]).to eq('MessageID')
     expect(mapping[:mmsi][:field]).to eq('UserID')
-    expect(mapping[:valid][:field]).to eq('Valid')
+    expect(mapping[:dte][:field]).to eq('DTE')
     expect(mapping[:eta][:nested].keys).to eq(%i[month day hour minute])
     expect(mapping[:dimension][:nested].keys).to eq(%i[a b c d])
     expect(mapping[:eta][:nested][:month][:class]).to eq(AisToNmea::MessageParts::ShipStaticData::Etas::Month)

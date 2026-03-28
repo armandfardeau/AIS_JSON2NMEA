@@ -121,7 +121,6 @@ ship_static_data:
   spare:
     class: AisToNmea::MessageParts::ShipStaticData::Spare
     field: Spare
-  valid: *common_valid
 
 safety_broadcast_message:
   message_id: *common_message_id
@@ -135,4 +134,3 @@ safety_broadcast_message:
   text:
     class: AisToNmea::MessageParts::SafetyBroadcastMessage::Text
     field: Text
-  valid: *common_valid
