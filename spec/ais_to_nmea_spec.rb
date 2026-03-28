@@ -299,6 +299,13 @@ describe AisToNmea do
         result = encoder.encode(position_report_input(position_optional_fields_input))
         expect(result).to start_with('!AIVDM')
       end
+
+      it 'accepts Cog equal to 360.0 by normalizing it to 0.0' do
+        normalized_result = described_class.new.encode(position_report_input('Cog' => 360.0))
+        zero_result = described_class.new.encode(position_report_input('Cog' => 0.0))
+
+        expect(normalized_result).to eq(zero_result)
+      end
     end
 
     context 'with invalid input' do

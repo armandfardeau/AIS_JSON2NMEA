@@ -18,6 +18,7 @@ module AisToNmea
             %w[Cog CourseOverGround],
             field_name: 'Cog/CourseOverGround'
           )
+          @value = 0.0 if @value == 360.0
           self
         end
 

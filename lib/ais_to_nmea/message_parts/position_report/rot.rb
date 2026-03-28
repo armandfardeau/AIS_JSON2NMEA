@@ -23,13 +23,14 @@ module AisToNmea
         end
 
         def validate!
-          return self if @value.between?(0, 255)
+          return self if @value.between?(-128, 255)
 
-          raise InvalidFieldError, "Rot must be between 0 and 255 (got: #{@value.inspect})"
+          raise InvalidFieldError, "Rot must be between -128 and 255 (got: #{@value.inspect})"
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 8)
+          encoded_value = @value.negative? ? (256 + @value) : @value
+          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(encoded_value, 8)
         end
       end
     end
