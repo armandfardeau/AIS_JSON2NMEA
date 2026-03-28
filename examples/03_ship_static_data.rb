@@ -8,11 +8,11 @@ ship_static_data = {
   'RepeatIndicator' => 0,
   'UserID' => 636_024_245,
   'Valid' => true,
-  'AisVersion' => 0,
-  'ImoNumber' => 9_876_543,
+  'AISVersion' => 0,
+  'IMONumber' => 9_876_543,
   'CallSign' => 'FRA1234',
   'Name' => 'TEST VESSEL',
-  'Type' => 70,
+  'ShipType' => 70,
   'Dimension' => {
     'A' => 50,
     'B' => 20,
@@ -28,7 +28,7 @@ ship_static_data = {
   },
   'MaximumStaticDraught' => 7.4,
   'Destination' => 'LE HAVRE',
-  'Dte' => false,
+  'DTE' => false,
   'Spare' => false
 }
 

@@ -3,24 +3,10 @@
 
 require_relative '_helper'
 
-missing_user_id = {
-  'MessageID' => 1,
-  'Latitude' => 48.8566,
-  'Longitude' => 2.3522,
-  'SpeedOverGround' => 12.3,
-  'CourseOverGround' => 254.8,
-  'TrueHeading' => 255
-}
+missing_user_id = ExampleHelper.base_position_report
+missing_user_id.delete('UserID')
 
-invalid_latitude = {
-  'MessageID' => 1,
-  'UserID' => 123_456_789,
-  'Latitude' => 95.0,
-  'Longitude' => 2.3522,
-  'SpeedOverGround' => 12.3,
-  'CourseOverGround' => 254.8,
-  'TrueHeading' => 255
-}
+invalid_latitude = ExampleHelper.base_position_report(latitude: 95.0)
 
 ExampleHelper.print_expected_error('Error handling - missing required field') do
   AisToNmea.to_nmea(missing_user_id)

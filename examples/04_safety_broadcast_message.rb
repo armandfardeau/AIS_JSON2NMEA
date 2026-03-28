@@ -12,17 +12,16 @@ safety_message = {
   'Text' => 'SECURITE NAVIGATION - SHALLOW WATER AHEAD'
 }
 
-nested_safety_message = {
-  'MessageType' => 'SafetyBroadcastMessage',
-  'Message' => {
-    'MessageID' => 14,
-    'RepeatIndicator' => 2,
-    'UserID' => 987_654_321,
-    'Valid' => true,
-    'Spare' => 1,
-    'Text' => 'ROCKS REPORTED 2NM EAST OF FAIRWAY'
+safety_message_json = <<~JSON
+  {
+    "MessageID": 14,
+    "RepeatIndicator": 2,
+    "UserID": 987654321,
+    "Valid": true,
+    "Spare": 1,
+    "Text": "ROCKS REPORTED 2NM EAST OF FAIRWAY"
   }
-}
+JSON
 
 ExampleHelper.print_case('Safety broadcast message - flat payload', safety_message)
-ExampleHelper.print_case('Safety broadcast message - nested payload', nested_safety_message)
+ExampleHelper.print_case('Safety broadcast message - JSON string payload', safety_message_json)

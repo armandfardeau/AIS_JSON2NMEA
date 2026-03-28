@@ -3,15 +3,14 @@
 
 require_relative '_helper'
 
-message = {
-  'MessageID' => 1,
-  'UserID' => 555_555_555,
-  'Latitude' => 37.7749,
-  'Longitude' => -122.4194,
-  'SpeedOverGround' => 13.1,
-  'CourseOverGround' => 318.2,
-  'TrueHeading' => 320
-}
+message = ExampleHelper.base_position_report(
+  user_id: 555_555_555,
+  latitude: 37.7749,
+  longitude: -122.4194,
+  speed_over_ground: 13.1,
+  course_over_ground: 318.2,
+  true_heading: 320
+)
 
 puts "#{'=' * 70}"
 puts 'Using AisToNmea::Encoder directly'
