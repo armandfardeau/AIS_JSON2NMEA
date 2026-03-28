@@ -54,6 +54,22 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
     expect(position_report_error_cases).not_to be_empty
   end
 
+  it 'loads parts mapping from YAML with expected keys and fields' do
+    mapping = described_class.parts_mapping
+
+    expect(mapping.keys).to eq(
+      %i[message_id repeat_indicator mmsi nav_status rot sog position_accuracy lon lat cog heading timestamp maneuver spare raim radio_status]
+    )
+    expect(mapping.transform_values { |map| map[:field] }).to include(
+      message_id: 'MessageID',
+      mmsi: 'UserID',
+      nav_status: 'NavigationalStatus',
+      sog: 'SpeedOverGround',
+      cog: 'CourseOverGround'
+    )
+    expect(mapping[:message_id][:class]).to eq(AisToNmea::MessageParts::Common::MessageId)
+  end
+
   context 'with valid fixtures' do
     it 'contains only supported message types in fixtures' do
       position_report_messages.each do |test_case|

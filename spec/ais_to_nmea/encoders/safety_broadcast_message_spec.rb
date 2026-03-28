@@ -23,13 +23,13 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
   end
 
   it 'declares the expected mapping keys' do
-    expect(described_class::PARTS_MAPPING.keys).to eq(
+    expect(described_class.parts_mapping.keys).to eq(
       %i[message_id repeat_indicator mmsi spare text valid]
     )
   end
 
   it 'uses the expected source fields in the mapping' do
-    expect(described_class::PARTS_MAPPING.transform_values { |map| map[:field] }).to eq(
+    expect(described_class.parts_mapping.transform_values { |map| map[:field] }).to eq(
       message_id: 'MessageID',
       repeat_indicator: 'RepeatIndicator',
       mmsi: 'UserID',
@@ -37,6 +37,11 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
       text: 'Text',
       valid: 'Valid'
     )
+  end
+
+  it 'resolves mapping classes from YAML' do
+    expect(described_class.parts_mapping[:message_id][:class]).to eq(AisToNmea::MessageParts::Common::MessageId)
+    expect(described_class.parts_mapping[:text][:class]).to eq(AisToNmea::MessageParts::SafetyBroadcastMessage::Text)
   end
 
   it 'delegates to encode_message when MessageID is supported' do
