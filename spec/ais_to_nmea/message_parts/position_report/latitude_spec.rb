@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Latitude do
   it 'normalizes the input value' do
-    expect(described_class.new("48.8566").value).to eq(48.8566)
+    expect(described_class.new('48.8566').value).to eq(48.8566)
   end
 
   it 'accepts a valid value' do

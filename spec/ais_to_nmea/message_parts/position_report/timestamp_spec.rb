@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Timestamp do
   it 'normalizes the input value' do
-    expect(described_class.new("59").value).to eq(59)
+    expect(described_class.new('59').value).to eq(59)
   end
 
   it 'accepts a valid value' do

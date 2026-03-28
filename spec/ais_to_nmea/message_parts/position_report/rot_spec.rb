@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Rot do
   it 'normalizes the input value' do
-    expect(described_class.new("-10").value).to eq(-10)
+    expect(described_class.new('-10').value).to eq(-10)
   end
 
   it 'accepts a valid value' do

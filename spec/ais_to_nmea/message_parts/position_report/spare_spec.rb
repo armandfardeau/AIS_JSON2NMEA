@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Spare do
   it 'normalizes the input value' do
-    expect(described_class.new("7").value).to eq(7)
+    expect(described_class.new('7').value).to eq(7)
   end
 
   it 'accepts a valid value' do

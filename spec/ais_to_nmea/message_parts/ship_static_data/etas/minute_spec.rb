@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::ShipStaticData::Etas::Minute do
   it 'normalizes the input value' do
-    expect(described_class.new("58").value).to eq(58)
+    expect(described_class.new('58').value).to eq(58)
   end
 
   it 'accepts a valid value' do

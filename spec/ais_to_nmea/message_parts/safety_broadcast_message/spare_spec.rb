@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::SafetyBroadcastMessage::Spare do
   it 'normalizes the input value' do
-    expect(described_class.new("3").value).to eq(3)
+    expect(described_class.new('3').value).to eq(3)
   end
 
   it 'accepts a valid value' do

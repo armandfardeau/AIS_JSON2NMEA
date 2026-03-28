@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "byebug"
   spec.add_runtime_dependency "zeitwerk", "~> 2.7"
   spec.add_runtime_dependency "json"
+  spec.add_runtime_dependency "nmea_plus"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["bug_tracker_uri"] = "https://github.com/armandfardeau/AIS_JSON2NMEA/issues"

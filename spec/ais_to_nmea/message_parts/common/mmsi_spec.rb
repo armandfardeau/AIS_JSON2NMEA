@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::Common::Mmsi do
   it 'normalizes the input value' do
-    expect(described_class.new("123456789").value).to eq(123_456_789)
+    expect(described_class.new('123456789').value).to eq(123_456_789)
   end
 
   it 'accepts a valid value' do

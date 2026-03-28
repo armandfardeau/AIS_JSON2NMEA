@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::RadioStatus do
   it 'normalizes the input value' do
-    expect(described_class.new("128").value).to eq(128)
+    expect(described_class.new('128').value).to eq(128)
   end
 
   it 'accepts a valid value' do

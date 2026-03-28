@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe AisToNmea::MessageParts::Common::Valid do
   it 'normalizes the input value' do
     part = described_class.new(true)
-    expect(part.value).to eq(true)
+    expect(part.value).to be(true)
   end
 
   it 'accepts a valid value' do

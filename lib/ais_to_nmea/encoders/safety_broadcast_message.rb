@@ -36,7 +36,10 @@ module AisToNmea
         add_packed_parts
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
-        AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
+        output = AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
+        validate!(message, output)
+
+        output
       end
     end
   end

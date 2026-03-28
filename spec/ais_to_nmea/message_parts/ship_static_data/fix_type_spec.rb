@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::ShipStaticData::FixType do
   it 'normalizes the input value' do
-    expect(described_class.new("1").value).to eq(1)
+    expect(described_class.new('1').value).to eq(1)
   end
 
   it 'accepts a valid value' do

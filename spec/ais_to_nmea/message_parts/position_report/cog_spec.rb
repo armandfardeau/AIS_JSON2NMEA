@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Cog do
   it 'normalizes the input value' do
-    expect(described_class.new("254.8").value).to eq(254.8)
+    expect(described_class.new('254.8').value).to eq(254.8)
   end
 
   it 'accepts a valid value' do

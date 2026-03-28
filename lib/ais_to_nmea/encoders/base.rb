@@ -6,6 +6,8 @@ module AisToNmea
   module Encoders
     # Base class shared by all AIS encoder implementations.
     class Base
+      include AisToNmea::AisEncoder::Utils::OutputValidator
+
       attr_reader :message
 
       def initialize(data: {}, options: {})

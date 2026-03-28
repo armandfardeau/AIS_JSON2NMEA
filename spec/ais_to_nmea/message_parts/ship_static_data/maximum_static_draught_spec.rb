@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught do
   it 'normalizes the input value' do
-    expect(described_class.new("7.4").value).to eq(7.4)
+    expect(described_class.new('7.4').value).to eq(7.4)
   end
 
   it 'accepts a valid value' do

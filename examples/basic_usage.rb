@@ -38,7 +38,7 @@ puts JSON.pretty_generate(position_report)
 puts
 
 begin
-  result = AisToNmea.to_nmea(position_report)
+  result = AisToNmea.to_nmea(data: position_report)
   puts 'Output (NMEA 0183):'
   puts result
   puts
@@ -67,7 +67,7 @@ puts 'Input (JSON String):'
 puts json_string
 
 begin
-  result = AisToNmea.to_nmea(json_string)
+  result = AisToNmea.to_nmea(data: json_string)
   puts 'Output (NMEA 0183):'
   puts result
   puts
@@ -181,7 +181,7 @@ puts JSON.pretty_generate(safety_broadcast_message)
 puts
 
 begin
-  result = AisToNmea.to_nmea(safety_broadcast_message)
+  result = AisToNmea.to_nmea(data: safety_broadcast_message)
   puts 'Output (NMEA 0183):'
   puts result
   puts
@@ -209,7 +209,7 @@ puts JSON.pretty_generate(invalid_message)
 puts
 
 begin
-  result = AisToNmea.to_nmea(invalid_message)
+  result = AisToNmea.to_nmea(data: invalid_message)
   puts 'Output (NMEA 0183):'
   puts result
 rescue AisToNmea::MissingFieldError => e
@@ -252,8 +252,6 @@ puts
 puts 'Example 9: Using Encoder Class Directly'
 puts '-' * 70
 
-encoder = AisToNmea::Encoder.new
-
 message = {
   'MessageID' => 1,
   'UserID' => 444_444_444,
@@ -269,7 +267,7 @@ puts JSON.pretty_generate(message)
 puts
 
 begin
-  result = encoder.encode(message)
+  result = AisToNmea::Encoder.new(data: message).encode
   puts 'Output (NMEA 0183):'
   puts result
 rescue StandardError => e

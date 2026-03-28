@@ -70,6 +70,15 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
         expect(encoder.encode).to eq('stubbed'), "fixture failed: #{test_case['name']}"
       end
     end
+
+    it 'encodes valid fixtures end-to-end without stubbing' do
+      position_report_messages.each do |test_case|
+        output = encode_with_new_instance(test_case['input'])
+
+        expect(output).to start_with('!AIVDM,')
+        expect(output).to end_with("\n")
+      end
+    end
   end
 
   context 'with invalid fixtures' do

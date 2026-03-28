@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Longitude do
   it 'normalizes the input value' do
-    expect(described_class.new("2.3522").value).to eq(2.3522)
+    expect(described_class.new('2.3522').value).to eq(2.3522)
   end
 
   it 'accepts a valid value' do

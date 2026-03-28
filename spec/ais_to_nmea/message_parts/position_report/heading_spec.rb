@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Heading do
   it 'normalizes the input value' do
-    expect(described_class.new("255").value).to eq(255)
+    expect(described_class.new('255').value).to eq(255)
   end
 
   it 'accepts a valid value' do

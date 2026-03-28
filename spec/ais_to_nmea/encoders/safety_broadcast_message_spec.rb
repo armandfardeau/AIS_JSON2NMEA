@@ -53,6 +53,13 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
     expect(encoder.encode).to eq('stubbed')
   end
 
+  it 'encodes end-to-end without stubbing' do
+    output = described_class.new(data: valid_input).encode
+
+    expect(output).to start_with('!AIVDM,')
+    expect(output).to end_with("\n")
+  end
+
   it 'raises UnsupportedMessageTypeError for unsupported MessageID' do
     encoder = described_class.new(data: valid_input.merge('MessageID' => 5))
 
