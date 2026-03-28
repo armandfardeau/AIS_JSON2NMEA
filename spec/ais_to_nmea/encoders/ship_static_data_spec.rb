@@ -52,6 +52,13 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
     expect(encoder.encode).to eq('stubbed')
   end
 
+  it 'encodes a valid fixture end-to-end without stubbing' do
+    output = encode_with_new_instance(ship_static_fixture['input'])
+
+    expect(output).to start_with('!AIVDM,')
+    expect(output).to end_with("\n")
+  end
+
   it 'rejects unsupported message type values for this encoder' do
     encoder = described_class.new(data: normalize_ship_static_data_input(ship_static_fixture['input']).merge('MessageID' => 14))
 

@@ -29,14 +29,14 @@ module AisToNmea
       private
 
       def extract_parts!(data = @data, mapping = self.class::PARTS_MAPPING)
-        mapping.map do |key, part_map|
-          if part_map[:nested]
-            nested_data = data.send(key)
-            extract_parts!(nested_data, part_map[:nested])
-          else
-            value = data.send(key)
-            part_map[:class].new(value).validate!
-          end
+        mapping.each_with_object({}) do |(key, part_map), parts|
+          parts[key] = if part_map[:nested]
+                         nested_data = data.send(key)
+                         extract_parts!(nested_data, part_map[:nested])
+                       else
+                         value = data.send(key)
+                         part_map[:class].new(value).validate!
+                       end
         end
       end
 
@@ -49,11 +49,17 @@ module AisToNmea
       end
 
       def add_packed_parts(parts = extract_parts!)
-        add_parts(
-          parts.values
-               .map(&:pack)
-               .flatten
-        )
+        add_parts(flatten_packed_parts(parts))
+      end
+
+      def flatten_packed_parts(parts)
+        parts.flat_map do |_key, part|
+          if part.is_a?(Hash)
+            flatten_packed_parts(part)
+          else
+            Array(part.pack)
+          end
+        end
       end
 
       # Build an intermediate representation of the data based on the provided mapping.

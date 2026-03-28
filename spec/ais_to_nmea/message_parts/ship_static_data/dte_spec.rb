@@ -16,7 +16,7 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::Dte do
     subject { described_class.new(true) }
 
     it 'packs value into AIS bits' do
-      expect { subject.pack }.to raise_error(ArgumentError)
+      expect(subject.pack).to eq('1')
     end
   end
 end
