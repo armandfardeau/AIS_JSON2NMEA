@@ -9,14 +9,29 @@ RSpec.describe AisToNmea::Error do
 
   it 'links JSON and field errors to the base error' do
     expect(AisToNmea::InvalidJsonError.superclass).to eq(described_class)
+  end
+
+  it 'links missing field error to the base error' do
     expect(AisToNmea::MissingFieldError.superclass).to eq(described_class)
+  end
+
+  it 'links invalid field error to the base error' do
     expect(AisToNmea::InvalidFieldError.superclass).to eq(described_class)
   end
 
   it 'links message and encoding errors to the expected parents' do
     expect(AisToNmea::UnsupportedMessageTypeError.superclass).to eq(described_class)
+  end
+
+  it 'links encoding error to the base error' do
     expect(AisToNmea::EncodingError.superclass).to eq(described_class)
+  end
+
+  it 'links encoding failure to encoding error' do
     expect(AisToNmea::EncodingFailureError.superclass).to eq(AisToNmea::EncodingError)
+  end
+
+  it 'links memory error to the base error' do
     expect(AisToNmea::MemoryError.superclass).to eq(described_class)
   end
 end

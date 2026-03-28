@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module AisToNmea
+  # Registry and builder for encoder implementations.
   class EncoderFactory
     @registry = {
       position_report: AisToNmea::Encoders::PositionReport,

@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the true heading field for a position report.
       class Heading
         attr_reader :value
 

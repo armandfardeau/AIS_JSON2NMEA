@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module Common
+      # Encodes and validates the AIS MessageID field.
       class MessageId
         attr_reader :value
 

@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module SafetyBroadcastMessage
+      # Encodes the broadcast text payload for a safety message.
       class Text
         attr_reader :value
 

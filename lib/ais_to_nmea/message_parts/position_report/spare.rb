@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the spare bits for a position report.
       class Spare
         attr_reader :value
 

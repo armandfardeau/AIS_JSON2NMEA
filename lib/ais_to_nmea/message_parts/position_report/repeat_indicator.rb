@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the repeat indicator for a position report.
       class RepeatIndicator
         attr_reader :value
 

@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the RAIM flag for a position report.
       class Raim
         attr_reader :value
 

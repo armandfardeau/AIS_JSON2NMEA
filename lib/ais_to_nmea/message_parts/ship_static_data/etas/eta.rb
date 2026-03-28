@@ -4,6 +4,7 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       module Etas
+        # Base class for individual ETA components.
         class Eta
           attr_reader :value
 
@@ -15,16 +16,7 @@ module AisToNmea
           private
 
           def extract_component(key, default)
-            eta = eta_payload
-            component = if eta.key?(key)
-                          eta[key]
-                        elsif eta.key?(key.to_sym)
-                          eta[key.to_sym]
-                        else
-                          default
-                        end
-
-            @value = Integer(component)
+            @value = Integer(component_value(key, default))
             self
           rescue ArgumentError, TypeError
             raise InvalidFieldError, "Invalid integer value for Eta.#{key}"
@@ -44,6 +36,14 @@ module AisToNmea
             return self if @value.between?(min, max)
 
             raise InvalidFieldError, "Eta.#{key} must be between #{min} and #{max}"
+          end
+
+          def component_value(key, default)
+            eta = eta_payload
+            return eta[key] if eta.key?(key)
+            return eta[key.to_sym] if eta.key?(key.to_sym)
+
+            default
           end
         end
       end

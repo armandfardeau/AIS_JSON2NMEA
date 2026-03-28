@@ -3,39 +3,39 @@
 module AisToNmea
   module AisEncoder
     module Utils
+      # Validation helpers for normalized AIS field values.
       module Validation
-        def self.validate_ranges!(lat, lon, sog, cog, heading, nav_status)
-          raise InvalidFieldError, "Latitude must be between -90 and 90 (got: #{lat.inspect})" unless lat.between?(
-            -90.0, 90.0
-          )
-          raise InvalidFieldError, "Longitude must be between -180 and 180 (got: #{lon.inspect})" unless lon.between?(
-            -180.0, 180.0
-          )
+        RANGE_RULES = [
+          [:lat, -90.0, 90.0, 'Latitude must be between -90 and 90'],
+          [:lon, -180.0, 180.0, 'Longitude must be between -180 and 180'],
+          [:sog, 0.0, 102.2, 'Sog/SpeedOverGround must be between 0 and 102.2'],
+          [:cog, 0.0, 359.9, 'Cog/CourseOverGround must be between 0 and 359.9'],
+          [:nav_status, 0, 15, 'NavigationStatus/NavigationalStatus must be between 0 and 15']
+        ].freeze
 
-          unless sog.between?(
-            0.0, 102.2
-          )
-            raise InvalidFieldError,
-                  "Sog/SpeedOverGround must be between 0 and 102.2 (got: #{sog.inspect})"
-          end
-          unless cog.between?(
-            0.0, 359.9
-          )
-            raise InvalidFieldError,
-                  "Cog/CourseOverGround must be between 0 and 359.9 (got: #{cog.inspect})"
+        def self.validate_ranges!(**values)
+          RANGE_RULES.each do |key, min, max, message|
+            assert_between!(values.fetch(key), min, max, message)
           end
 
-          valid_heading = heading.between?(0, 359) || heading == 511
-          unless valid_heading
-            raise InvalidFieldError,
-                  "TrueHeading must be between 0 and 359 (or 511 for unavailable) (got: #{heading.inspect})"
-          end
-          unless nav_status.between?(
-            0, 15
+          heading = values.fetch(:heading)
+          assert_predicate!(
+            heading.between?(0, 359) || heading == 511,
+            heading,
+            'TrueHeading must be between 0 and 359 (or 511 for unavailable)'
           )
-            raise InvalidFieldError,
-                  "NavigationStatus/NavigationalStatus must be between 0 and 15 (got: #{nav_status.inspect})"
-          end
+        end
+
+        def self.assert_between!(value, min, max, error_message)
+          return if value.between?(min, max)
+
+          raise InvalidFieldError, "#{error_message} (got: #{value.inspect})"
+        end
+
+        def self.assert_predicate!(valid, value, error_message)
+          return if valid
+
+          raise InvalidFieldError, "#{error_message} (got: #{value.inspect})"
         end
       end
     end

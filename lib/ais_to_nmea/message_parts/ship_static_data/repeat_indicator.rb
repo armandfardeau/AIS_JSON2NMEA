@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the repeat indicator for ship static data.
       class RepeatIndicator
         attr_reader :value
 

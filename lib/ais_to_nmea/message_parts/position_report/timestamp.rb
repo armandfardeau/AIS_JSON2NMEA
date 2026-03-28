@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the UTC second timestamp for a position report.
       class Timestamp
         attr_reader :value
 

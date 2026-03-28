@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the call sign field for ship static data.
       class CallSign
         attr_reader :value
 

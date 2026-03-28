@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the rate of turn field for a position report.
       class Rot
         attr_reader :value
 

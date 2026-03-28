@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the speed over ground field for a position report.
       class Sog
         attr_reader :value
 

@@ -4,6 +4,7 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       module Etas
+        # Encodes the ETA month component.
         class Month < Eta
           def extract
             extract_component('Month', 0)

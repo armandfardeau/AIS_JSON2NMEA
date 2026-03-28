@@ -2,6 +2,7 @@
 
 module AisToNmea
   module MessageParts
+    # Shared message components reused by multiple AIS message types.
     module Common
     end
   end

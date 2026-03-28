@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the radio status field for a position report.
       class RadioStatus
         attr_reader :value
 

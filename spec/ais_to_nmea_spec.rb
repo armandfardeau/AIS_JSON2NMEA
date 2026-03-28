@@ -3,6 +3,101 @@
 require 'spec_helper'
 
 describe AisToNmea do
+  ship_static_data_base_input = {
+    'MessageID' => 5,
+    'UserID' => 123_456_789,
+    'AisVersion' => 0,
+    'ImoNumber' => 9_876_543,
+    'CallSign' => 'FRA1234',
+    'Name' => 'TEST VESSEL',
+    'Type' => 70,
+    'Dimension' => { 'A' => 50, 'B' => 20, 'C' => 5, 'D' => 5 },
+    'FixType' => 1,
+    'Eta' => { 'Month' => 12, 'Day' => 31, 'Hour' => 23, 'Minute' => 59 },
+    'MaximumStaticDraught' => 7.4,
+    'Destination' => 'LE HAVRE',
+    'Dte' => false,
+    'Spare' => false
+  }.freeze
+  position_alias_input = {
+    'UserID' => 601_967_000,
+    'Latitude' => -34.14586666666666,
+    'Longitude' => 18.230756666666665,
+    'SpeedOverGround' => 6.3,
+    'CourseOverGround' => 182.3,
+    'NavigationalStatus' => 8,
+    'TrueHeading' => 180
+  }.freeze
+  position_symbol_input = {
+    MessageID: 1,
+    UserID: 601_600_400,
+    Latitude: -33.904673333333335,
+    Longitude: 18.422055,
+    Sog: 0,
+    Cog: 262.8,
+    NavigationalStatus: 0,
+    TrueHeading: 511
+  }.freeze
+  position_optional_fields_input = {
+    'RepeatIndicator' => 2,
+    'UserID' => 555_555_555,
+    'Valid' => true,
+    'NavigationalStatus' => 5,
+    'RateOfTurn' => 64,
+    'Sog' => 14.2,
+    'PositionAccuracy' => true,
+    'Longitude' => 2.1501,
+    'Latitude' => 41.3902,
+    'Cog' => 89.4,
+    'TrueHeading' => 90,
+    'Timestamp' => 58,
+    'SpecialManoeuvreIndicator' => 1,
+    'Spare' => 3,
+    'Raim' => true,
+    'CommunicationState' => 123_456
+  }.freeze
+
+  def position_report_input(overrides = {})
+    {
+      'MessageID' => 1,
+      'UserID' => 123_456_789,
+      'Latitude' => 48.8566,
+      'Longitude' => 2.3522,
+      'Sog' => 12.3,
+      'Cog' => 254.8,
+      'TrueHeading' => 255
+    }.merge(overrides)
+  end
+
+  def safety_broadcast_input(overrides = {})
+    {
+      'MessageID' => 14,
+      'UserID' => 123_456_789,
+      'Text' => 'SECURITE NAVIGATION'
+    }.merge(overrides)
+  end
+
+  ship_static_data_input = ->(overrides = {}) { ship_static_data_base_input.merge(overrides) }
+
+  def nmea_fields(result)
+    result.split("\n").first[1..(result.split("\n").first.index('*') - 1)].split(',')
+  end
+
+  def nmea_checksum_matches?(result)
+    sentence = result.split("\n").first
+    content = sentence[1..(sentence.index('*') - 1)]
+    checksum_expected = sentence[(sentence.index('*') + 1)..].to_i(16)
+    checksum_actual = content.each_char.reduce(0) { |acc, c| acc ^ c.ord }
+    checksum_actual == checksum_expected
+  end
+
+  def nested_safety_broadcast_input(text)
+    {
+      'MessageType' => 'SafetyBroadcastMessage',
+      'Message' => { 'MessageID' => 14, 'UserID' => 123_456_789, 'Text' => text }
+    }
+  end
+
   fixtures_path = File.join(__dir__, 'fixtures', 'sample_ais_messages.json')
   fixtures = JSON.parse(File.read(fixtures_path))
   message_id_for = lambda do |input|
@@ -23,68 +118,29 @@ describe AisToNmea do
   end
 
   describe '.to_nmea' do
-    it 'is a shorthand for Encoder.new.encode' do
-      input = {
-        'MessageID' => 1,
-        'UserID' => 123_456_789,
-        'Latitude' => 48.8566,
-        'Longitude' => 2.3522,
-        'Sog' => 12.3,
-        'Cog' => 254.8,
-        'TrueHeading' => 255
-      }
+    it 'returns a String for shorthand encoding' do
+      expect(described_class.to_nmea(position_report_input)).to be_a(String)
+    end
 
-      result = described_class.to_nmea(input)
-      expect(result).to be_a(String)
-      expect(result).to start_with('!AIVDM')
+    it 'produces an AIVDM sentence for shorthand encoding' do
+      expect(described_class.to_nmea(position_report_input)).to start_with('!AIVDM')
+    end
+
+    it 'registers position_report encoder key' do
+      expect(AisToNmea::EncoderFactory.registered).to include(:position_report)
     end
 
     it 'uses encoder factory with explicit encoder key' do
-      input = {
-        'MessageID' => 1,
-        'UserID' => 123_456_789,
-        'Latitude' => 48.8566,
-        'Longitude' => 2.3522,
-        'Sog' => 12.3,
-        'Cog' => 254.8,
-        'TrueHeading' => 255
-      }
-
-      expect(AisToNmea::EncoderFactory.registered).to include(:position_report)
-      result = described_class.to_nmea(input, encoder: :position_report)
-      expect(result).to start_with('!AIVDM')
+      expect(described_class.to_nmea(position_report_input, encoder: :position_report)).to start_with('!AIVDM')
     end
 
     it 'routes MessageID 14 to SafetyBroadcastMessage encoder' do
-      input = {
-        'MessageID' => 14,
-        'UserID' => 123_456_789,
-        'Text' => 'SECURITE NAVIGATION'
-      }
-
-      result = described_class.to_nmea(input)
+      result = described_class.to_nmea(safety_broadcast_input)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'routes MessageID 5 to ShipStaticData encoder' do
-      input = {
-        'MessageID' => 5,
-        'UserID' => 123_456_789,
-        'AisVersion' => 0,
-        'ImoNumber' => 9_876_543,
-        'CallSign' => 'FRA1234',
-        'Name' => 'TEST VESSEL',
-        'Type' => 70,
-        'Dimension' => { 'A' => 50, 'B' => 20, 'C' => 5, 'D' => 5 },
-        'FixType' => 1,
-        'Eta' => { 'Month' => 12, 'Day' => 31, 'Hour' => 23, 'Minute' => 59 },
-        'MaximumStaticDraught' => 7.4,
-        'Destination' => 'LE HAVRE',
-        'Dte' => false,
-        'Spare' => false
-      }
-
-      result = described_class.to_nmea(input)
+      result = described_class.to_nmea(ship_static_data_input.call)
       expect(result).to start_with('!AIVDM')
     end
   end
@@ -106,12 +162,7 @@ describe AisToNmea do
     end
 
     it 'supports custom registered encoder' do
-      custom = Class.new do
-        def encode(_input, _options = {})
-          '!AIVDM,1,1,0,A,CUSTOMPAYLOAD,0*00\n'
-        end
-      end
-
+      custom = Class.new { def encode(_input, _options = {}) = "!AIVDM,1,1,0,A,CUSTOMPAYLOAD,0*00\n" }
       described_class.register(:custom, custom)
       encoder = described_class.build(encoder: :custom)
       expect(encoder.encode({})).to start_with('!AIVDM')
@@ -124,294 +175,158 @@ describe AisToNmea do
   end
 
   describe AisToNmea::Encoder do
-    subject { described_class.new }
+    subject(:encoder) { described_class.new }
 
     it 'routes Position Report message types' do
-      input = {
-        'MessageID' => 1,
-        'UserID' => 123_456_789,
-        'Latitude' => 48.8566,
-        'Longitude' => 2.3522,
-        'Sog' => 12.3,
-        'Cog' => 254.8,
-        'TrueHeading' => 255
-      }
-
-      result = subject.encode(input)
+      result = encoder.encode(position_report_input)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'routes Safety Broadcast messages' do
-      input = {
-        'MessageID' => 14,
-        'UserID' => 123_456_789,
-        'Text' => 'SECURITE NAVIGATION'
-      }
-
-      result = subject.encode(input)
+      result = encoder.encode(safety_broadcast_input)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'routes ShipStaticData messages' do
-      input = {
-        'MessageID' => 5,
-        'UserID' => 123_456_789,
-        'AisVersion' => 0,
-        'ImoNumber' => 9_876_543,
-        'CallSign' => 'FRA1234',
-        'Name' => 'TEST VESSEL',
-        'Type' => 70,
-        'Dimension' => { 'A' => 50, 'B' => 20, 'C' => 5, 'D' => 5 },
-        'FixType' => 1,
-        'Eta' => { 'Month' => 12, 'Day' => 31, 'Hour' => 23, 'Minute' => 59 },
-        'MaximumStaticDraught' => 7.4,
-        'Destination' => 'LE HAVRE',
-        'Dte' => false,
-        'Spare' => false
-      }
-
-      result = subject.encode(input)
+      result = encoder.encode(ship_static_data_input.call)
       expect(result).to start_with('!AIVDM')
     end
   end
 
   describe AisToNmea::Encoders::PositionReport do
-    subject { described_class.new }
+    subject(:encoder) { described_class.new }
 
-    describe '#encode' do
-      it 'raises UnsupportedMessageTypeError for non-position-report message IDs' do
-        input = {
-          'MessageID' => 5,
-          'UserID' => 636_024_245,
-          'AisVersion' => 2,
-          'ImoNumber' => 9_221_827,
-          'CallSign' => '5LRR4',
-          'Name' => 'MSC SOPHIE VII',
-          'Type' => 71,
-          'Dimension' => { 'A' => 243, 'B' => 57, 'C' => 26, 'D' => 14 },
-          'FixType' => 1,
-          'Eta' => { 'Day' => 26, 'Hour' => 12, 'Minute' => 0, 'Month' => 3 },
-          'MaximumStaticDraught' => 14.6,
-          'Destination' => 'ZACPT',
-          'Dte' => false,
-          'Spare' => false
-        }
+    it 'raises UnsupportedMessageTypeError for non-position-report message IDs' do
+      expect { encoder.encode(ship_static_data_input.call) }
+        .to raise_error(AisToNmea::UnsupportedMessageTypeError, /PositionReport/)
+    end
 
+    context 'with valid Position Report messages' do
+      position_report_messages.each do |test_case|
+        it "handles #{test_case['name']} as String" do
+          expect(encoder.encode(test_case['input'])).to be_a(String)
+        end
+
+        it "handles #{test_case['name']} with AIVDM prefix" do
+          expect(encoder.encode(test_case['input'])).to match(/^!AIVDM/)
+        end
+
+        it "handles #{test_case['name']} with checksum suffix" do
+          expect(encoder.encode(test_case['input'])).to match(/\*[0-9A-F]{2}$/)
+        end
+
+        it "handles #{test_case['name']} as JSON string result type" do
+          json_input = JSON.generate(test_case['input'])
+          expect(encoder.encode(json_input)).to be_a(String)
+        end
+
+        it "handles #{test_case['name']} as JSON string prefix" do
+          json_input = JSON.generate(test_case['input'])
+          expect(encoder.encode(json_input)).to match(/^!AIVDM/)
+        end
+      end
+
+      it 'accepts legacy aliased keys for speed, course and navigation status' do
+        result = encoder.encode(position_report_input(position_alias_input))
+        expect(result).to start_with('!AIVDM')
+      end
+
+      it 'accepts symbol keys from upstream pipelines' do
+        result = encoder.encode(position_symbol_input)
+        expect(result).to start_with('!AIVDM')
+      end
+
+      it 'accepts explicit optional fields and communication state alias' do
+        result = encoder.encode(position_report_input(position_optional_fields_input))
+        expect(result).to start_with('!AIVDM')
+      end
+    end
+
+    context 'with invalid input' do
+      position_report_error_cases.each do |test_case|
+        it "raises #{test_case['error_type']} for: #{test_case['name']}" do
+          error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
+          expect do
+            encoder.encode(test_case['input'])
+          end.to raise_error(error_class)
+        end
+      end
+
+      it 'raises clear COG alias range error when course is invalid' do
+        expect { encoder.encode(position_report_input('Cog' => 400.0, 'NavigationStatus' => 0)) }
+          .to raise_error(AisToNmea::InvalidFieldError, %r{Cog/CourseOverGround})
+      end
+
+      it 'rejects invalid Valid flag set to false' do
+        expect { encoder.encode(position_report_input('Valid' => false)) }
+          .to raise_error(AisToNmea::InvalidFieldError, /Valid/)
+      end
+    end
+
+    context 'with invalid input type' do
+      it 'raises InvalidJsonError for non-string, non-Hash input' do
         expect do
-          subject.encode(input)
-        end.to raise_error(AisToNmea::UnsupportedMessageTypeError, /PositionReport/)
+          encoder.encode(123)
+        end.to raise_error(AisToNmea::InvalidJsonError)
+      end
+    end
+
+    context 'when validating NMEA format' do
+      let(:valid_input) { position_report_input }
+      let(:fields) { nmea_fields(encoder.encode(valid_input)) }
+
+      it 'returns NMEA sentences starting with !AIVDM' do
+        result = encoder.encode(valid_input)
+        expect(result).to start_with('!AIVDM')
       end
 
-      context 'with valid Position Report messages' do
-        position_report_messages.each do |test_case|
-          it "handles #{test_case['name']}" do
-            result = subject.encode(test_case['input'])
-
-            expect(result).to be_a(String)
-            expect(result).to match(/^!AIVDM/)
-            expect(result).to match(/\*[0-9A-F]{2}$/)
-          end
-
-          it "handles #{test_case['name']} as JSON string" do
-            json_input = JSON.generate(test_case['input'])
-            result = subject.encode(json_input)
-
-            expect(result).to be_a(String)
-            expect(result).to match(/^!AIVDM/)
-          end
-        end
-
-        it 'accepts legacy aliased keys for speed, course and navigation status' do
-          input = {
-            'MessageID' => 1,
-            'UserID' => 601_967_000,
-            'Latitude' => -34.14586666666666,
-            'Longitude' => 18.230756666666665,
-            'SpeedOverGround' => 6.3,
-            'CourseOverGround' => 182.3,
-            'NavigationalStatus' => 8,
-            'TrueHeading' => 180
-          }
-
-          result = subject.encode(input)
-          expect(result).to start_with('!AIVDM')
-        end
-
-        it 'accepts symbol keys from upstream pipelines' do
-          input = {
-            MessageID: 1,
-            UserID: 601_600_400,
-            Latitude: -33.904673333333335,
-            Longitude: 18.422055,
-            Sog: 0,
-            Cog: 262.8,
-            NavigationalStatus: 0,
-            TrueHeading: 511
-          }
-
-          result = subject.encode(input)
-          expect(result).to start_with('!AIVDM')
-        end
-
-        it 'accepts explicit optional fields and communication state alias' do
-          input = {
-            'MessageID' => 1,
-            'RepeatIndicator' => 2,
-            'UserID' => 555_555_555,
-            'Valid' => true,
-            'NavigationalStatus' => 5,
-            'RateOfTurn' => 64,
-            'Sog' => 14.2,
-            'PositionAccuracy' => true,
-            'Longitude' => 2.1501,
-            'Latitude' => 41.3902,
-            'Cog' => 89.4,
-            'TrueHeading' => 90,
-            'Timestamp' => 58,
-            'SpecialManoeuvreIndicator' => 1,
-            'Spare' => 3,
-            'Raim' => true,
-            'CommunicationState' => 123_456
-          }
-
-          result = subject.encode(input)
-          expect(result).to start_with('!AIVDM')
-        end
+      it 'includes checksum after *' do
+        expect(encoder.encode(valid_input).split('*').length).to eq(2)
       end
 
-      context 'with invalid input' do
-        position_report_error_cases.each do |test_case|
-          it "raises #{test_case['error_type']} for: #{test_case['name']}" do
-            error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
-            expect do
-              subject.encode(test_case['input'])
-            end.to raise_error(error_class)
-          end
-        end
-
-        it 'raises clear COG alias range error when course is invalid' do
-          input = {
-            'MessageID' => 1,
-            'UserID' => 123_456_789,
-            'Latitude' => 48.8566,
-            'Longitude' => 2.3522,
-            'Cog' => 400.0,
-            'Sog' => 12.3,
-            'TrueHeading' => 255,
-            'NavigationStatus' => 0
-          }
-
-          expect do
-            subject.encode(input)
-          end.to raise_error(AisToNmea::InvalidFieldError, %r{Cog/CourseOverGround})
-        end
-
-        it 'rejects invalid Valid flag set to false' do
-          input = {
-            'MessageID' => 1,
-            'UserID' => 123_456_789,
-            'Valid' => false,
-            'Latitude' => 48.8566,
-            'Longitude' => 2.3522,
-            'Sog' => 12.3,
-            'Cog' => 254.8,
-            'TrueHeading' => 255
-          }
-
-          expect do
-            subject.encode(input)
-          end.to raise_error(AisToNmea::InvalidFieldError, /Valid/)
-        end
+      it 'formats checksum as two uppercase hex characters' do
+        checksum = encoder.encode(valid_input).split('*')[1]
+        expect(checksum).to match(/^[0-9A-F]{2}/)
       end
 
-      context 'with invalid input type' do
-        it 'raises InvalidJsonError for non-string, non-Hash input' do
-          expect do
-            subject.encode(123)
-          end.to raise_error(AisToNmea::InvalidJsonError)
-        end
+      it 'has valid NMEA structure' do
+        expect(fields[0]).to eq('AIVDM')
       end
 
-      context 'NMEA format validation' do
-        let(:valid_input) do
-          {
-            'MessageID' => 1,
-            'UserID' => 123_456_789,
-            'Latitude' => 48.8566,
-            'Longitude' => 2.3522,
-            'Sog' => 12.3,
-            'Cog' => 254.8,
-            'TrueHeading' => 255
-          }
-        end
-
-        it 'returns NMEA sentences starting with !AIVDM' do
-          result = subject.encode(valid_input)
-          expect(result).to start_with('!AIVDM')
-        end
-
-        it 'includes checksum after *' do
-          result = subject.encode(valid_input)
-          parts = result.split('*')
-          expect(parts.length).to eq(2)
-          expect(parts[1]).to match(/^[0-9A-F]{2}/)
-        end
-
-        it 'has valid NMEA structure' do
-          result = subject.encode(valid_input)
-          sentence = result.split("\n").first
-
-          # Remove ! and checksum for analysis
-          content = sentence[1..(sentence.index('*') - 1)]
-          fields = content.split(',')
-
-          expect(fields[0]).to eq('AIVDM') # Sentence type
-          expect(fields[1].to_i).to be >= 1  # Total sentences
-          expect(fields[2].to_i).to be >= 1  # Sentence number
-          expect(fields[3].to_i).to be >= 0  # Sequential message ID
-          expect(fields[4]).to eq('A')       # Channel
-          expect(fields[5]).not_to be_empty  # Payload
-        end
-
-        it 'calculates correct checksums' do
-          result = subject.encode(valid_input)
-          sentence = result.split("\n").first
-
-          # Extract parts
-          content = sentence[1..(sentence.index('*') - 1)]
-          checksum_str = sentence[(sentence.index('*') + 1)..]
-          checksum_expected = checksum_str.to_i(16)
-
-          # Calculate checksum
-          checksum_actual = 0
-          content.each_char { |c| checksum_actual ^= c.ord }
-
-          expect(checksum_actual).to eq(checksum_expected)
-        end
+      it 'uses channel A in NMEA fields' do
+        expect(fields[4]).to eq('A')
       end
 
-      context 'multi-part message handling' do
-        it 'returns multi-part messages separated by newlines' do
-          # Type 5 messages can be multi-part, but with types 1-3 this is less common
-          # This test ensures proper formatting if multi-part occurs
-          input = {
-            'MessageID' => 1,
-            'UserID' => 123_456_789,
-            'Latitude' => 48.8566,
-            'Longitude' => 2.3522,
-            'Sog' => 12.3,
-            'Cog' => 254.8,
-            'TrueHeading' => 255
-          }
+      it 'has positive sentence counters' do
+        expect(fields[1].to_i).to be >= 1
+      end
 
-          result = subject.encode(input)
-          sentences = result.split("\n")
+      it 'has positive sentence index' do
+        expect(fields[2].to_i).to be >= 1
+      end
 
-          sentences.each do |sentence|
-            expect(sentence).to start_with('!AIVDM')
-            expect(sentence).to match(/\*[0-9A-F]{2}$/)
-          end
-        end
+      it 'has non-negative sequence id and non-empty payload' do
+        expect(fields[3].to_i).to be >= 0
+      end
+
+      it 'has non-empty payload field' do
+        expect(fields[5]).not_to be_empty
+      end
+
+      it 'calculates correct checksums' do
+        expect(nmea_checksum_matches?(encoder.encode(valid_input))).to be(true)
+      end
+    end
+
+    context 'when handling multi-part messages' do
+      it 'returns multi-part messages separated by newlines' do
+        sentences = encoder.encode(position_report_input).split("\n")
+        expect(sentences).to all(start_with('!AIVDM'))
+      end
+
+      it 'returns sentences with valid checksum suffixes' do
+        sentences = encoder.encode(position_report_input).split("\n")
+        expect(sentences).to all(match(/\*[0-9A-F]{2}$/))
       end
     end
   end
@@ -499,157 +414,105 @@ describe AisToNmea do
   end
 
   describe AisToNmea::Encoders::SafetyBroadcastMessage do
-    subject { described_class.new }
+    subject(:encoder) { described_class.new }
 
-    describe '#encode' do
-      context 'with valid SafetyBroadcastMessage fixtures' do
-        safety_broadcast_messages.each do |test_case|
-          it "handles #{test_case['name']}" do
-            result = subject.encode(test_case['input'])
+    context 'with valid SafetyBroadcastMessage fixtures' do
+      safety_broadcast_messages.each do |test_case|
+        it "handles #{test_case['name']} as String" do
+          expect(encoder.encode(test_case['input'])).to be_a(String)
+        end
 
-            expect(result).to be_a(String)
-            expect(result).to start_with('!AIVDM')
-            expect(result).to match(/\*[0-9A-F]{2}$/)
-          end
+        it "handles #{test_case['name']} with AIVDM prefix" do
+          expect(encoder.encode(test_case['input'])).to start_with('!AIVDM')
+        end
 
-          it "handles #{test_case['name']} as JSON string" do
-            json_input = JSON.generate(test_case['input'])
-            result = subject.encode(json_input)
+        it "handles #{test_case['name']} with checksum suffix" do
+          expect(encoder.encode(test_case['input'])).to match(/\*[0-9A-F]{2}$/)
+        end
 
-            expect(result).to be_a(String)
-            expect(result).to start_with('!AIVDM')
-          end
+        it "handles #{test_case['name']} as JSON string result type" do
+          json_input = JSON.generate(test_case['input'])
+          expect(encoder.encode(json_input)).to be_a(String)
+        end
+
+        it "handles #{test_case['name']} as JSON string prefix" do
+          json_input = JSON.generate(test_case['input'])
+          expect(encoder.encode(json_input)).to start_with('!AIVDM')
         end
       end
+    end
 
-      it 'encodes a valid SafetyBroadcastMessage' do
-        input = {
-          'MessageID' => 14,
-          'RepeatIndicator' => 0,
-          'UserID' => 123_456_789,
-          'Spare' => 0,
-          'Text' => 'SECURITE NAVIGATION'
-        }
+    it 'encodes a valid SafetyBroadcastMessage as String' do
+      input = safety_broadcast_input('RepeatIndicator' => 0, 'Spare' => 0)
+      expect(encoder.encode(input)).to be_a(String)
+    end
 
-        result = subject.encode(input)
-        expect(result).to be_a(String)
-        expect(result).to start_with('!AIVDM')
-        expect(result).to match(/\*[0-9A-F]{2}$/)
-      end
+    it 'encodes a valid SafetyBroadcastMessage with AIVDM prefix' do
+      input = safety_broadcast_input('RepeatIndicator' => 0, 'Spare' => 0)
+      expect(encoder.encode(input)).to start_with('!AIVDM')
+    end
 
-      it 'raises MissingFieldError when Text is missing' do
-        input = {
-          'MessageID' => 14,
-          'UserID' => 123_456_789
-        }
+    it 'encodes a valid SafetyBroadcastMessage with checksum suffix' do
+      input = safety_broadcast_input('RepeatIndicator' => 0, 'Spare' => 0)
+      expect(encoder.encode(input)).to match(/\*[0-9A-F]{2}$/)
+    end
 
-        expect do
-          subject.encode(input)
-        end.to raise_error(AisToNmea::MissingFieldError)
-      end
+    it 'raises MissingFieldError when Text is missing' do
+      expect { encoder.encode(safety_broadcast_input.except('Text')) }.to raise_error(AisToNmea::MissingFieldError)
+    end
 
-      it 'raises InvalidFieldError for unsupported characters' do
-        input = {
-          'MessageID' => 14,
-          'UserID' => 123_456_789,
-          'Text' => 'ALERTE~'
-        }
+    it 'raises InvalidFieldError for unsupported characters' do
+      expect { encoder.encode(safety_broadcast_input('Text' => 'ALERTE~')) }.to raise_error(AisToNmea::InvalidFieldError)
+    end
 
-        expect do
-          subject.encode(input)
-        end.to raise_error(AisToNmea::InvalidFieldError)
-      end
-
-      context 'with invalid SafetyBroadcastMessage fixtures' do
-        safety_broadcast_error_cases.each do |test_case|
-          it "raises #{test_case['error_type']} for: #{test_case['name']}" do
-            error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
-            expect do
-              subject.encode(test_case['input'])
-            end.to raise_error(error_class)
-          end
+    context 'with invalid SafetyBroadcastMessage fixtures' do
+      safety_broadcast_error_cases.each do |test_case|
+        it "raises #{test_case['error_type']} for: #{test_case['name']}" do
+          error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
+          expect do
+            encoder.encode(test_case['input'])
+          end.to raise_error(error_class)
         end
       end
+    end
 
-      it 'accepts boundary values for RepeatIndicator and Spare' do
-        input = {
-          'MessageID' => 14,
-          'RepeatIndicator' => 3,
-          'UserID' => 123_456_789,
-          'Spare' => 3,
-          'Text' => 'BOUNDARY SAFETY MESSAGE'
-        }
+    it 'accepts boundary values for RepeatIndicator and Spare' do
+      result = encoder.encode(
+        safety_broadcast_input('RepeatIndicator' => 3, 'Spare' => 3, 'Text' => 'BOUNDARY SAFETY MESSAGE')
+      )
+      expect(result).to start_with('!AIVDM')
+    end
 
-        result = subject.encode(input)
-        expect(result).to start_with('!AIVDM')
-      end
+    it 'accepts Text at the 156-character limit' do
+      result = encoder.encode(safety_broadcast_input('Text' => 'A' * 156))
+      expect(result).to start_with('!AIVDM')
+    end
 
-      it 'accepts Text at the 156-character limit' do
-        input = {
-          'MessageID' => 14,
-          'UserID' => 123_456_789,
-          'Text' => 'A' * 156
-        }
-
-        result = subject.encode(input)
-        expect(result).to start_with('!AIVDM')
-      end
-
-      it 'accepts nested Message format for SafetyBroadcastMessage' do
-        input = {
-          'MessageType' => 'SafetyBroadcastMessage',
-          'Message' => {
-            'MessageID' => 14,
-            'UserID' => 123_456_789,
-            'Text' => 'NESTED SAFETY MESSAGE'
-          }
-        }
-
-        result = subject.encode(input)
-        expect(result).to start_with('!AIVDM')
-      end
+    it 'accepts nested Message format for SafetyBroadcastMessage' do
+      result = encoder.encode(nested_safety_broadcast_input('NESTED SAFETY MESSAGE'))
+      expect(result).to start_with('!AIVDM')
     end
   end
 
   describe AisToNmea::Encoders::ShipStaticData do
-    subject { described_class.new }
+    subject(:encoder) { described_class.new }
 
     describe '#encode' do
-      it 'encodes a valid ShipStaticData message' do
-        input = {
-          'MessageID' => 5,
-          'UserID' => 123_456_789,
-          'AisVersion' => 0,
-          'ImoNumber' => 9_876_543,
-          'CallSign' => 'FRA1234',
-          'Name' => 'TEST VESSEL',
-          'Type' => 70,
-          'Dimension' => { 'A' => 50, 'B' => 20, 'C' => 5, 'D' => 5 },
-          'FixType' => 1,
-          'Eta' => { 'Month' => 12, 'Day' => 31, 'Hour' => 23, 'Minute' => 59 },
-          'MaximumStaticDraught' => 7.4,
-          'Destination' => 'LE HAVRE',
-          'Dte' => false,
-          'Spare' => false
-        }
+      it 'encodes a valid ShipStaticData message as String' do
+        expect(encoder.encode(ship_static_data_input.call)).to be_a(String)
+      end
 
-        result = subject.encode(input)
-        expect(result).to be_a(String)
-        expect(result).to start_with('!AIVDM')
-        expect(result).to match(/\*[0-9A-F]{2}$/)
+      it 'encodes a valid ShipStaticData message with AIVDM prefix' do
+        expect(encoder.encode(ship_static_data_input.call)).to start_with('!AIVDM')
+      end
+
+      it 'encodes a valid ShipStaticData message with checksum suffix' do
+        expect(encoder.encode(ship_static_data_input.call)).to match(/\*[0-9A-F]{2}$/)
       end
 
       it 'raises MissingFieldError when Name is missing' do
-        input = {
-          'MessageID' => 5,
-          'UserID' => 123_456_789,
-          'CallSign' => 'FRA1234',
-          'Destination' => 'LE HAVRE'
-        }
-
-        expect do
-          subject.encode(input)
-        end.to raise_error(AisToNmea::MissingFieldError)
+        expect { encoder.encode(ship_static_data_input.call.except('Name')) }
+          .to raise_error(AisToNmea::MissingFieldError)
       end
     end
   end

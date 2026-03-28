@@ -3,6 +3,7 @@
 module AisToNmea
   module AisEncoder
     module Utils
+      # AIS six-bit encoding helpers.
       module SixBit
         def self.encode(bit_string)
           fill_bits = (6 - (bit_string.length % 6)) % 6

@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the special maneuver indicator for a position report.
       class Maneuver
         attr_reader :value
 

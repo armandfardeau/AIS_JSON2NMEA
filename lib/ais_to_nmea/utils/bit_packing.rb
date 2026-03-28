@@ -3,6 +3,7 @@
 module AisToNmea
   module AisEncoder
     module Utils
+      # Bit packing helpers for AIS field serialization.
       module BitPacking
         def self.pack_uint(value, width)
           if value.negative? || value >= (1 << width)

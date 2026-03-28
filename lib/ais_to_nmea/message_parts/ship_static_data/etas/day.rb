@@ -4,6 +4,7 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       module Etas
+        # Encodes the ETA day component.
         class Day < Eta
           def extract
             extract_component('Day', 0)

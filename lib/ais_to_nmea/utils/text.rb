@@ -3,6 +3,7 @@
 module AisToNmea
   module AisEncoder
     module Utils
+      # Text encoding helpers for AIS six-bit character payloads.
       module Text
         AIS_CHARSET = '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^- !"#$%&\'()*+,-./0123456789:;<=>?'
 

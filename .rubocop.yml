@@ -1,7 +1,8 @@
-inherit_from: .rubocop_todo.yml
-
 require:
   - rubocop-rspec
+
+plugins:
+  - rubocop-rake
 
 AllCops:
   TargetRubyVersion: 3.2
@@ -14,3 +15,8 @@ AllCops:
 
 Capybara/RSpec/PredicateMatcher:
   Enabled: false
+
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'

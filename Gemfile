@@ -8,6 +8,7 @@ group :development do
   gem 'rake', '~> 13.0'
   gem 'rspec', '~> 3.12'
   gem 'rubocop', '~> 1.82.0', require: false
+  gem 'rubocop-rake', '~> 0.7', require: false
   gem 'rubocop-rspec', '~> 2.27', require: false
   gem 'simplecov', '~> 0.22'
 end

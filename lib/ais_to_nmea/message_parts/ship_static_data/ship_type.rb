@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the ship type field for ship static data.
       class ShipType
         attr_reader :value
 

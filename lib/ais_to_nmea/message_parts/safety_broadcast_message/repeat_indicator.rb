@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module SafetyBroadcastMessage
+      # Encodes the repeat indicator for a safety broadcast message.
       class RepeatIndicator
         attr_reader :value
 

@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # ETA component helpers for ship static data messages.
       module Etas
       end
     end

@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the latitude field for a position report.
       class Latitude
         attr_reader :value
 

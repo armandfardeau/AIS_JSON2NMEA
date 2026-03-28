@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the spare bits for ship static data.
       class Spare
         attr_reader :value
 

@@ -3,6 +3,7 @@
 module AisToNmea
   module AisEncoder
     module Utils
+      # Input normalization helpers for reading AIS payload fields.
       module Input
         def self.value_for_key(data, key)
           return [true, data[key]] if data.key?(key)

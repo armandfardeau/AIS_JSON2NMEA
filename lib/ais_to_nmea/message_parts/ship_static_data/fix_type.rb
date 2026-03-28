@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the electronic position fix type for ship static data.
       class FixType
         attr_reader :value
 

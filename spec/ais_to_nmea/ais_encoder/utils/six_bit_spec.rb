@@ -14,24 +14,33 @@ describe AisToNmea::AisEncoder::Utils::SixBit do
   end
 
   describe '.encode' do
-    it 'returns payload and fill bits without padding when size is multiple of 6' do
-      payload, fill_bits = described_class.encode('000001000010')
-
+    it 'returns payload without padding when size is multiple of 6' do
+      payload, _fill_bits = described_class.encode('000001000010')
       expect(payload).to eq('12')
+    end
+
+    it 'returns zero fill bits when size is multiple of 6' do
+      _, fill_bits = described_class.encode('000001000010')
       expect(fill_bits).to eq(0)
     end
 
-    it 'pads to nearest 6 bits and reports fill bits' do
-      payload, fill_bits = described_class.encode('101')
-
+    it 'pads to nearest 6 bits in payload' do
+      payload, _fill_bits = described_class.encode('101')
       expect(payload).to eq('`')
+    end
+
+    it 'reports fill bits after padding' do
+      _, fill_bits = described_class.encode('101')
       expect(fill_bits).to eq(3)
     end
 
-    it 'handles empty bit string' do
-      payload, fill_bits = described_class.encode('')
-
+    it 'returns empty payload for empty bit string' do
+      payload, _fill_bits = described_class.encode('')
       expect(payload).to eq('')
+    end
+
+    it 'returns zero fill bits for empty bit string' do
+      _, fill_bits = described_class.encode('')
       expect(fill_bits).to eq(0)
     end
   end

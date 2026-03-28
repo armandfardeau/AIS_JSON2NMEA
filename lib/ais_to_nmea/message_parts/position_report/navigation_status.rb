@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the navigation status field for a position report.
       class NavigationStatus
         attr_reader :value
 

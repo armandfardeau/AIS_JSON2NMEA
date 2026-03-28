@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the maximum static draught field for ship static data.
       class MaximumStaticDraught
         attr_reader :value
 

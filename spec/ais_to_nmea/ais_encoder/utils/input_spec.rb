@@ -4,33 +4,45 @@ require 'spec_helper'
 
 describe AisToNmea::AisEncoder::Utils::Input do
   describe '.value_for_key' do
-    it 'finds value using string key' do
-      present, value = described_class.value_for_key({ 'Sog' => 12.3 }, 'Sog')
-
+    it 'finds value presence using string key' do
+      present, = described_class.value_for_key({ 'Sog' => 12.3 }, 'Sog')
       expect(present).to be(true)
+    end
+
+    it 'finds value using string key' do
+      _, value = described_class.value_for_key({ 'Sog' => 12.3 }, 'Sog')
       expect(value).to eq(12.3)
     end
 
-    it 'finds value using symbol fallback' do
-      present, value = described_class.value_for_key({ Sog: 12.3 }, 'Sog')
-
+    it 'finds value presence using symbol fallback' do
+      present, = described_class.value_for_key({ Sog: 12.3 }, 'Sog')
       expect(present).to be(true)
+    end
+
+    it 'finds value using symbol fallback' do
+      _, value = described_class.value_for_key({ Sog: 12.3 }, 'Sog')
       expect(value).to eq(12.3)
     end
 
     it 'returns not present when key does not exist' do
-      present, value = described_class.value_for_key({}, 'Sog')
-
+      present, = described_class.value_for_key({}, 'Sog')
       expect(present).to be(false)
+    end
+
+    it 'returns nil value when key does not exist' do
+      _, value = described_class.value_for_key({}, 'Sog')
       expect(value).to be_nil
     end
   end
 
   describe '.first_available' do
-    it 'returns first matching key and value' do
-      key, value = described_class.first_available({ 'SpeedOverGround' => 4.2 }, 'Sog', 'SpeedOverGround')
-
+    it 'returns first matching key' do
+      key, = described_class.first_available({ 'SpeedOverGround' => 4.2 }, 'Sog', 'SpeedOverGround')
       expect(key).to eq('SpeedOverGround')
+    end
+
+    it 'returns first matching value' do
+      _, value = described_class.first_available({ 'SpeedOverGround' => 4.2 }, 'Sog', 'SpeedOverGround')
       expect(value).to eq(4.2)
     end
 
@@ -57,13 +69,9 @@ describe AisToNmea::AisEncoder::Utils::Input do
 
   describe '.required_int_from' do
     it 'reads first available key from aliases' do
-      value = described_class.required_int_from(
-        { 'CourseOverGround' => '254' },
-        %w[Cog CourseOverGround],
-        field_name: 'Cog'
-      )
-
-      expect(value).to eq(254)
+      expect(
+        described_class.required_int_from({ 'CourseOverGround' => '254' }, %w[Cog CourseOverGround], field_name: 'Cog')
+      ).to eq(254)
     end
   end
 
@@ -75,14 +83,10 @@ describe AisToNmea::AisEncoder::Utils::Input do
     end
 
     it 'raises on invalid integer for optional field' do
-      expect do
-        described_class.optional_int_from(
-          { 'RepeatIndicator' => 'bad' },
-          ['RepeatIndicator'],
-          field_name: 'RepeatIndicator',
-          default: 0
-        )
-      end.to raise_error(AisToNmea::InvalidFieldError, /Invalid integer value/)
+      input = { 'RepeatIndicator' => 'bad' }
+      aliases = ['RepeatIndicator']
+      expect { described_class.optional_int_from(input, aliases, field_name: 'RepeatIndicator', default: 0) }
+        .to raise_error(AisToNmea::InvalidFieldError, /Invalid integer value/)
     end
   end
 
@@ -99,36 +103,34 @@ describe AisToNmea::AisEncoder::Utils::Input do
 
   describe '.required_float_from' do
     it 'supports aliased float field names' do
-      value = described_class.required_float_from(
-        { Sog: '8.5' },
-        %w[Sog SpeedOverGround],
-        field_name: 'Sog'
-      )
-
-      expect(value).to eq(8.5)
+      expect(described_class.required_float_from({ Sog: '8.5' }, %w[Sog SpeedOverGround], field_name: 'Sog')).to eq(8.5)
     end
   end
 
   describe '.optional_bool_from' do
     it 'returns default when keys are absent' do
-      value = described_class.optional_bool_from({}, ['PositionAccuracy'], field_name: 'PositionAccuracy', default: false)
-
+      field_name = 'PositionAccuracy'
+      value = described_class.optional_bool_from({}, [field_name], field_name:, default: false)
       expect(value).to be(false)
     end
 
-    it 'normalizes accepted boolean representations' do
-      expect(
-        described_class.optional_bool_from({ 'Dte' => 1 }, ['Dte'], field_name: 'Dte', default: false)
-      ).to be(true)
-      expect(
-        described_class.optional_bool_from({ 'Dte' => '0' }, ['Dte'], field_name: 'Dte', default: true)
-      ).to be(false)
-      expect(
-        described_class.optional_bool_from({ 'Dte' => 'TRUE' }, ['Dte'], field_name: 'Dte', default: false)
-      ).to be(true)
-      expect(
-        described_class.optional_bool_from({ 'Dte' => 'false' }, ['Dte'], field_name: 'Dte', default: true)
-      ).to be(false)
+    it 'normalizes integer representations' do
+      expect(described_class.optional_bool_from({ 'Dte' => 1 }, ['Dte'], field_name: 'Dte', default: false)).to be(true)
+    end
+
+    it 'normalizes string integer representations' do
+      expect(described_class.optional_bool_from({ 'Dte' => '0' }, ['Dte'], field_name: 'Dte', default: true))
+        .to be(false)
+    end
+
+    it 'normalizes string representations' do
+      expect(described_class.optional_bool_from({ 'Dte' => 'TRUE' }, ['Dte'], field_name: 'Dte', default: false))
+        .to be(true)
+    end
+
+    it 'normalizes lowercase string representations' do
+      expect(described_class.optional_bool_from({ 'Dte' => 'false' }, ['Dte'], field_name: 'Dte', default: true))
+        .to be(false)
     end
 
     it 'raises on unsupported boolean representations' do

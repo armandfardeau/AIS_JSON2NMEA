@@ -56,7 +56,9 @@ require_relative 'ais_to_nmea/message_parts/ship_static_data/etas/day'
 require_relative 'ais_to_nmea/message_parts/ship_static_data/etas/hour'
 require_relative 'ais_to_nmea/message_parts/ship_static_data/etas/minute'
 
+# Main namespace for AIS to NMEA conversion helpers and public APIs.
 module AisToNmea
+  # Namespace for low-level AIS encoding components.
   module AisEncoder
   end
 

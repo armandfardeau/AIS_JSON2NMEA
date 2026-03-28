@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module SafetyBroadcastMessage
+      # Encodes the spare bits for a safety broadcast message.
       class Spare
         attr_reader :value
 

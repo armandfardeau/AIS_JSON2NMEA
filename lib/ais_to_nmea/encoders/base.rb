@@ -2,6 +2,7 @@
 
 module AisToNmea
   module Encoders
+    # Base class shared by all AIS encoder implementations.
     class Base
       attr_reader :message
 

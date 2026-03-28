@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the vessel dimension fields for ship static data.
       class Dimensions
         attr_reader :value
 
@@ -12,15 +13,7 @@ module AisToNmea
         end
 
         def extract
-          present, dimension_value = AisToNmea::AisEncoder::Utils::Input.value_for_key(@data, 'Dimension')
-          dimension = present && dimension_value.is_a?(Hash) ? dimension_value : {}
-
-          @value = {
-            a: fetch_dimension(dimension, 'A', 0),
-            b: fetch_dimension(dimension, 'B', 0),
-            c: fetch_dimension(dimension, 'C', 0),
-            d: fetch_dimension(dimension, 'D', 0)
-          }
+          @value = build_dimension_values(normalized_dimension)
           self
         rescue ArgumentError, TypeError
           raise InvalidFieldError, 'Invalid integer value in Dimension'
@@ -59,6 +52,20 @@ module AisToNmea
           return if value.between?(min, max)
 
           raise InvalidFieldError, "#{key} must be between #{min} and #{max} (got: #{value.inspect})"
+        end
+
+        def normalized_dimension
+          present, dimension_value = AisToNmea::AisEncoder::Utils::Input.value_for_key(@data, 'Dimension')
+          present && dimension_value.is_a?(Hash) ? dimension_value : {}
+        end
+
+        def build_dimension_values(dimension)
+          {
+            a: fetch_dimension(dimension, 'A', 0),
+            b: fetch_dimension(dimension, 'B', 0),
+            c: fetch_dimension(dimension, 'C', 0),
+            d: fetch_dimension(dimension, 'D', 0)
+          }
         end
       end
     end

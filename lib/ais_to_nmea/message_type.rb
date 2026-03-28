@@ -13,25 +13,30 @@ module AisToNmea
     # @raise [UnsupportedMessageTypeError] if message type is not supported
     def self.detect(input)
       data = parse_input(input)
+      msg_id = extract_message_id(data)
+      validate_supported_type!(msg_id)
+      msg_id
+    end
 
-      # Try direct MessageID
+    def self.extract_message_id(data)
       msg_id = data['MessageID'] || data[:MessageID]
+      return msg_id.to_i unless msg_id.nil?
 
-      # Try nested Message.MessageID
-      if msg_id.nil?
-        nested = data['Message'] || data[:Message]
-        msg_id = nested['MessageID'] || nested[:MessageID] if nested.is_a?(Hash)
-      end
+      nested = data['Message'] || data[:Message]
+      nested_msg_id = nested['MessageID'] || nested[:MessageID] if nested.is_a?(Hash)
 
+      raise MissingFieldError, 'Missing required field: MessageID' if nested_msg_id.nil?
+
+      nested_msg_id.to_i
+    end
+
+    def self.validate_supported_type!(msg_id)
       raise MissingFieldError, 'Missing required field: MessageID' if msg_id.nil?
 
-      msg_id = msg_id.to_i
-      unless SUPPORTED_TYPES.include?(msg_id)
-        raise UnsupportedMessageTypeError,
-              "MessageID must be one of #{SUPPORTED_TYPES.join(', ')}, got: #{msg_id}"
-      end
+      return if SUPPORTED_TYPES.include?(msg_id)
 
-      msg_id
+      raise UnsupportedMessageTypeError,
+            "MessageID must be one of #{SUPPORTED_TYPES.join(', ')}, got: #{msg_id}"
     end
 
     # Parse JSON string or Hash input
@@ -40,15 +45,15 @@ module AisToNmea
     # @return [Hash] Parsed data
     # @raise [InvalidJsonError] if input is invalid JSON
     def self.parse_input(input)
-      case input
-      when Hash
-        input
-      when String
-        require 'json'
-        JSON.parse(input)
-      else
-        raise InvalidJsonError, 'Input must be a JSON string or Hash'
-      end
+      return input if input.is_a?(Hash)
+      return parse_json_input(input) if input.is_a?(String)
+
+      raise InvalidJsonError, 'Input must be a JSON string or Hash'
+    end
+
+    def self.parse_json_input(input)
+      require 'json'
+      JSON.parse(input)
     rescue JSON::ParserError => e
       raise InvalidJsonError, "Invalid JSON: #{e.message}"
     end

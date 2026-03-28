@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the position accuracy flag for a position report.
       class PositionAccuracy
         attr_reader :value
 

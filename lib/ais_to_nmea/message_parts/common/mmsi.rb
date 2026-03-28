@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module Common
+      # Encodes and validates the AIS MMSI/UserID field.
       class Mmsi
         attr_reader :value
 

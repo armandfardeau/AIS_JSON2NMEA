@@ -4,6 +4,7 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       module Etas
+        # Encodes the ETA hour component.
         class Hour < Eta
           def extract
             extract_component('Hour', 24)

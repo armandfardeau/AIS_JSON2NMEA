@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module ShipStaticData
+      # Encodes the IMO number field for ship static data.
       class ImoNumber
         attr_reader :value
 

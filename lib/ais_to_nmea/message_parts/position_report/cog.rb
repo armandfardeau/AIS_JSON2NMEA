@@ -3,6 +3,7 @@
 module AisToNmea
   module MessageParts
     module PositionReport
+      # Encodes the course over ground field for a position report.
       class Cog
         attr_reader :value
 
