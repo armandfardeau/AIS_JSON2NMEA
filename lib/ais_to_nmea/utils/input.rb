@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module AisEncoder
     module Utils
@@ -73,9 +75,9 @@ module AisToNmea
         end
 
         def self.normalize_boolean(value, field_name)
-          return value if value == true || value == false
-          return true if value == 1 || value == '1'
-          return false if value == 0 || value == '0'
+          return value if [true, false].include?(value)
+          return true if [1, '1'].include?(value)
+          return false if [0, '0'].include?(value)
 
           value_str = value.to_s.strip.downcase
           return true if value_str == 'true'

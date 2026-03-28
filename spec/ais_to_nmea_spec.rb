@@ -1,72 +1,90 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe AisToNmea do
   fixtures_path = File.join(__dir__, 'fixtures', 'sample_ais_messages.json')
   fixtures = JSON.parse(File.read(fixtures_path))
+  message_id_for = lambda do |input|
+    next nil unless input.is_a?(Hash)
+
+    input['MessageID'] || input.dig('Message', 'MessageID')
+  end
+  position_report_messages = fixtures['messages'].select do |test_case|
+    [1, 2, 3].include?(message_id_for.call(test_case['input']))
+  end
+  position_report_error_cases = fixtures['error_cases'].select do |test_case|
+    message_id = message_id_for.call(test_case['input'])
+    message_id.nil? || [1, 2, 3].include?(message_id)
+  end
+  safety_broadcast_messages = fixtures['messages'].select { |test_case| message_id_for.call(test_case['input']) == 14 }
+  safety_broadcast_error_cases = fixtures['error_cases'].select do |test_case|
+    message_id_for.call(test_case['input']) == 14
+  end
 
   describe '.to_nmea' do
     it 'is a shorthand for Encoder.new.encode' do
       input = {
-        "MessageID" => 1,
-        "UserID" => 123456789,
-        "Latitude" => 48.8566,
-        "Longitude" => 2.3522,
-        "Sog" => 12.3,
-        "Cog" => 254.8,
-        "TrueHeading" => 255
+        'MessageID' => 1,
+        'UserID' => 123_456_789,
+        'Latitude' => 48.8566,
+        'Longitude' => 2.3522,
+        'Sog' => 12.3,
+        'Cog' => 254.8,
+        'TrueHeading' => 255
       }
 
-      result = AisToNmea.to_nmea(input)
+      result = described_class.to_nmea(input)
       expect(result).to be_a(String)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'uses encoder factory with explicit encoder key' do
       input = {
-        "MessageID" => 1,
-        "UserID" => 123456789,
-        "Latitude" => 48.8566,
-        "Longitude" => 2.3522,
-        "Sog" => 12.3,
-        "Cog" => 254.8,
-        "TrueHeading" => 255
+        'MessageID' => 1,
+        'UserID' => 123_456_789,
+        'Latitude' => 48.8566,
+        'Longitude' => 2.3522,
+        'Sog' => 12.3,
+        'Cog' => 254.8,
+        'TrueHeading' => 255
       }
 
       expect(AisToNmea::EncoderFactory.registered).to include(:position_report)
-      result = AisToNmea.to_nmea(input, encoder: :position_report)
+      result = described_class.to_nmea(input, encoder: :position_report)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'routes MessageID 14 to SafetyBroadcastMessage encoder' do
       input = {
-        "MessageID" => 14,
-        "UserID" => 123456789,
-        "Text" => 'SECURITE NAVIGATION'
+        'MessageID' => 14,
+        'UserID' => 123_456_789,
+        'Text' => 'SECURITE NAVIGATION'
       }
 
-      result = AisToNmea.to_nmea(input)
+      result = described_class.to_nmea(input)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'routes MessageID 5 to ShipStaticData encoder' do
       input = {
-        "MessageID" => 5,
-        "UserID" => 123456789,
-        "AisVersion" => 0,
-        "ImoNumber" => 9876543,
-        "CallSign" => 'FRA1234',
-        "Name" => 'TEST VESSEL',
-        "Type" => 70,
-        "Dimension" => { "A" => 50, "B" => 20, "C" => 5, "D" => 5 },
-        "FixType" => 1,
-        "Eta" => { "Month" => 12, "Day" => 31, "Hour" => 23, "Minute" => 59 },
-        "MaximumStaticDraught" => 7.4,
-        "Destination" => 'LE HAVRE',
-        "Dte" => false,
-        "Spare" => false
+        'MessageID' => 5,
+        'UserID' => 123_456_789,
+        'AisVersion' => 0,
+        'ImoNumber' => 9_876_543,
+        'CallSign' => 'FRA1234',
+        'Name' => 'TEST VESSEL',
+        'Type' => 70,
+        'Dimension' => { 'A' => 50, 'B' => 20, 'C' => 5, 'D' => 5 },
+        'FixType' => 1,
+        'Eta' => { 'Month' => 12, 'Day' => 31, 'Hour' => 23, 'Minute' => 59 },
+        'MaximumStaticDraught' => 7.4,
+        'Destination' => 'LE HAVRE',
+        'Dte' => false,
+        'Spare' => false
       }
 
-      result = AisToNmea.to_nmea(input)
+      result = described_class.to_nmea(input)
       expect(result).to start_with('!AIVDM')
     end
   end
@@ -110,13 +128,13 @@ describe AisToNmea do
 
     it 'routes Position Report message types' do
       input = {
-        "MessageID" => 1,
-        "UserID" => 123456789,
-        "Latitude" => 48.8566,
-        "Longitude" => 2.3522,
-        "Sog" => 12.3,
-        "Cog" => 254.8,
-        "TrueHeading" => 255
+        'MessageID' => 1,
+        'UserID' => 123_456_789,
+        'Latitude' => 48.8566,
+        'Longitude' => 2.3522,
+        'Sog' => 12.3,
+        'Cog' => 254.8,
+        'TrueHeading' => 255
       }
 
       result = subject.encode(input)
@@ -125,9 +143,9 @@ describe AisToNmea do
 
     it 'routes Safety Broadcast messages' do
       input = {
-        "MessageID" => 14,
-        "UserID" => 123456789,
-        "Text" => 'SECURITE NAVIGATION'
+        'MessageID' => 14,
+        'UserID' => 123_456_789,
+        'Text' => 'SECURITE NAVIGATION'
       }
 
       result = subject.encode(input)
@@ -136,20 +154,20 @@ describe AisToNmea do
 
     it 'routes ShipStaticData messages' do
       input = {
-        "MessageID" => 5,
-        "UserID" => 123456789,
-        "AisVersion" => 0,
-        "ImoNumber" => 9876543,
-        "CallSign" => 'FRA1234',
-        "Name" => 'TEST VESSEL',
-        "Type" => 70,
-        "Dimension" => { "A" => 50, "B" => 20, "C" => 5, "D" => 5 },
-        "FixType" => 1,
-        "Eta" => { "Month" => 12, "Day" => 31, "Hour" => 23, "Minute" => 59 },
-        "MaximumStaticDraught" => 7.4,
-        "Destination" => 'LE HAVRE',
-        "Dte" => false,
-        "Spare" => false
+        'MessageID' => 5,
+        'UserID' => 123_456_789,
+        'AisVersion' => 0,
+        'ImoNumber' => 9_876_543,
+        'CallSign' => 'FRA1234',
+        'Name' => 'TEST VESSEL',
+        'Type' => 70,
+        'Dimension' => { 'A' => 50, 'B' => 20, 'C' => 5, 'D' => 5 },
+        'FixType' => 1,
+        'Eta' => { 'Month' => 12, 'Day' => 31, 'Hour' => 23, 'Minute' => 59 },
+        'MaximumStaticDraught' => 7.4,
+        'Destination' => 'LE HAVRE',
+        'Dte' => false,
+        'Spare' => false
       }
 
       result = subject.encode(input)
@@ -163,20 +181,20 @@ describe AisToNmea do
     describe '#encode' do
       it 'raises UnsupportedMessageTypeError for non-position-report message IDs' do
         input = {
-          "MessageID" => 5,
-          "UserID" => 636024245,
-          "AisVersion" => 2,
-          "ImoNumber" => 9221827,
-          "CallSign" => '5LRR4',
-          "Name" => 'MSC SOPHIE VII',
-          "Type" => 71,
-          "Dimension" => { "A" => 243, "B" => 57, "C" => 26, "D" => 14 },
-          "FixType" => 1,
-          "Eta" => { "Day" => 26, "Hour" => 12, "Minute" => 0, "Month" => 3 },
-          "MaximumStaticDraught" => 14.6,
-          "Destination" => 'ZACPT',
-          "Dte" => false,
-          "Spare" => false
+          'MessageID' => 5,
+          'UserID' => 636_024_245,
+          'AisVersion' => 2,
+          'ImoNumber' => 9_221_827,
+          'CallSign' => '5LRR4',
+          'Name' => 'MSC SOPHIE VII',
+          'Type' => 71,
+          'Dimension' => { 'A' => 243, 'B' => 57, 'C' => 26, 'D' => 14 },
+          'FixType' => 1,
+          'Eta' => { 'Day' => 26, 'Hour' => 12, 'Minute' => 0, 'Month' => 3 },
+          'MaximumStaticDraught' => 14.6,
+          'Destination' => 'ZACPT',
+          'Dte' => false,
+          'Spare' => false
         }
 
         expect do
@@ -185,7 +203,7 @@ describe AisToNmea do
       end
 
       context 'with valid Position Report messages' do
-        fixtures['messages'].each do |test_case|
+        position_report_messages.each do |test_case|
           it "handles #{test_case['name']}" do
             result = subject.encode(test_case['input'])
 
@@ -205,14 +223,14 @@ describe AisToNmea do
 
         it 'accepts legacy aliased keys for speed, course and navigation status' do
           input = {
-            "MessageID" => 1,
-            "UserID" => 601967000,
-            "Latitude" => -34.14586666666666,
-            "Longitude" => 18.230756666666665,
-            "SpeedOverGround" => 6.3,
-            "CourseOverGround" => 182.3,
-            "NavigationalStatus" => 8,
-            "TrueHeading" => 180
+            'MessageID' => 1,
+            'UserID' => 601_967_000,
+            'Latitude' => -34.14586666666666,
+            'Longitude' => 18.230756666666665,
+            'SpeedOverGround' => 6.3,
+            'CourseOverGround' => 182.3,
+            'NavigationalStatus' => 8,
+            'TrueHeading' => 180
           }
 
           result = subject.encode(input)
@@ -222,7 +240,7 @@ describe AisToNmea do
         it 'accepts symbol keys from upstream pipelines' do
           input = {
             MessageID: 1,
-            UserID: 601600400,
+            UserID: 601_600_400,
             Latitude: -33.904673333333335,
             Longitude: 18.422055,
             Sog: 0,
@@ -237,23 +255,23 @@ describe AisToNmea do
 
         it 'accepts explicit optional fields and communication state alias' do
           input = {
-            "MessageID" => 1,
-            "RepeatIndicator" => 2,
-            "UserID" => 555555555,
-            "Valid" => true,
-            "NavigationalStatus" => 5,
-            "RateOfTurn" => 64,
-            "Sog" => 14.2,
-            "PositionAccuracy" => true,
-            "Longitude" => 2.1501,
-            "Latitude" => 41.3902,
-            "Cog" => 89.4,
-            "TrueHeading" => 90,
-            "Timestamp" => 58,
-            "SpecialManoeuvreIndicator" => 1,
-            "Spare" => 3,
-            "Raim" => true,
-            "CommunicationState" => 123456
+            'MessageID' => 1,
+            'RepeatIndicator' => 2,
+            'UserID' => 555_555_555,
+            'Valid' => true,
+            'NavigationalStatus' => 5,
+            'RateOfTurn' => 64,
+            'Sog' => 14.2,
+            'PositionAccuracy' => true,
+            'Longitude' => 2.1501,
+            'Latitude' => 41.3902,
+            'Cog' => 89.4,
+            'TrueHeading' => 90,
+            'Timestamp' => 58,
+            'SpecialManoeuvreIndicator' => 1,
+            'Spare' => 3,
+            'Raim' => true,
+            'CommunicationState' => 123_456
           }
 
           result = subject.encode(input)
@@ -262,7 +280,7 @@ describe AisToNmea do
       end
 
       context 'with invalid input' do
-        fixtures['error_cases'].each do |test_case|
+        position_report_error_cases.each do |test_case|
           it "raises #{test_case['error_type']} for: #{test_case['name']}" do
             error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
             expect do
@@ -273,31 +291,31 @@ describe AisToNmea do
 
         it 'raises clear COG alias range error when course is invalid' do
           input = {
-            "MessageID" => 1,
-            "UserID" => 123456789,
-            "Latitude" => 48.8566,
-            "Longitude" => 2.3522,
-            "Cog" => 400.0,
-            "Sog" => 12.3,
-            "TrueHeading" => 255,
-            "NavigationStatus" => 0
+            'MessageID' => 1,
+            'UserID' => 123_456_789,
+            'Latitude' => 48.8566,
+            'Longitude' => 2.3522,
+            'Cog' => 400.0,
+            'Sog' => 12.3,
+            'TrueHeading' => 255,
+            'NavigationStatus' => 0
           }
 
           expect do
             subject.encode(input)
-          end.to raise_error(AisToNmea::InvalidFieldError, /Cog\/CourseOverGround/)
+          end.to raise_error(AisToNmea::InvalidFieldError, %r{Cog/CourseOverGround})
         end
 
         it 'rejects invalid Valid flag set to false' do
           input = {
-            "MessageID" => 1,
-            "UserID" => 123456789,
-            "Valid" => false,
-            "Latitude" => 48.8566,
-            "Longitude" => 2.3522,
-            "Sog" => 12.3,
-            "Cog" => 254.8,
-            "TrueHeading" => 255
+            'MessageID' => 1,
+            'UserID' => 123_456_789,
+            'Valid' => false,
+            'Latitude' => 48.8566,
+            'Longitude' => 2.3522,
+            'Sog' => 12.3,
+            'Cog' => 254.8,
+            'TrueHeading' => 255
           }
 
           expect do
@@ -317,13 +335,13 @@ describe AisToNmea do
       context 'NMEA format validation' do
         let(:valid_input) do
           {
-            "MessageID" => 1,
-            "UserID" => 123456789,
-            "Latitude" => 48.8566,
-            "Longitude" => 2.3522,
-            "Sog" => 12.3,
-            "Cog" => 254.8,
-            "TrueHeading" => 255
+            'MessageID' => 1,
+            'UserID' => 123_456_789,
+            'Latitude' => 48.8566,
+            'Longitude' => 2.3522,
+            'Sog' => 12.3,
+            'Cog' => 254.8,
+            'TrueHeading' => 255
           }
         end
 
@@ -342,12 +360,12 @@ describe AisToNmea do
         it 'has valid NMEA structure' do
           result = subject.encode(valid_input)
           sentence = result.split("\n").first
-          
+
           # Remove ! and checksum for analysis
-          content = sentence[1..sentence.index('*') - 1]
+          content = sentence[1..(sentence.index('*') - 1)]
           fields = content.split(',')
 
-          expect(fields[0]).to eq('AIVDM')  # Sentence type
+          expect(fields[0]).to eq('AIVDM') # Sentence type
           expect(fields[1].to_i).to be >= 1  # Total sentences
           expect(fields[2].to_i).to be >= 1  # Sentence number
           expect(fields[3].to_i).to be >= 0  # Sequential message ID
@@ -360,7 +378,7 @@ describe AisToNmea do
           sentence = result.split("\n").first
 
           # Extract parts
-          content = sentence[1..sentence.index('*') - 1]
+          content = sentence[1..(sentence.index('*') - 1)]
           checksum_str = sentence[(sentence.index('*') + 1)..]
           checksum_expected = checksum_str.to_i(16)
 
@@ -377,13 +395,13 @@ describe AisToNmea do
           # Type 5 messages can be multi-part, but with types 1-3 this is less common
           # This test ensures proper formatting if multi-part occurs
           input = {
-            "MessageID" => 1,
-            "UserID" => 123456789,
-            "Latitude" => 48.8566,
-            "Longitude" => 2.3522,
-            "Sog" => 12.3,
-            "Cog" => 254.8,
-            "TrueHeading" => 255
+            'MessageID' => 1,
+            'UserID' => 123_456_789,
+            'Latitude' => 48.8566,
+            'Longitude' => 2.3522,
+            'Sog' => 12.3,
+            'Cog' => 254.8,
+            'TrueHeading' => 255
           }
 
           result = subject.encode(input)
@@ -401,7 +419,7 @@ describe AisToNmea do
   describe AisToNmea::MessageType do
     describe '.detect' do
       it 'detects message type 1 from Hash' do
-        input = { "MessageID" => 1 }
+        input = { 'MessageID' => 1 }
         expect(described_class.detect(input)).to eq(1)
       end
 
@@ -411,34 +429,34 @@ describe AisToNmea do
       end
 
       it 'detects message type from nested Message.MessageID' do
-        input = { "Message" => { "MessageID" => 2 } }
+        input = { 'Message' => { 'MessageID' => 2 } }
         expect(described_class.detect(input)).to eq(2)
       end
 
       it 'detects message type 3' do
-        input = { "MessageID" => 3 }
+        input = { 'MessageID' => 3 }
         expect(described_class.detect(input)).to eq(3)
       end
 
       it 'detects message type 14' do
-        input = { "MessageID" => 14 }
+        input = { 'MessageID' => 14 }
         expect(described_class.detect(input)).to eq(14)
       end
 
       it 'detects message type 5' do
-        input = { "MessageID" => 5 }
+        input = { 'MessageID' => 5 }
         expect(described_class.detect(input)).to eq(5)
       end
 
       it 'raises UnsupportedMessageTypeError for type 4' do
-        input = { "MessageID" => 4 }
+        input = { 'MessageID' => 4 }
         expect do
           described_class.detect(input)
         end.to raise_error(AisToNmea::UnsupportedMessageTypeError)
       end
 
       it 'raises MissingFieldError if MessageID is missing' do
-        input = { "UserID" => 123 }
+        input = { 'UserID' => 123 }
         expect do
           described_class.detect(input)
         end.to raise_error(AisToNmea::MissingFieldError)
@@ -456,11 +474,11 @@ describe AisToNmea do
       it 'parses JSON string to Hash' do
         input = '{"key": "value"}'
         result = described_class.parse_input(input)
-        expect(result).to eq({ "key" => "value" })
+        expect(result).to eq({ 'key' => 'value' })
       end
 
       it 'returns Hash as-is' do
-        input = { "key" => "value" }
+        input = { 'key' => 'value' }
         result = described_class.parse_input(input)
         expect(result).to eq(input)
       end
@@ -484,13 +502,33 @@ describe AisToNmea do
     subject { described_class.new }
 
     describe '#encode' do
+      context 'with valid SafetyBroadcastMessage fixtures' do
+        safety_broadcast_messages.each do |test_case|
+          it "handles #{test_case['name']}" do
+            result = subject.encode(test_case['input'])
+
+            expect(result).to be_a(String)
+            expect(result).to start_with('!AIVDM')
+            expect(result).to match(/\*[0-9A-F]{2}$/)
+          end
+
+          it "handles #{test_case['name']} as JSON string" do
+            json_input = JSON.generate(test_case['input'])
+            result = subject.encode(json_input)
+
+            expect(result).to be_a(String)
+            expect(result).to start_with('!AIVDM')
+          end
+        end
+      end
+
       it 'encodes a valid SafetyBroadcastMessage' do
         input = {
-          "MessageID" => 14,
-          "RepeatIndicator" => 0,
-          "UserID" => 123456789,
-          "Spare" => 0,
-          "Text" => 'SECURITE NAVIGATION'
+          'MessageID' => 14,
+          'RepeatIndicator' => 0,
+          'UserID' => 123_456_789,
+          'Spare' => 0,
+          'Text' => 'SECURITE NAVIGATION'
         }
 
         result = subject.encode(input)
@@ -501,8 +539,8 @@ describe AisToNmea do
 
       it 'raises MissingFieldError when Text is missing' do
         input = {
-          "MessageID" => 14,
-          "UserID" => 123456789
+          'MessageID' => 14,
+          'UserID' => 123_456_789
         }
 
         expect do
@@ -512,14 +550,63 @@ describe AisToNmea do
 
       it 'raises InvalidFieldError for unsupported characters' do
         input = {
-          "MessageID" => 14,
-          "UserID" => 123456789,
-          "Text" => 'ALERTE~'
+          'MessageID' => 14,
+          'UserID' => 123_456_789,
+          'Text' => 'ALERTE~'
         }
 
         expect do
           subject.encode(input)
         end.to raise_error(AisToNmea::InvalidFieldError)
+      end
+
+      context 'with invalid SafetyBroadcastMessage fixtures' do
+        safety_broadcast_error_cases.each do |test_case|
+          it "raises #{test_case['error_type']} for: #{test_case['name']}" do
+            error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
+            expect do
+              subject.encode(test_case['input'])
+            end.to raise_error(error_class)
+          end
+        end
+      end
+
+      it 'accepts boundary values for RepeatIndicator and Spare' do
+        input = {
+          'MessageID' => 14,
+          'RepeatIndicator' => 3,
+          'UserID' => 123_456_789,
+          'Spare' => 3,
+          'Text' => 'BOUNDARY SAFETY MESSAGE'
+        }
+
+        result = subject.encode(input)
+        expect(result).to start_with('!AIVDM')
+      end
+
+      it 'accepts Text at the 156-character limit' do
+        input = {
+          'MessageID' => 14,
+          'UserID' => 123_456_789,
+          'Text' => 'A' * 156
+        }
+
+        result = subject.encode(input)
+        expect(result).to start_with('!AIVDM')
+      end
+
+      it 'accepts nested Message format for SafetyBroadcastMessage' do
+        input = {
+          'MessageType' => 'SafetyBroadcastMessage',
+          'Message' => {
+            'MessageID' => 14,
+            'UserID' => 123_456_789,
+            'Text' => 'NESTED SAFETY MESSAGE'
+          }
+        }
+
+        result = subject.encode(input)
+        expect(result).to start_with('!AIVDM')
       end
     end
   end
@@ -530,20 +617,20 @@ describe AisToNmea do
     describe '#encode' do
       it 'encodes a valid ShipStaticData message' do
         input = {
-          "MessageID" => 5,
-          "UserID" => 123456789,
-          "AisVersion" => 0,
-          "ImoNumber" => 9876543,
-          "CallSign" => 'FRA1234',
-          "Name" => 'TEST VESSEL',
-          "Type" => 70,
-          "Dimension" => { "A" => 50, "B" => 20, "C" => 5, "D" => 5 },
-          "FixType" => 1,
-          "Eta" => { "Month" => 12, "Day" => 31, "Hour" => 23, "Minute" => 59 },
-          "MaximumStaticDraught" => 7.4,
-          "Destination" => 'LE HAVRE',
-          "Dte" => false,
-          "Spare" => false
+          'MessageID' => 5,
+          'UserID' => 123_456_789,
+          'AisVersion' => 0,
+          'ImoNumber' => 9_876_543,
+          'CallSign' => 'FRA1234',
+          'Name' => 'TEST VESSEL',
+          'Type' => 70,
+          'Dimension' => { 'A' => 50, 'B' => 20, 'C' => 5, 'D' => 5 },
+          'FixType' => 1,
+          'Eta' => { 'Month' => 12, 'Day' => 31, 'Hour' => 23, 'Minute' => 59 },
+          'MaximumStaticDraught' => 7.4,
+          'Destination' => 'LE HAVRE',
+          'Dte' => false,
+          'Spare' => false
         }
 
         result = subject.encode(input)
@@ -554,10 +641,10 @@ describe AisToNmea do
 
       it 'raises MissingFieldError when Name is missing' do
         input = {
-          "MessageID" => 5,
-          "UserID" => 123456789,
-          "CallSign" => 'FRA1234',
-          "Destination" => 'LE HAVRE'
+          'MessageID' => 5,
+          'UserID' => 123_456_789,
+          'CallSign' => 'FRA1234',
+          'Destination' => 'LE HAVRE'
         }
 
         expect do
@@ -569,27 +656,27 @@ describe AisToNmea do
 
   describe 'Error classes' do
     it 'has InvalidJsonError' do
-      expect { raise AisToNmea::InvalidJsonError, "test" }.to raise_error(AisToNmea::InvalidJsonError)
+      expect { raise AisToNmea::InvalidJsonError, 'test' }.to raise_error(AisToNmea::InvalidJsonError)
     end
 
     it 'has MissingFieldError' do
-      expect { raise AisToNmea::MissingFieldError, "test" }.to raise_error(AisToNmea::MissingFieldError)
+      expect { raise AisToNmea::MissingFieldError, 'test' }.to raise_error(AisToNmea::MissingFieldError)
     end
 
     it 'has InvalidFieldError' do
-      expect { raise AisToNmea::InvalidFieldError, "test" }.to raise_error(AisToNmea::InvalidFieldError)
+      expect { raise AisToNmea::InvalidFieldError, 'test' }.to raise_error(AisToNmea::InvalidFieldError)
     end
 
     it 'has UnsupportedMessageTypeError' do
-      expect { raise AisToNmea::UnsupportedMessageTypeError, "test" }.to raise_error(AisToNmea::UnsupportedMessageTypeError)
+      expect { raise AisToNmea::UnsupportedMessageTypeError, 'test' }.to raise_error(AisToNmea::UnsupportedMessageTypeError)
     end
 
     it 'has EncodingError' do
-      expect { raise AisToNmea::EncodingError, "test" }.to raise_error(AisToNmea::EncodingError)
+      expect { raise AisToNmea::EncodingError, 'test' }.to raise_error(AisToNmea::EncodingError)
     end
 
     it 'has MemoryError' do
-      expect { raise AisToNmea::MemoryError, "test" }.to raise_error(AisToNmea::MemoryError)
+      expect { raise AisToNmea::MemoryError, 'test' }.to raise_error(AisToNmea::MemoryError)
     end
   end
 end

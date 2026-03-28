@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 require:
   - rubocop-rspec
 
@@ -9,3 +11,6 @@ AllCops:
     - "coverage/**/*"
     - "tmp/**/*"
     - "*.gemspec"
+
+Capybara/RSpec/PredicateMatcher:
+  Enabled: false

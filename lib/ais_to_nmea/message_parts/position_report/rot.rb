@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module MessageParts
     module PositionReport
@@ -12,7 +14,7 @@ module AisToNmea
         def extract
           @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
             @data,
-            ['RateOfTurn', 'Rot'],
+            %w[RateOfTurn Rot],
             field_name: 'RateOfTurn/Rot',
             default: 128
           )

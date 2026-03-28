@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   # Generic encoder that dispatches to a message-specific encoder.
   class Encoder

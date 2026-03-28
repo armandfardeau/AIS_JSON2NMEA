@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module MessageParts
     module ShipStaticData
@@ -16,7 +18,7 @@ module AisToNmea
         end
 
         def validate!
-          @value = !!@value
+          @value = !@value.nil?
           self
         end
 

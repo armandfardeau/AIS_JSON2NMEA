@@ -1,16 +1,16 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module AisEncoder
     module Utils
       module Text
-        AIS_CHARSET = '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^- !"#$%&\'()*+,-./0123456789:;<=>?'.freeze
+        AIS_CHARSET = '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^- !"#$%&\'()*+,-./0123456789:;<=>?'
 
         def self.encode_ais_text(value, max_length:)
           raise MissingFieldError, 'Missing required field: Text' if value.nil?
 
           text = value.to_s.upcase
-          if text.length > max_length
-            raise InvalidFieldError, "Text is too long (max #{max_length} characters)"
-          end
+          raise InvalidFieldError, "Text is too long (max #{max_length} characters)" if text.length > max_length
 
           text.each_char.map do |char|
             idx = AIS_CHARSET.index(char)
@@ -24,9 +24,7 @@ module AisToNmea
           raise MissingFieldError, "Missing required field: #{field_name}" if value.nil?
 
           text = value.to_s.upcase
-          if text.length > length
-            raise InvalidFieldError, "#{field_name} is too long (max #{length} characters)"
-          end
+          raise InvalidFieldError, "#{field_name} is too long (max #{length} characters)" if text.length > length
 
           padded = text.ljust(length, '@')
           padded.each_char.map do |char|

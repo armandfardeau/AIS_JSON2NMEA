@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module MessageParts
     module SafetyBroadcastMessage
@@ -16,6 +18,8 @@ module AisToNmea
         end
 
         def validate!
+          raise MissingFieldError, 'Missing required field: Text' if @value.nil?
+
           self
         end
 

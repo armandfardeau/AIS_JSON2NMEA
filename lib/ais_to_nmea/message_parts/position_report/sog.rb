@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module MessageParts
     module PositionReport
@@ -12,7 +14,7 @@ module AisToNmea
         def extract
           @value = AisToNmea::AisEncoder::Utils::Input.required_float_from(
             @data,
-            ['Sog', 'SpeedOverGround'],
+            %w[Sog SpeedOverGround],
             field_name: 'Sog/SpeedOverGround'
           )
           self

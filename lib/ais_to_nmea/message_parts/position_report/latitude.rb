@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module MessageParts
     module PositionReport
@@ -23,7 +25,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_signed((value * 600000).round, 27)
+          AisToNmea::AisEncoder::Utils::BitPacking.pack_signed((value * 600_000).round, 27)
         end
       end
     end

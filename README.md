@@ -4,7 +4,7 @@ Convert AIS (Automatic Identification System) JSON messages into raw NMEA 0183 A
 
 ## Features
 
-- **Supported AIS Message Types**: 1, 2, 3 (Position Reports)
+- **Supported AIS Message Types**: 1, 2, 3 (Position Reports), 5 (Ship Static Data), 14 (Safety Broadcast Message)
 - **Multiple Input Formats**: Ruby Hash or JSON string
 - **Valid NMEA Output**: 6-bit encoding, correct fill bits, valid checksums
 - **Multi-part Support**: Automatically splits long messages into multiple NMEA sentences
@@ -82,7 +82,7 @@ Convenience method for converting AIS JSON to NMEA.
 - `AisToNmea::InvalidJsonError` - Malformed JSON
 - `AisToNmea::MissingFieldError` - Required field missing
 - `AisToNmea::InvalidFieldError` - Field value out of valid range
-- `AisToNmea::UnsupportedMessageTypeError` - Message type not 1, 2, or 3
+- `AisToNmea::UnsupportedMessageTypeError` - Message type not supported
 - `AisToNmea::EncodingError` - AIS encoding failed
 - `AisToNmea::MemoryError` - Memory allocation failure
 
@@ -124,6 +124,28 @@ Or with nested structure:
   }
 }
 ```
+
+### AIS Safety Broadcast Message (Message Type 14)
+
+```json
+{
+  "MessageID": 14,
+  "RepeatIndicator": 0,
+  "UserID": 123456789,
+  "Valid": true,
+  "Spare": 0,
+  "Text": "SECURITE NAVIGATION"
+}
+```
+
+Field notes for message type 14:
+
+- `MessageID`: must be `14`
+- `RepeatIndicator`: optional, integer `0..3`, default `0`
+- `UserID`: required MMSI (mapped to the AIS source identifier)
+- `Valid`: accepted for compatibility, not encoded in type 14 payload
+- `Spare`: optional, integer `0..3`, default `0`
+- `Text`: required AIS text payload, max length `156` characters
 
 ### Field Descriptions
 
@@ -219,7 +241,7 @@ See [examples/basic_usage.rb](examples/basic_usage.rb) for comprehensive example
 
 - Hash input
 - JSON string input
-- All three message types (1, 2, 3)
+- Message types 1, 2, 3, 5 and 14
 - Error handling
 - Direct encoder usage
 
@@ -247,7 +269,7 @@ bundle exec rspec spec/
 
 The gem includes tests for:
 
-- All three message types (1, 2, 3)
+- Message types 1, 2, 3, 5 and 14
 - Hash and JSON string inputs
 - Valid NMEA format generation
 - Checksum calculation and validation
@@ -352,7 +374,7 @@ results = messages.map { |msg| encoder.encode(msg) }
 
 ### Current Release
 
-- **Message types**: Only 1, 2, 3 (Position Reports) supported
+- **Message types**: 1, 2, 3, 5 and 14 are supported
 - **No decoding**: NMEA → AIS parsing not implemented (output only)
 - **Platform**: Any platform running Ruby 3.2+
 

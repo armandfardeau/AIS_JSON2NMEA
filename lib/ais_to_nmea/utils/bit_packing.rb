@@ -1,9 +1,14 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module AisEncoder
     module Utils
       module BitPacking
         def self.pack_uint(value, width)
-          raise InvalidFieldError, "Value #{value} does not fit in #{width} bits" if value.negative? || value >= (1 << width)
+          if value.negative? || value >= (1 << width)
+            raise InvalidFieldError,
+                  "Value #{value} does not fit in #{width} bits"
+          end
 
           value.to_s(2).rjust(width, '0')
         end

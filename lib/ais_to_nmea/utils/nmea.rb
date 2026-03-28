@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module AisEncoder
     module Utils
@@ -9,7 +11,7 @@ module AisToNmea
           seq_id = 0
 
           result = parts.each_with_index.map do |part, idx|
-            part_fill = (idx == total - 1) ? fill_bits : 0
+            part_fill = idx == total - 1 ? fill_bits : 0
             content = "AIVDM,#{total},#{idx + 1},#{seq_id},A,#{part},#{part_fill}"
             checksum = checksum(content)
             "!#{content}*#{checksum}"

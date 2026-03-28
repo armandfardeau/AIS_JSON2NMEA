@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Position Report messages (types 1, 2, 3)
@@ -15,7 +17,7 @@ module AisToNmea
       # @raise [UnsupportedMessageTypeError] if message type is not 1, 2, or 3
       # @raise [EncodingError] if AIS encoding fails
       # @raise [MemoryError] if memory allocation fails
-      def encode(input, options = {})
+      def encode(input, _options = {})
         data = MessageType.parse_input(input)
         message_type = MessageType.detect(data)
         message_data = data.key?('Message') ? data['Message'] : data
@@ -53,7 +55,8 @@ module AisToNmea
         radio_status_part = AisToNmea::MessageParts::PositionReport::RadioStatus.new(data).extract.validate!
         mmsi_part = AisToNmea::MessageParts::Common::Mmsi.new(data).extract.validate!
 
-        AisToNmea::AisEncoder::Utils::Validation.validate_ranges!(lat_part.value, lon_part.value, sog_part.value, cog_part.value, heading_part.value, nav_status_part.value)
+        AisToNmea::AisEncoder::Utils::Validation.validate_ranges!(lat_part.value, lon_part.value, sog_part.value,
+                                                                  cog_part.value, heading_part.value, nav_status_part.value)
 
         message_id_part = AisToNmea::MessageParts::Common::MessageId.new(message_type).extract.validate!
 

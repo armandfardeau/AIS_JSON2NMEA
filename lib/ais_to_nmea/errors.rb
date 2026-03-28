@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   # Base error class for AIS to NMEA conversion
   class Error < StandardError; end

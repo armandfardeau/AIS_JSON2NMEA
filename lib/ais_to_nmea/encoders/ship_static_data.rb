@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Ship Static Data (type 5)
     class ShipStaticData < Base
-      def encode(input, options = {})
+      def encode(input, _options = {})
         data = MessageType.parse_input(input)
         message_type = MessageType.detect(data)
         message_data = data.key?('Message') ? data['Message'] : data

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require_relative 'ais_to_nmea/version'
 require_relative 'ais_to_nmea/errors'
@@ -59,7 +61,7 @@ module AisToNmea
   end
 
   # Convenience method for simple usage
-  # 
+  #
   # @param input [String, Hash] JSON string or Ruby Hash
   # @param options [Hash] Additional options
   # @return [String] NMEA sentence(s)

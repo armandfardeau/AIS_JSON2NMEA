@@ -1,11 +1,13 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
 
 gemspec
 
 group :development do
-  gem "rspec", "~> 3.12"
-  gem "rake", "~> 13.0"
-  gem "simplecov", "~> 0.22"
-  gem "rubocop", "~> 1.62", require: false
-  gem "rubocop-rspec", "~> 2.27", require: false
+  gem 'rake', '~> 13.0'
+  gem 'rspec', '~> 3.12'
+  gem 'rubocop', '~> 1.82.0', require: false
+  gem 'rubocop-rspec', '~> 2.27', require: false
+  gem 'simplecov', '~> 0.22'
 end

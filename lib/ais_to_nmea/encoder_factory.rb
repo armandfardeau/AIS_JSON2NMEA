@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AisToNmea
   class EncoderFactory
     @registry = {
@@ -16,9 +18,7 @@ module AisToNmea
 
     class << self
       def register(name, encoder_class)
-        unless encoder_class.respond_to?(:new)
-          raise InvalidFieldError, 'Encoder class must implement .new'
-        end
+        raise InvalidFieldError, 'Encoder class must implement .new' unless encoder_class.respond_to?(:new)
 
         @registry[name.to_sym] = encoder_class
       end

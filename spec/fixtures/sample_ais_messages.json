@@ -140,6 +140,83 @@
         "Raim": 0,
         "CommunicationState": 524287
       }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage minimal",
+      "input": {
+        "MessageID": 14,
+        "UserID": 123456789,
+        "Text": "SECURITE NAVIGATION"
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage complete",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 2,
+        "UserID": 636024245,
+        "Valid": true,
+        "Spare": 1,
+        "Text": "ROCKS REPORTED 2NM EAST OF FAIRWAY"
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage nested Message",
+      "input": {
+        "MessageType": "SafetyBroadcastMessage",
+        "Message": {
+          "MessageID": 14,
+          "RepeatIndicator": 1,
+          "UserID": 987654321,
+          "Spare": 0,
+          "Text": "SHALLOW WATER AHEAD"
+        }
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage max text length",
+      "input": {
+        "MessageID": 14,
+        "UserID": 111222333,
+        "Text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage valid charset punctuation",
+      "input": {
+        "MessageID": 14,
+        "UserID": 444555666,
+        "Text": "DANGER AHEAD = KEEP CLEAR ?"
+      }
+    },
+    {
+      "name": "Type 5 - ShipStaticData complete",
+      "input": {
+        "MessageID": 5,
+        "UserID": 636024245,
+        "AisVersion": 0,
+        "ImoNumber": 9876543,
+        "CallSign": "FRA1234",
+        "Name": "TEST VESSEL",
+        "Type": 70,
+        "Dimension": {
+          "A": 50,
+          "B": 20,
+          "C": 5,
+          "D": 5
+        },
+        "FixType": 1,
+        "Eta": {
+          "Month": 12,
+          "Day": 31,
+          "Hour": 23,
+          "Minute": 59
+        },
+        "MaximumStaticDraught": 7.4,
+        "Destination": "LE HAVRE",
+        "Dte": false,
+        "Spare": false
+      }
     }
   ],
   "error_cases": [
@@ -259,6 +336,60 @@
         "Cog": 254.8,
         "TrueHeading": 255,
         "Raim": "maybe"
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Type 14 - Missing UserID",
+      "input": {
+        "MessageID": 14,
+        "Text": "SECURITE NAVIGATION"
+      },
+      "error_type": "MissingFieldError"
+    },
+    {
+      "name": "Type 14 - Missing Text",
+      "input": {
+        "MessageID": 14,
+        "UserID": 123456789
+      },
+      "error_type": "MissingFieldError"
+    },
+    {
+      "name": "Type 14 - Text too long",
+      "input": {
+        "MessageID": 14,
+        "UserID": 123456789,
+        "Text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Type 14 - Unsupported character in Text",
+      "input": {
+        "MessageID": 14,
+        "UserID": 123456789,
+        "Text": "ALERTE~"
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Type 14 - RepeatIndicator out of range",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 4,
+        "UserID": 123456789,
+        "Text": "SECURITE NAVIGATION"
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Type 14 - Spare out of range",
+      "input": {
+        "MessageID": 14,
+        "UserID": 123456789,
+        "Spare": 4,
+        "Text": "SECURITE NAVIGATION"
       },
       "error_type": "InvalidFieldError"
     },
