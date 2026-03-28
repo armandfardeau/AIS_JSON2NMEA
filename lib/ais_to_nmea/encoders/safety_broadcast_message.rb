@@ -37,7 +37,7 @@ module AisToNmea
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         output = AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
-        validate!(message, output)
+        validate!(@data, output)
 
         output
       end
