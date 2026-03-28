@@ -5,7 +5,9 @@ require 'spec_helper'
 describe AisToNmea do
   ship_static_data_base_input = {
     'MessageID' => 5,
+    'RepeatIndicator' => 0,
     'UserID' => 123_456_789,
+    'Valid' => true,
     'AisVersion' => 0,
     'ImoNumber' => 9_876_543,
     'CallSign' => 'FRA1234',
@@ -20,23 +22,41 @@ describe AisToNmea do
     'Spare' => false
   }.freeze
   position_alias_input = {
+    'Valid' => true,
+    'RepeatIndicator' => 0,
     'UserID' => 601_967_000,
+    'NavigationStatus' => 8,
+    'Rot' => 128,
     'Latitude' => -34.14586666666666,
     'Longitude' => 18.230756666666665,
     'SpeedOverGround' => 6.3,
+    'PositionAccuracy' => false,
     'CourseOverGround' => 182.3,
-    'NavigationalStatus' => 8,
-    'TrueHeading' => 180
+    'TrueHeading' => 180,
+    'Timestamp' => 0,
+    'Maneuver' => 0,
+    'Spare' => 0,
+    'Raim' => false,
+    'RadioStatus' => 0
   }.freeze
   position_symbol_input = {
     MessageID: 1,
+    RepeatIndicator: 0,
     UserID: 601_600_400,
+    Valid: true,
+    NavigationalStatus: 0,
+    RateOfTurn: 128,
     Latitude: -33.904673333333335,
     Longitude: 18.422055,
     Sog: 0,
+    PositionAccuracy: false,
     Cog: 262.8,
-    NavigationalStatus: 0,
-    TrueHeading: 511
+    TrueHeading: 511,
+    Timestamp: 0,
+    SpecialManoeuvreIndicator: 0,
+    Spare: 0,
+    Raim: false,
+    CommunicationState: 0
   }.freeze
   position_optional_fields_input = {
     'RepeatIndicator' => 2,
@@ -58,23 +78,62 @@ describe AisToNmea do
   }.freeze
 
   def position_report_input(overrides = {})
-    {
-      'MessageID' => 1,
-      'UserID' => 123_456_789,
-      'Latitude' => 48.8566,
-      'Longitude' => 2.3522,
-      'Sog' => 12.3,
-      'Cog' => 254.8,
-      'TrueHeading' => 255
-    }.merge(overrides)
+    position_report_base_input.merge(overrides)
   end
 
   def safety_broadcast_input(overrides = {})
+    safety_broadcast_base_input.merge(overrides)
+  end
+
+  def position_report_base_input
+    position_report_identity_fields.merge(position_report_navigation_fields)
+  end
+
+  def position_report_identity_fields
+    position_report_header_fields.merge(position_report_motion_fields)
+  end
+
+  def position_report_header_fields
+    {
+      'MessageID' => 1,
+      'RepeatIndicator' => 0,
+      'UserID' => 123_456_789,
+      'Valid' => true,
+      'NavigationalStatus' => 0
+    }
+  end
+
+  def position_report_motion_fields
+    {
+      'RateOfTurn' => 128,
+      'Latitude' => 48.8566,
+      'Longitude' => 2.3522,
+      'Sog' => 12.3
+    }
+  end
+
+  def position_report_navigation_fields
+    {
+      'PositionAccuracy' => false,
+      'Cog' => 254.8,
+      'TrueHeading' => 255,
+      'Timestamp' => 0,
+      'SpecialManoeuvreIndicator' => 0,
+      'Spare' => 0,
+      'Raim' => false,
+      'CommunicationState' => 0
+    }
+  end
+
+  def safety_broadcast_base_input
     {
       'MessageID' => 14,
+      'RepeatIndicator' => 0,
       'UserID' => 123_456_789,
+      'Valid' => true,
+      'Spare' => 0,
       'Text' => 'SECURITE NAVIGATION'
-    }.merge(overrides)
+    }
   end
 
   ship_static_data_input = ->(overrides = {}) { ship_static_data_base_input.merge(overrides) }
@@ -94,7 +153,7 @@ describe AisToNmea do
   def nested_safety_broadcast_input(text)
     {
       'MessageType' => 'SafetyBroadcastMessage',
-      'Message' => { 'MessageID' => 14, 'UserID' => 123_456_789, 'Text' => text }
+      'Message' => safety_broadcast_input('Text' => text)
     }
   end
 
@@ -260,6 +319,12 @@ describe AisToNmea do
       it 'rejects invalid Valid flag set to false' do
         expect { encoder.encode(position_report_input('Valid' => false)) }
           .to raise_error(AisToNmea::InvalidFieldError, /Valid/)
+      end
+
+      it 'raises MissingFieldError when RepeatIndicator is omitted' do
+        input = position_report_input.except('RepeatIndicator')
+        expect { encoder.encode(input) }
+          .to raise_error(AisToNmea::MissingFieldError, /RepeatIndicator/)
       end
     end
 
@@ -459,6 +524,16 @@ describe AisToNmea do
 
     it 'raises MissingFieldError when Text is missing' do
       expect { encoder.encode(safety_broadcast_input.except('Text')) }.to raise_error(AisToNmea::MissingFieldError)
+    end
+
+    it 'raises MissingFieldError when RepeatIndicator is missing' do
+      expect { encoder.encode(safety_broadcast_input.except('RepeatIndicator')) }
+        .to raise_error(AisToNmea::MissingFieldError, /RepeatIndicator/)
+    end
+
+    it 'raises InvalidFieldError when Valid is false' do
+      expect { encoder.encode(safety_broadcast_input('Valid' => false)) }
+        .to raise_error(AisToNmea::InvalidFieldError, /Valid/)
     end
 
     it 'raises InvalidFieldError for unsupported characters' do

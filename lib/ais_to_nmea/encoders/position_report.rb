@@ -48,6 +48,7 @@ module AisToNmea
       private
 
       def encode_position_report(message_type, data)
+        validate_required_fields!(data)
         validate_valid_flag!(data)
         parts = extract_position_parts(data)
         validate_position_ranges!(parts)
@@ -97,16 +98,20 @@ module AisToNmea
       end
 
       def validate_valid_flag!(data)
-        valid = AisToNmea::AisEncoder::Utils::Input.optional_bool_from(
-          data,
-          ['Valid'],
-          field_name: 'Valid',
-          default: true
+        AisToNmea::AisEncoder::Utils::StrictValidation.validate_required_true_flag!(data, 'PositionReport')
+      end
+
+      def validate_required_fields!(data)
+        # All fields from PART_CLASSES_IN_ORDER are required
+        required_field_names = %w[
+          RepeatIndicator UserID Valid NavigationalStatus RateOfTurn Sog PositionAccuracy
+          Longitude Latitude Cog TrueHeading Timestamp SpecialManoeuvreIndicator Spare Raim
+          CommunicationState
+        ]
+        missing_fields = AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_simple_fields(
+          data, required_field_names
         )
-
-        return if valid
-
-        raise InvalidFieldError, 'Valid must be true for PositionReport encoding'
+        AisToNmea::AisEncoder::Utils::StrictValidation.raise_missing_fields!('PositionReport', missing_fields)
       end
     end
   end

@@ -24,6 +24,8 @@ module AisToNmea
       private
 
       def encode_safety_broadcast_message(message_type, data)
+        validate_required_fields!(data)
+        validate_valid_flag!(data)
         parts = extract_safety_broadcast_parts(data)
         message_id_part = extract_validated_part(AisToNmea::MessageParts::Common::MessageId, message_type)
         add_safety_broadcast_parts(message_id_part, parts)
@@ -56,6 +58,19 @@ module AisToNmea
         return [message_type, message_data] if message_type == 14
 
         raise UnsupportedMessageTypeError, "MessageID must be 14 for SafetyBroadcastMessage, got: #{message_type}"
+      end
+
+      def validate_required_fields!(data)
+        # All fields from PART_CLASSES_IN_ORDER are required
+        required_field_names = %w[RepeatIndicator UserID Valid Spare Text]
+        missing_fields = AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_simple_fields(
+          data, required_field_names
+        )
+        AisToNmea::AisEncoder::Utils::StrictValidation.raise_missing_fields!('SafetyBroadcastMessage', missing_fields)
+      end
+
+      def validate_valid_flag!(data)
+        AisToNmea::AisEncoder::Utils::StrictValidation.validate_required_true_flag!(data, 'SafetyBroadcastMessage')
       end
     end
   end

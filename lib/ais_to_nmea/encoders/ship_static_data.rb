@@ -4,6 +4,9 @@ module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Ship Static Data (type 5)
     class ShipStaticData < Base
+      REQUIRED_DIMENSION_KEYS = %w[A B C D].freeze
+      REQUIRED_ETA_KEYS = %w[Month Day Hour Minute].freeze
+
       PART_CLASSES_IN_ORDER = {
         repeat_indicator: AisToNmea::MessageParts::ShipStaticData::RepeatIndicator,
         mmsi: AisToNmea::MessageParts::Common::Mmsi,
@@ -37,6 +40,8 @@ module AisToNmea
       private
 
       def encode_ship_static_data(message_type, data)
+        validate_required_fields!(data)
+        validate_valid_flag!(data)
         parts = extract_ship_static_parts(data)
         message_id_part = extract_validated_part(AisToNmea::MessageParts::Common::MessageId, message_type)
         add_ship_static_parts(message_id_part, parts)
@@ -81,6 +86,41 @@ module AisToNmea
         return [message_type, message_data] if message_type == 5
 
         raise UnsupportedMessageTypeError, "MessageID must be 5 for ShipStaticData, got: #{message_type}"
+      end
+
+      def validate_required_fields!(data)
+        # All fields from PART_CLASSES_IN_ORDER are required
+        required_field_names = %w[
+          RepeatIndicator UserID Valid AisVersion ImoNumber CallSign Name Type Dimension FixType Eta
+          MaximumStaticDraught Destination Dte Spare
+        ]
+        missing_fields = AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_simple_fields(
+          data, required_field_names
+        )
+        missing_fields.concat(collect_nested_field_errors(data))
+
+        AisToNmea::AisEncoder::Utils::StrictValidation.raise_missing_fields!('ShipStaticData', missing_fields.uniq)
+      end
+
+      private
+
+      def collect_nested_field_errors(data)
+        errors = []
+        errors.concat(
+          AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_nested_fields(
+            data, 'Dimension', REQUIRED_DIMENSION_KEYS
+          )
+        )
+        errors.concat(
+          AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_nested_fields(
+            data, 'Eta', REQUIRED_ETA_KEYS
+          )
+        )
+        errors
+      end
+
+      def validate_valid_flag!(data)
+        AisToNmea::AisEncoder::Utils::StrictValidation.validate_required_true_flag!(data, 'ShipStaticData')
       end
     end
   end

@@ -4,12 +4,22 @@
       "name": "Type 1 - Position Report",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
-        "TrueHeading": 255
+        "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       }
     },
     {
@@ -18,12 +28,22 @@
         "MessageType": "PositionReport",
         "Message": {
           "MessageID": 1,
+          "RepeatIndicator": 0,
           "UserID": 987654321,
+          "Valid": true,
+          "NavigationalStatus": 0,
+          "RateOfTurn": 128,
           "Latitude": 51.5074,
           "Longitude": -0.1278,
           "Sog": 8.5,
+          "PositionAccuracy": false,
           "Cog": 123.4,
-          "TrueHeading": 120
+          "TrueHeading": 120,
+          "Timestamp": 0,
+          "SpecialManoeuvreIndicator": 0,
+          "Spare": 0,
+          "Raim": false,
+          "CommunicationState": 0
         }
       }
     },
@@ -31,48 +51,88 @@
       "name": "Type 2 - Position Report (assigned)",
       "input": {
         "MessageID": 2,
+        "RepeatIndicator": 0,
         "UserID": 111111111,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 40.7128,
         "Longitude": -74.0060,
         "Sog": 15.8,
+        "PositionAccuracy": false,
         "Cog": 45.5,
-        "TrueHeading": 46
+        "TrueHeading": 46,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       }
     },
     {
       "name": "Type 3 - Position Report (response to interrogation)",
       "input": {
         "MessageID": 3,
+        "RepeatIndicator": 0,
         "UserID": 222222222,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 35.6762,
         "Longitude": 139.6503,
         "Sog": 0.0,
+        "PositionAccuracy": false,
         "Cog": 0.0,
-        "TrueHeading": 511
+        "TrueHeading": 511,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       }
     },
     {
       "name": "Position at equator and null meridian",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 333333333,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 0.0,
         "Longitude": 0.0,
         "Sog": 0.1,
+        "PositionAccuracy": false,
         "Cog": 180.0,
-        "TrueHeading": 180
+        "TrueHeading": 180,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       }
     },
     {
       "name": "Maximum speed (102.2 knots)",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 444444444,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 60.0,
         "Longitude": 25.0,
         "Sog": 102.2,
+        "PositionAccuracy": false,
         "Cog": 359.9,
-        "TrueHeading": 359
+        "TrueHeading": 359,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       }
     },
     {
@@ -95,28 +155,6 @@
         "Spare": 3,
         "Raim": true,
         "CommunicationState": 123456
-      }
-    },
-    {
-      "name": "PositionReport using alias fields",
-      "input": {
-        "MessageID": 2,
-        "RepeatIndicator": 1,
-        "UserID": 666666666,
-        "Valid": "true",
-        "NavigationStatus": 8,
-        "Rot": 127,
-        "SpeedOverGround": 6.3,
-        "PositionAccuracy": 1,
-        "Longitude": 18.230756666666665,
-        "Latitude": -34.14586666666666,
-        "CourseOverGround": 182.3,
-        "TrueHeading": 180,
-        "Timestamp": 31,
-        "Maneuver": 2,
-        "Spare": 1,
-        "Raim": "false",
-        "RadioStatus": 65535
       }
     },
     {
@@ -145,7 +183,10 @@
       "name": "Type 14 - SafetyBroadcastMessage minimal",
       "input": {
         "MessageID": 14,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
         "Text": "SECURITE NAVIGATION"
       }
     },
@@ -168,6 +209,7 @@
           "MessageID": 14,
           "RepeatIndicator": 1,
           "UserID": 987654321,
+          "Valid": true,
           "Spare": 0,
           "Text": "SHALLOW WATER AHEAD"
         }
@@ -177,7 +219,10 @@
       "name": "Type 14 - SafetyBroadcastMessage max text length",
       "input": {
         "MessageID": 14,
+        "RepeatIndicator": 0,
         "UserID": 111222333,
+        "Valid": true,
+        "Spare": 0,
         "Text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       }
     },
@@ -185,7 +230,10 @@
       "name": "Type 14 - SafetyBroadcastMessage valid charset punctuation",
       "input": {
         "MessageID": 14,
+        "RepeatIndicator": 0,
         "UserID": 444555666,
+        "Valid": true,
+        "Spare": 0,
         "Text": "DANGER AHEAD = KEEP CLEAR ?"
       }
     },
@@ -193,7 +241,9 @@
       "name": "Type 5 - ShipStaticData complete",
       "input": {
         "MessageID": 5,
+        "RepeatIndicator": 0,
         "UserID": 636024245,
+        "Valid": true,
         "AisVersion": 0,
         "ImoNumber": 9876543,
         "CallSign": "FRA1234",
@@ -224,11 +274,21 @@
       "name": "Missing UserID",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
-        "TrueHeading": 255
+        "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       },
       "error_type": "MissingFieldError"
     },
@@ -236,11 +296,21 @@
       "name": "Missing Latitude",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
-        "TrueHeading": 255
+        "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       },
       "error_type": "MissingFieldError"
     },
@@ -261,12 +331,22 @@
       "name": "Latitude out of range (>90)",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 95.0,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
-        "TrueHeading": 255
+        "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       },
       "error_type": "InvalidFieldError"
     },
@@ -274,12 +354,22 @@
       "name": "Longitude out of range (>180)",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 190.0,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
-        "TrueHeading": 255
+        "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       },
       "error_type": "InvalidFieldError"
     },
@@ -287,13 +377,22 @@
       "name": "Valid flag is false",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
         "Valid": false,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
-        "TrueHeading": 255
+        "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
       },
       "error_type": "InvalidFieldError"
     },
@@ -301,12 +400,21 @@
       "name": "CommunicationState out of range",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
         "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
         "CommunicationState": 600000
       },
       "error_type": "InvalidFieldError"
@@ -315,12 +423,21 @@
       "name": "RateOfTurn out of range",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "NavigationalStatus": 0,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
         "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0,
         "RateOfTurn": 300
       },
       "error_type": "InvalidFieldError"
@@ -329,12 +446,21 @@
       "name": "Raim has invalid boolean value",
       "input": {
         "MessageID": 1,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
         "Sog": 12.3,
+        "PositionAccuracy": false,
         "Cog": 254.8,
         "TrueHeading": 255,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "CommunicationState": 0,
         "Raim": "maybe"
       },
       "error_type": "InvalidFieldError"
@@ -343,6 +469,9 @@
       "name": "Type 14 - Missing UserID",
       "input": {
         "MessageID": 14,
+        "RepeatIndicator": 0,
+        "Valid": true,
+        "Spare": 0,
         "Text": "SECURITE NAVIGATION"
       },
       "error_type": "MissingFieldError"
@@ -351,7 +480,10 @@
       "name": "Type 14 - Missing Text",
       "input": {
         "MessageID": 14,
-        "UserID": 123456789
+        "RepeatIndicator": 0,
+        "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0
       },
       "error_type": "MissingFieldError"
     },
@@ -359,7 +491,10 @@
       "name": "Type 14 - Text too long",
       "input": {
         "MessageID": 14,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
         "Text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       },
       "error_type": "InvalidFieldError"
@@ -368,7 +503,10 @@
       "name": "Type 14 - Unsupported character in Text",
       "input": {
         "MessageID": 14,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
         "Text": "ALERTE~"
       },
       "error_type": "InvalidFieldError"
@@ -379,6 +517,8 @@
         "MessageID": 14,
         "RepeatIndicator": 4,
         "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
         "Text": "SECURITE NAVIGATION"
       },
       "error_type": "InvalidFieldError"
@@ -387,7 +527,9 @@
       "name": "Type 14 - Spare out of range",
       "input": {
         "MessageID": 14,
+        "RepeatIndicator": 0,
         "UserID": 123456789,
+        "Valid": true,
         "Spare": 4,
         "Text": "SECURITE NAVIGATION"
       },
