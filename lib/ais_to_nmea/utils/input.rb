@@ -64,6 +64,25 @@ module AisToNmea
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid numeric value for #{field_name}"
         end
+
+        def self.optional_bool_from(data, keys, field_name:, default:)
+          key, value = first_available(data, *keys)
+          return default if key.nil?
+
+          normalize_boolean(value, field_name)
+        end
+
+        def self.normalize_boolean(value, field_name)
+          return value if value == true || value == false
+          return true if value == 1 || value == '1'
+          return false if value == 0 || value == '0'
+
+          value_str = value.to_s.strip.downcase
+          return true if value_str == 'true'
+          return false if value_str == 'false'
+
+          raise InvalidFieldError, "Invalid boolean value for #{field_name}"
+        end
       end
     end
   end

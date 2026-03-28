@@ -10,7 +10,13 @@ module AisToNmea
         end
 
         def extract
-          @value = 0
+          raim = AisToNmea::AisEncoder::Utils::Input.optional_bool_from(
+            @data,
+            ['Raim'],
+            field_name: 'Raim',
+            default: false
+          )
+          @value = raim ? 1 : 0
           self
         end
 

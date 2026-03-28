@@ -234,6 +234,31 @@ describe AisToNmea do
           result = subject.encode(input)
           expect(result).to start_with('!AIVDM')
         end
+
+        it 'accepts explicit optional fields and communication state alias' do
+          input = {
+            "MessageID" => 1,
+            "RepeatIndicator" => 2,
+            "UserID" => 555555555,
+            "Valid" => true,
+            "NavigationalStatus" => 5,
+            "RateOfTurn" => 64,
+            "Sog" => 14.2,
+            "PositionAccuracy" => true,
+            "Longitude" => 2.1501,
+            "Latitude" => 41.3902,
+            "Cog" => 89.4,
+            "TrueHeading" => 90,
+            "Timestamp" => 58,
+            "SpecialManoeuvreIndicator" => 1,
+            "Spare" => 3,
+            "Raim" => true,
+            "CommunicationState" => 123456
+          }
+
+          result = subject.encode(input)
+          expect(result).to start_with('!AIVDM')
+        end
       end
 
       context 'with invalid input' do
@@ -261,6 +286,23 @@ describe AisToNmea do
           expect do
             subject.encode(input)
           end.to raise_error(AisToNmea::InvalidFieldError, /Cog\/CourseOverGround/)
+        end
+
+        it 'rejects invalid Valid flag set to false' do
+          input = {
+            "MessageID" => 1,
+            "UserID" => 123456789,
+            "Valid" => false,
+            "Latitude" => 48.8566,
+            "Longitude" => 2.3522,
+            "Sog" => 12.3,
+            "Cog" => 254.8,
+            "TrueHeading" => 255
+          }
+
+          expect do
+            subject.encode(input)
+          end.to raise_error(AisToNmea::InvalidFieldError, /Valid/)
         end
       end
 

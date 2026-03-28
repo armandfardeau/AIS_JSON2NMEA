@@ -74,6 +74,72 @@
         "Cog": 359.9,
         "TrueHeading": 359
       }
+    },
+    {
+      "name": "Complete PositionReport with explicit optional fields",
+      "input": {
+        "MessageID": 1,
+        "RepeatIndicator": 2,
+        "UserID": 555555555,
+        "Valid": true,
+        "NavigationalStatus": 5,
+        "RateOfTurn": 64,
+        "Sog": 14.2,
+        "PositionAccuracy": true,
+        "Longitude": 2.1501,
+        "Latitude": 41.3902,
+        "Cog": 89.4,
+        "TrueHeading": 90,
+        "Timestamp": 58,
+        "SpecialManoeuvreIndicator": 1,
+        "Spare": 3,
+        "Raim": true,
+        "CommunicationState": 123456
+      }
+    },
+    {
+      "name": "PositionReport using alias fields",
+      "input": {
+        "MessageID": 2,
+        "RepeatIndicator": 1,
+        "UserID": 666666666,
+        "Valid": "true",
+        "NavigationStatus": 8,
+        "Rot": 127,
+        "SpeedOverGround": 6.3,
+        "PositionAccuracy": 1,
+        "Longitude": 18.230756666666665,
+        "Latitude": -34.14586666666666,
+        "CourseOverGround": 182.3,
+        "TrueHeading": 180,
+        "Timestamp": 31,
+        "Maneuver": 2,
+        "Spare": 1,
+        "Raim": "false",
+        "RadioStatus": 65535
+      }
+    },
+    {
+      "name": "PositionReport with extreme valid bounds",
+      "input": {
+        "MessageID": 3,
+        "RepeatIndicator": 3,
+        "UserID": 777777777,
+        "Valid": 1,
+        "NavigationalStatus": 15,
+        "RateOfTurn": 255,
+        "Sog": 0.0,
+        "PositionAccuracy": false,
+        "Longitude": 180.0,
+        "Latitude": -90.0,
+        "Cog": 0.0,
+        "TrueHeading": 511,
+        "Timestamp": 63,
+        "SpecialManoeuvreIndicator": 3,
+        "Spare": 7,
+        "Raim": 0,
+        "CommunicationState": 524287
+      }
     }
   ],
   "error_cases": [
@@ -137,6 +203,62 @@
         "Sog": 12.3,
         "Cog": 254.8,
         "TrueHeading": 255
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Valid flag is false",
+      "input": {
+        "MessageID": 1,
+        "UserID": 123456789,
+        "Valid": false,
+        "Latitude": 48.8566,
+        "Longitude": 2.3522,
+        "Sog": 12.3,
+        "Cog": 254.8,
+        "TrueHeading": 255
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "CommunicationState out of range",
+      "input": {
+        "MessageID": 1,
+        "UserID": 123456789,
+        "Latitude": 48.8566,
+        "Longitude": 2.3522,
+        "Sog": 12.3,
+        "Cog": 254.8,
+        "TrueHeading": 255,
+        "CommunicationState": 600000
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "RateOfTurn out of range",
+      "input": {
+        "MessageID": 1,
+        "UserID": 123456789,
+        "Latitude": 48.8566,
+        "Longitude": 2.3522,
+        "Sog": 12.3,
+        "Cog": 254.8,
+        "TrueHeading": 255,
+        "RateOfTurn": 300
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Raim has invalid boolean value",
+      "input": {
+        "MessageID": 1,
+        "UserID": 123456789,
+        "Latitude": 48.8566,
+        "Longitude": 2.3522,
+        "Sog": 12.3,
+        "Cog": 254.8,
+        "TrueHeading": 255,
+        "Raim": "maybe"
       },
       "error_type": "InvalidFieldError"
     },

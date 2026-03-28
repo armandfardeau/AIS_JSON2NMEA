@@ -35,19 +35,21 @@ module AisToNmea
       private
 
       def encode_position_report(message_type, data)
+        validate_valid_flag!(data)
+
         lat_part = AisToNmea::MessageParts::PositionReport::Latitude.new(data).extract.validate!
         lon_part = AisToNmea::MessageParts::PositionReport::Longitude.new(data).extract.validate!
         sog_part = AisToNmea::MessageParts::PositionReport::Sog.new(data).extract.validate!
         cog_part = AisToNmea::MessageParts::PositionReport::Cog.new(data).extract.validate!
         heading_part = AisToNmea::MessageParts::PositionReport::Heading.new(data).extract.validate!
         nav_status_part = AisToNmea::MessageParts::PositionReport::NavigationStatus.new(data).extract.validate!
-        repeat_indicator_part = AisToNmea::MessageParts::PositionReport::RepeatIndicator.new.extract.validate!
-        rot_part = AisToNmea::MessageParts::PositionReport::Rot.new.extract.validate!
-        position_accuracy_part = AisToNmea::MessageParts::PositionReport::PositionAccuracy.new.extract.validate!
-        timestamp_part = AisToNmea::MessageParts::PositionReport::Timestamp.new.extract.validate!
-        maneuver_part = AisToNmea::MessageParts::PositionReport::Maneuver.new.extract.validate!
-        spare_part = AisToNmea::MessageParts::PositionReport::Spare.new.extract.validate!
-        raim_part = AisToNmea::MessageParts::PositionReport::Raim.new.extract.validate!
+        repeat_indicator_part = AisToNmea::MessageParts::PositionReport::RepeatIndicator.new(data).extract.validate!
+        rot_part = AisToNmea::MessageParts::PositionReport::Rot.new(data).extract.validate!
+        position_accuracy_part = AisToNmea::MessageParts::PositionReport::PositionAccuracy.new(data).extract.validate!
+        timestamp_part = AisToNmea::MessageParts::PositionReport::Timestamp.new(data).extract.validate!
+        maneuver_part = AisToNmea::MessageParts::PositionReport::Maneuver.new(data).extract.validate!
+        spare_part = AisToNmea::MessageParts::PositionReport::Spare.new(data).extract.validate!
+        raim_part = AisToNmea::MessageParts::PositionReport::Raim.new(data).extract.validate!
         radio_status_part = AisToNmea::MessageParts::PositionReport::RadioStatus.new(data).extract.validate!
         mmsi_part = AisToNmea::MessageParts::Common::Mmsi.new(data).extract.validate!
 
@@ -74,6 +76,19 @@ module AisToNmea
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
+      end
+
+      def validate_valid_flag!(data)
+        valid = AisToNmea::AisEncoder::Utils::Input.optional_bool_from(
+          data,
+          ['Valid'],
+          field_name: 'Valid',
+          default: true
+        )
+
+        return if valid
+
+        raise InvalidFieldError, 'Valid must be true for PositionReport encoding'
       end
     end
   end

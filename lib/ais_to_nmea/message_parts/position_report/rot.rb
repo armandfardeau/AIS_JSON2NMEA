@@ -10,7 +10,12 @@ module AisToNmea
         end
 
         def extract
-          @value = 128
+          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
+            @data,
+            ['RateOfTurn', 'Rot'],
+            field_name: 'RateOfTurn/Rot',
+            default: 128
+          )
           self
         end
 

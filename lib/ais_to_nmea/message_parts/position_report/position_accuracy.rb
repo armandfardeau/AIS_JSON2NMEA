@@ -10,7 +10,13 @@ module AisToNmea
         end
 
         def extract
-          @value = 0
+          accuracy = AisToNmea::AisEncoder::Utils::Input.optional_bool_from(
+            @data,
+            ['PositionAccuracy'],
+            field_name: 'PositionAccuracy',
+            default: false
+          )
+          @value = accuracy ? 1 : 0
           self
         end
 

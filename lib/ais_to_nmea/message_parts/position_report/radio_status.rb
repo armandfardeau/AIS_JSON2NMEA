@@ -12,8 +12,8 @@ module AisToNmea
         def extract
           @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
             @data,
-            ['RadioStatus'],
-            field_name: 'RadioStatus',
+            ['RadioStatus', 'CommunicationState'],
+            field_name: 'RadioStatus/CommunicationState',
             default: 0
           )
           self

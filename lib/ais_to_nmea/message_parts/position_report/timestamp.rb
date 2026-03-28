@@ -10,7 +10,12 @@ module AisToNmea
         end
 
         def extract
-          @value = 0
+          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
+            @data,
+            ['Timestamp'],
+            field_name: 'Timestamp',
+            default: 0
+          )
           self
         end
 
