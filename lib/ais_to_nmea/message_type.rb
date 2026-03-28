@@ -11,8 +11,7 @@ module AisToNmea
     # @return [Integer] Supported message type
     # @raise [InvalidJsonError] if input is invalid JSON
     # @raise [UnsupportedMessageTypeError] if message type is not supported
-    def self.detect(input)
-      data = parse_input(input)
+    def self.detect(data)
       msg_id = extract_message_id(data)
       validate_supported_type!(msg_id)
       msg_id
@@ -37,25 +36,6 @@ module AisToNmea
 
       raise UnsupportedMessageTypeError,
             "MessageID must be one of #{SUPPORTED_TYPES.join(', ')}, got: #{msg_id}"
-    end
-
-    # Parse JSON string or Hash input
-    #
-    # @param input [String, Hash] JSON string or Ruby Hash
-    # @return [Hash] Parsed data
-    # @raise [InvalidJsonError] if input is invalid JSON
-    def self.parse_input(input)
-      return input if input.is_a?(Hash)
-      return parse_json_input(input) if input.is_a?(String)
-
-      raise InvalidJsonError, 'Input must be a JSON string or Hash'
-    end
-
-    def self.parse_json_input(input)
-      require 'json'
-      JSON.parse(input)
-    rescue JSON::ParserError => e
-      raise InvalidJsonError, "Invalid JSON: #{e.message}"
     end
   end
 end

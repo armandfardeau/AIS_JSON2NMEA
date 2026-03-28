@@ -12,8 +12,7 @@ module AisToNmea
       }.freeze
 
       def encode
-        data = MessageType.parse_input(@data)
-        message_type, message_data = validated_payload(data)
+        message_type, message_data = validated_payload(@data)
         encode_safety_broadcast_message(message_type, message_data)
       rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
         raise

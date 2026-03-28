@@ -9,11 +9,10 @@ module AisToNmea
     end
 
     def encode
-      data = MessageType.parse_input(@data)
-      message_type = MessageType.detect(data)
+      message_type = MessageType.detect(@data)
       encoder_key = EncoderFactory.key_for_message_type(message_type)
 
-      EncoderFactory.build(data: data, options: @options, encoder: encoder_key).encode
+      EncoderFactory.build(data: @data, options: @options, encoder: encoder_key).encode
     rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
       raise
     rescue StandardError => e

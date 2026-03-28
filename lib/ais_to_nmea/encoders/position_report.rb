@@ -4,7 +4,7 @@ module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Position Report messages (types 1, 2, 3)
     class PositionReport < Base
-      PART_CLASSES_IN_ORDER = {
+      PARTS_MAPPING = {
         repeat_indicator: AisToNmea::MessageParts::PositionReport::RepeatIndicator,
         mmsi: AisToNmea::MessageParts::Common::Mmsi,
         nav_status: AisToNmea::MessageParts::PositionReport::NavigationStatus,
@@ -36,8 +36,7 @@ module AisToNmea
       # @raise [EncodingError] if AIS encoding fails
       # @raise [MemoryError] if memory allocation fails
       def encode
-        data = MessageType.parse_input(@data)
-        message_type, message_data = validated_payload(data)
+        message_type, message_data = validated_payload(@data)
         encode_position_report(message_type, message_data)
       rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
         raise
@@ -60,7 +59,7 @@ module AisToNmea
       end
 
       def extract_position_parts(data)
-        extract_parts_from(data, PART_CLASSES_IN_ORDER)
+        extract_parts_from(data, PARTS_MAPPING)
       end
 
       def validate_position_ranges!(parts)
@@ -76,7 +75,7 @@ module AisToNmea
 
       def add_position_report_parts(message_id_part, parts)
         ordered_parts = [message_id_part]
-        ordered_parts.concat(PART_CLASSES_IN_ORDER.keys.map { |key| parts.fetch(key) })
+        ordered_parts.concat(PARTS_MAPPING.keys.map { |key| parts.fetch(key) })
         add_parts(ordered_parts.map(&:pack))
       end
 
@@ -101,7 +100,7 @@ module AisToNmea
       end
 
       def validate_required_fields!(data)
-        # All fields from PART_CLASSES_IN_ORDER are required
+        # All fields from PARTS_MAPPING are required
         required_field_names = %w[
           RepeatIndicator UserID Valid NavigationalStatus RateOfTurn Sog PositionAccuracy
           Longitude Latitude Cog TrueHeading Timestamp SpecialManoeuvreIndicator Spare Raim
