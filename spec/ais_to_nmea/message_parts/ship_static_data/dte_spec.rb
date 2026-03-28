@@ -3,7 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::ShipStaticData::Dte do
-  it 'is defined' do
-    expect(described_class).not_to be_nil
+  it 'normalizes the input value' do
+    expect(described_class.new(true).value).to eq(1)
+  end
+
+  it 'accepts a valid value' do
+    part = described_class.new(true)
+    expect(part.validate!).to eq(part)
+  end
+
+  describe '#pack' do
+    subject { described_class.new(true) }
+
+    it 'packs value into AIS bits' do
+      expect { subject.pack }.to raise_error(ArgumentError)
+    end
   end
 end

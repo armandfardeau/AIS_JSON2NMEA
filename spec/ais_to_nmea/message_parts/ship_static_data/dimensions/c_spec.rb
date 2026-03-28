@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe AisToNmea::MessageParts::Common::MessageId do
+RSpec.describe AisToNmea::MessageParts::ShipStaticData::Dimensions::C do
   it 'normalizes the input value' do
-    expect(described_class.new("7").value).to eq(7)
+    expect(described_class.new("40").value).to eq(40)
   end
 
   it 'accepts a valid value' do
-    part = described_class.new(7)
+    part = described_class.new(40)
     expect(part.validate!).to eq(part)
   end
 
@@ -17,7 +17,7 @@ RSpec.describe AisToNmea::MessageParts::Common::MessageId do
   end
 
   describe '#pack' do
-    subject { described_class.new(7) }
+    subject { described_class.new(40) }
 
     it 'packs value into AIS bits' do
       expect(subject.pack.length).to eq(6)

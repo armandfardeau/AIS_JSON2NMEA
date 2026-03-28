@@ -3,7 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::SafetyBroadcastMessage::RepeatIndicator do
-  it 'is defined' do
-    expect(described_class).not_to be_nil
+  it 'normalizes the input value' do
+    expect(described_class.new("2").value).to eq(2)
+  end
+
+  it 'accepts a valid value' do
+    part = described_class.new(2)
+    expect(part.validate!).to eq(part)
+  end
+
+  it 'rejects an invalid value' do
+    expect { described_class.new(4).validate! }.to raise_error(AisToNmea::InvalidFieldError)
+  end
+
+  describe '#pack' do
+    subject { described_class.new(2) }
+
+    it 'packs value into AIS bits' do
+      expect(subject.pack).to eq('10')
+    end
   end
 end

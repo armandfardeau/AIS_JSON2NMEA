@@ -93,21 +93,6 @@ module AisToNmea
           nav_status: parts[:nav_status].value
         )
       end
-
-      def add_position_report_parts(message_id_part, parts)
-        ordered_parts = [message_id_part]
-        ordered_parts.concat(PARTS_MAPPING.keys.map { |key| parts.fetch(key) })
-        add_parts(ordered_parts.map(&:pack))
-      end
-
-      def extract_validated_part(part_class, data)
-        part_class.new(data).extract.validate!
-      end
-
-      def validate_valid_flag!
-        AisToNmea::AisEncoder::Utils::StrictValidation.validate_required_true_flag!(@data.position_report,
-                                                                                    :position_report)
-      end
     end
   end
 end

@@ -3,7 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::SafetyBroadcastMessage::Text do
-  it 'is defined' do
-    expect(described_class).not_to be_nil
+  it 'normalizes the input value' do
+    expect(described_class.new(123).value).to eq('123')
+  end
+
+  it 'accepts a valid value' do
+    part = described_class.new('HELLO')
+    expect(part.validate!).to eq(part)
+  end
+
+  it 'rejects an invalid value' do
+    expect { described_class.new(nil).validate! }.to raise_error(AisToNmea::MissingFieldError)
+  end
+
+  describe '#pack' do
+    subject { described_class.new('OK') }
+
+    it 'packs value into AIS bits' do
+      expect(subject.pack.length).to eq(12)
+    end
   end
 end
