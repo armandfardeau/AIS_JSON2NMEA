@@ -24,8 +24,8 @@ module AisToNmea
         @registry[name.to_sym] = encoder_class
       end
 
-      def build(data: , options: {}, encoder: nil)
-key = encoder
+      def build(data:, options: {}, encoder: nil)
+        key = encoder
         encoder_klass = @registry[key]
         raise InvalidFieldError, "Unknown encoder: #{key}" unless encoder_klass
 

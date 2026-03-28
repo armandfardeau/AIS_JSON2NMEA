@@ -5,21 +5,66 @@ module AisToNmea
     # Encoder dedicated to AIS Position Report messages (types 1, 2, 3)
     class PositionReport < Base
       PARTS_MAPPING = {
-        repeat_indicator: AisToNmea::MessageParts::PositionReport::RepeatIndicator,
-        mmsi: AisToNmea::MessageParts::Common::Mmsi,
-        nav_status: AisToNmea::MessageParts::PositionReport::NavigationStatus,
-        rot: AisToNmea::MessageParts::PositionReport::Rot,
-        sog: AisToNmea::MessageParts::PositionReport::Sog,
-        position_accuracy: AisToNmea::MessageParts::PositionReport::PositionAccuracy,
-        lon: AisToNmea::MessageParts::PositionReport::Longitude,
-        lat: AisToNmea::MessageParts::PositionReport::Latitude,
-        cog: AisToNmea::MessageParts::PositionReport::Cog,
-        heading: AisToNmea::MessageParts::PositionReport::Heading,
-        timestamp: AisToNmea::MessageParts::PositionReport::Timestamp,
-        maneuver: AisToNmea::MessageParts::PositionReport::Maneuver,
-        spare: AisToNmea::MessageParts::PositionReport::Spare,
-        raim: AisToNmea::MessageParts::PositionReport::Raim,
-        radio_status: AisToNmea::MessageParts::PositionReport::RadioStatus
+        repeat_indicator: {
+          class: AisToNmea::MessageParts::PositionReport::RepeatIndicator,
+          field: 'RepeatIndicator'
+        },
+        mmsi: {
+          class: AisToNmea::MessageParts::Common::Mmsi,
+          field: 'UserID'
+        },
+        nav_status: {
+          class: AisToNmea::MessageParts::PositionReport::NavigationStatus,
+          field: 'NavigationalStatus'
+        },
+        rot: {
+          class: AisToNmea::MessageParts::PositionReport::Rot,
+          field: 'RateOfTurn'
+        },
+        sog: {
+          class: AisToNmea::MessageParts::PositionReport::Sog,
+          field: 'SpeedOverGround'
+        },
+        position_accuracy: {
+          class: AisToNmea::MessageParts::PositionReport::PositionAccuracy,
+          field: 'PositionAccuracy'
+        },
+        lon: {
+          class: AisToNmea::MessageParts::PositionReport::Longitude,
+          field: 'Longitude'
+        },
+        lat: {
+          class: AisToNmea::MessageParts::PositionReport::Latitude,
+          field: 'Latitude'
+        },
+        cog: {
+          class: AisToNmea::MessageParts::PositionReport::Cog,
+          field: 'CourseOverGround'
+        },
+        heading: {
+          class: AisToNmea::MessageParts::PositionReport::Heading,
+          field: 'TrueHeading'
+        },
+        timestamp: {
+          class: AisToNmea::MessageParts::PositionReport::Timestamp,
+          field: 'Timestamp'
+        },
+        maneuver: {
+          class: AisToNmea::MessageParts::PositionReport::Maneuver,
+          field: 'SpecialManoeuvreIndicator'
+        },
+        spare: {
+          class: AisToNmea::MessageParts::PositionReport::Spare,
+          field: 'Spare'
+        },
+        raim: {
+          class: AisToNmea::MessageParts::PositionReport::Raim,
+          field: 'Raim'
+        },
+        radio_status: {
+          class: AisToNmea::MessageParts::PositionReport::RadioStatus,
+          field: 'RadioStatus'
+        }
       }.freeze
 
       # Convert AIS JSON message to NMEA 0183 sentence(s)
@@ -49,17 +94,13 @@ module AisToNmea
       def encode_position_report(message_type, data)
         validate_required_fields!(data)
         validate_valid_flag!(data)
-        parts = extract_position_parts(data)
+        parts = extract_parts_from(data, PARTS_MAPPING)
         validate_position_ranges!(parts)
         message_id_part = extract_validated_part(AisToNmea::MessageParts::Common::MessageId, message_type)
         add_position_report_parts(message_id_part, parts)
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
-      end
-
-      def extract_position_parts(data)
-        extract_parts_from(data, PARTS_MAPPING)
       end
 
       def validate_position_ranges!(parts)
@@ -81,10 +122,6 @@ module AisToNmea
 
       def extract_validated_part(part_class, data)
         part_class.new(data).extract.validate!
-      end
-
-      def extract_parts_from(data, part_classes)
-        part_classes.transform_values { |part_class| extract_validated_part(part_class, data) }
       end
 
       def validated_payload(data)

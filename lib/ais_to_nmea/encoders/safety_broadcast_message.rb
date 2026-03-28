@@ -4,11 +4,23 @@ module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Safety Broadcast Message (type 14)
     class SafetyBroadcastMessage < Base
-      PART_CLASSES_IN_ORDER = {
-        repeat_indicator: AisToNmea::MessageParts::SafetyBroadcastMessage::RepeatIndicator,
-        mmsi: AisToNmea::MessageParts::Common::Mmsi,
-        spare: AisToNmea::MessageParts::SafetyBroadcastMessage::Spare,
-        text: AisToNmea::MessageParts::SafetyBroadcastMessage::Text
+      PARTS_MAPPING = {
+        repeat_indicator: {
+          class: AisToNmea::MessageParts::SafetyBroadcastMessage::RepeatIndicator,
+          field: 'RepeatIndicator'
+        },
+        mmsi: {
+          class: AisToNmea::MessageParts::Common::Mmsi,
+          field: 'UserID'
+        },
+        spare: {
+          class: AisToNmea::MessageParts::SafetyBroadcastMessage::Spare,
+          field: 'Spare'
+        },
+        text: {
+          class: AisToNmea::MessageParts::SafetyBroadcastMessage::Text,
+          field: 'Text'
+        }
       }.freeze
 
       def encode
@@ -25,7 +37,7 @@ module AisToNmea
       def encode_safety_broadcast_message(message_type, data)
         validate_required_fields!(data)
         validate_valid_flag!(data)
-        parts = extract_safety_broadcast_parts(data)
+        parts = extract_parts_from(data, PARTS_MAPPING)
         message_id_part = extract_validated_part(AisToNmea::MessageParts::Common::MessageId, message_type)
         add_safety_broadcast_parts(message_id_part, parts)
 
@@ -33,22 +45,14 @@ module AisToNmea
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
       end
 
-      def extract_safety_broadcast_parts(data)
-        extract_parts_from(data, PART_CLASSES_IN_ORDER)
-      end
-
       def add_safety_broadcast_parts(message_id_part, parts)
         ordered_parts = [message_id_part]
-        ordered_parts.concat(PART_CLASSES_IN_ORDER.keys.map { |key| parts.fetch(key) })
+        ordered_parts.concat(PARTS_MAPPING.keys.map { |key| parts.fetch(key) })
         add_parts(ordered_parts.map(&:pack))
       end
 
       def extract_validated_part(part_class, data)
         part_class.new(data).extract.validate!
-      end
-
-      def extract_parts_from(data, part_classes)
-        part_classes.transform_values { |part_class| extract_validated_part(part_class, data) }
       end
 
       def validated_payload(data)
@@ -60,8 +64,8 @@ module AisToNmea
       end
 
       def validate_required_fields!(data)
-        # All fields from PART_CLASSES_IN_ORDER are required
-        required_field_names = %w[RepeatIndicator UserID Valid Spare Text]
+        # All fields from PARTS_MAPPING are required
+        required_field_names = PARTS_MAPPING.values.map { |part_map| part_map[:field] }
         missing_fields = AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_simple_fields(
           data, required_field_names
         )

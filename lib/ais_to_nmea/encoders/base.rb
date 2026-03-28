@@ -17,6 +17,10 @@ module AisToNmea
 
       private
 
+      def extract_parts_from(data, parts_mapping)
+        parts_mapping.transform_values { |part_map| extract_validated_part(part_map[:class], data) }
+      end
+
       def add_part(part)
         @message << part
       end
@@ -26,26 +30,29 @@ module AisToNmea
       end
 
       def build_data_ir(data)
+        # input_data = parse_input(data)
+        # ir = Struct.new(DATA_MAPPING.KEYS)
+        # ir.new(*DATA_MAPPING.values.map { |mapping| input_data[mapping] })
         parse_input(data)
       end
 
       # Parse JSON string or Hash input
-    #
-    # @param input [String, Hash] JSON string or Ruby Hash
-    # @return [Hash] Parsed data
-    # @raise [InvalidJsonError] if input is invalid JSON
-    def parse_input(input)
-      return input if input.is_a?(Hash)
-      return parse_json_input(input) if input.is_a?(String)
+      #
+      # @param input [String, Hash] JSON string or Ruby Hash
+      # @return [Hash] Parsed data
+      # @raise [InvalidJsonError] if input is invalid JSON
+      def parse_input(input)
+        return input if input.is_a?(Hash)
+        return parse_json_input(input) if input.is_a?(String)
 
-      raise InvalidJsonError, 'Input must be a JSON string or Hash'
-    end
+        raise InvalidJsonError, 'Input must be a JSON string or Hash'
+      end
 
-    def parse_json_input(input)
-      JSON.parse(input)
-    rescue JSON::ParserError => e
-      raise InvalidJsonError, "Invalid JSON: #{e.message}"
-    end
+      def parse_json_input(input)
+        JSON.parse(input)
+      rescue JSON::ParserError => e
+        raise InvalidJsonError, "Invalid JSON: #{e.message}"
+      end
     end
   end
 end

@@ -7,24 +7,75 @@ module AisToNmea
       REQUIRED_DIMENSION_KEYS = %w[A B C D].freeze
       REQUIRED_ETA_KEYS = %w[Month Day Hour Minute].freeze
 
-      PART_CLASSES_IN_ORDER = {
-        repeat_indicator: AisToNmea::MessageParts::ShipStaticData::RepeatIndicator,
-        mmsi: AisToNmea::MessageParts::Common::Mmsi,
-        ais_version: AisToNmea::MessageParts::ShipStaticData::AisVersion,
-        imo_number: AisToNmea::MessageParts::ShipStaticData::ImoNumber,
-        call_sign: AisToNmea::MessageParts::ShipStaticData::CallSign,
-        name: AisToNmea::MessageParts::ShipStaticData::Name,
-        ship_type: AisToNmea::MessageParts::ShipStaticData::ShipType,
-        dimensions: AisToNmea::MessageParts::ShipStaticData::Dimensions,
-        fix_type: AisToNmea::MessageParts::ShipStaticData::FixType,
-        eta_month: AisToNmea::MessageParts::ShipStaticData::Etas::Month,
-        eta_day: AisToNmea::MessageParts::ShipStaticData::Etas::Day,
-        eta_hour: AisToNmea::MessageParts::ShipStaticData::Etas::Hour,
-        eta_minute: AisToNmea::MessageParts::ShipStaticData::Etas::Minute,
-        maximum_static_draught: AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught,
-        destination: AisToNmea::MessageParts::ShipStaticData::Destination,
-        dte: AisToNmea::MessageParts::ShipStaticData::Dte,
-        spare: AisToNmea::MessageParts::ShipStaticData::Spare
+      PARTS_MAPPING = {
+        repeat_indicator: {
+          class: AisToNmea::MessageParts::ShipStaticData::RepeatIndicator,
+          field: 'RepeatIndicator'
+        },
+        mmsi: {
+          class: AisToNmea::MessageParts::Common::Mmsi,
+          field: 'UserID'
+        },
+        ais_version: {
+          class: AisToNmea::MessageParts::ShipStaticData::AisVersion,
+          field: 'AISVersion'
+        },
+        imo_number: {
+          class: AisToNmea::MessageParts::ShipStaticData::ImoNumber,
+          field: 'IMONumber'
+        },
+        call_sign: {
+          class: AisToNmea::MessageParts::ShipStaticData::CallSign,
+          field: 'CallSign'
+        },
+        name: {
+          class: AisToNmea::MessageParts::ShipStaticData::Name,
+          field: 'Name'
+        },
+        ship_type: {
+          class: AisToNmea::MessageParts::ShipStaticData::ShipType,
+          field: 'ShipType'
+        },
+        dimensions: {
+          class: AisToNmea::MessageParts::ShipStaticData::Dimensions,
+          field: 'Dimensions'
+        },
+        fix_type: {
+          class: AisToNmea::MessageParts::ShipStaticData::FixType,
+          field: 'FixType'
+        },
+        eta_month: {
+          class: AisToNmea::MessageParts::ShipStaticData::Etas::Month,
+          field: 'ETAMonth'
+        },
+        eta_day: {
+          class: AisToNmea::MessageParts::ShipStaticData::Etas::Day,
+          field: 'ETADay'
+        },
+        eta_hour: {
+          class: AisToNmea::MessageParts::ShipStaticData::Etas::Hour,
+          field: 'ETAHour'
+        },
+        eta_minute: {
+          class: AisToNmea::MessageParts::ShipStaticData::Etas::Minute,
+          field: 'ETAMinute'
+        },
+        maximum_static_draught: {
+          class: AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught,
+          field: 'MaximumStaticDraught'
+        },
+        destination: {
+          class: AisToNmea::MessageParts::ShipStaticData::Destination,
+          field: 'Destination'
+        },
+        dte: {
+          class: AisToNmea::MessageParts::ShipStaticData::Dte,
+          field: 'DTE'
+        },
+        spare: {
+          class: AisToNmea::MessageParts::ShipStaticData::Spare,
+          field: 'Spare'
+        }
       }.freeze
 
       def encode
@@ -41,7 +92,7 @@ module AisToNmea
       def encode_ship_static_data(message_type, data)
         validate_required_fields!(data)
         validate_valid_flag!(data)
-        parts = extract_ship_static_parts(data)
+        parts = extract_parts_from(data, PARTS_MAPPING)
         message_id_part = extract_validated_part(AisToNmea::MessageParts::Common::MessageId, message_type)
         add_ship_static_parts(message_id_part, parts)
 
@@ -49,13 +100,9 @@ module AisToNmea
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
       end
 
-      def extract_ship_static_parts(data)
-        extract_parts_from(data, PART_CLASSES_IN_ORDER)
-      end
-
       def add_ship_static_parts(message_id_part, parts)
         packed_parts = [message_id_part.pack]
-        PART_CLASSES_IN_ORDER.each_key do |key|
+        PARTS_MAPPING.each_key do |key|
           part = parts.fetch(key)
           if key == :dimensions
             packed_parts.concat(pack_dimensions(part))
@@ -75,10 +122,6 @@ module AisToNmea
         [dimensions[:a], dimensions[:b], dimensions[:c], dimensions[:d]]
       end
 
-      def extract_parts_from(data, part_classes)
-        part_classes.transform_values { |part_class| extract_validated_part(part_class, data) }
-      end
-
       def validated_payload(data)
         message_type = MessageType.detect(data)
         message_data = data.key?('Message') ? data['Message'] : data
@@ -88,11 +131,8 @@ module AisToNmea
       end
 
       def validate_required_fields!(data)
-        # All fields from PART_CLASSES_IN_ORDER are required
-        required_field_names = %w[
-          RepeatIndicator UserID Valid AisVersion ImoNumber CallSign Name Type Dimension FixType Eta
-          MaximumStaticDraught Destination Dte Spare
-        ]
+        # All fields from PARTS_MAPPING are required
+        required_field_names = PARTS_MAPPING.values.map { |part_map| part_map[:field] }
         missing_fields = AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_simple_fields(
           data, required_field_names
         )
