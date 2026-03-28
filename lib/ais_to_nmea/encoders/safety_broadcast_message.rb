@@ -11,8 +11,8 @@ module AisToNmea
         text: AisToNmea::MessageParts::SafetyBroadcastMessage::Text
       }.freeze
 
-      def encode(input, _options = {})
-        data = MessageType.parse_input(input)
+      def encode
+        data = MessageType.parse_input(@data)
         message_type, message_data = validated_payload(data)
         encode_safety_broadcast_message(message_type, message_data)
       rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError

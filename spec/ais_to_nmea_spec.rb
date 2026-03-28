@@ -157,12 +157,16 @@ describe AisToNmea do
     }
   end
 
+  def encode_with(encoder_class, input, options = {})
+    encoder_class.new(data: input, options: options).encode
+  end
+
   fixtures_path = File.join(__dir__, 'fixtures', 'sample_ais_messages.json')
   fixtures = JSON.parse(File.read(fixtures_path))
   message_id_for = lambda do |input|
     next nil unless input.is_a?(Hash)
 
-    input['MessageID'] || input.dig('Message', 'MessageID')
+    input['MessageID']
   end
   position_report_messages = fixtures['messages'].select do |test_case|
     [1, 2, 3].include?(message_id_for.call(test_case['input']))
@@ -205,104 +209,109 @@ describe AisToNmea do
   end
 
   describe AisToNmea::EncoderFactory do
-    it 'builds default encoder (position report)' do
-      encoder = described_class.build
+    it 'builds position report encoder' do
+      encoder = described_class.build(data: position_report_input, encoder: :position_report)
       expect(encoder).to be_a(AisToNmea::Encoders::PositionReport)
     end
 
     it 'builds safety broadcast encoder' do
-      encoder = described_class.build(encoder: :safety_broadcast_message)
+      encoder = described_class.build(data: safety_broadcast_input, encoder: :safety_broadcast_message)
       expect(encoder).to be_a(AisToNmea::Encoders::SafetyBroadcastMessage)
     end
 
     it 'builds ship static data encoder' do
-      encoder = described_class.build(encoder: :ship_static_data)
+      encoder = described_class.build(data: ship_static_data_input.call, encoder: :ship_static_data)
       expect(encoder).to be_a(AisToNmea::Encoders::ShipStaticData)
     end
 
     it 'supports custom registered encoder' do
-      custom = Class.new { def encode(_input, _options = {}) = "!AIVDM,1,1,0,A,CUSTOMPAYLOAD,0*00\n" }
+      custom = Class.new do
+        def initialize(data: nil, options: {})
+          @data = data
+          @options = options
+        end
+
+        def encode
+          "!AIVDM,1,1,0,A,CUSTOMPAYLOAD,0*00\n"
+        end
+      end
       described_class.register(:custom, custom)
-      encoder = described_class.build(encoder: :custom)
-      expect(encoder.encode({})).to start_with('!AIVDM')
+      encoder = described_class.build(data: {}, encoder: :custom)
+      expect(encoder.encode).to start_with('!AIVDM')
     end
 
     it 'raises for unknown encoder key' do
-      expect { described_class.build(encoder: :unknown) }
+      expect { described_class.build(data: position_report_input, encoder: :unknown) }
         .to raise_error(AisToNmea::InvalidFieldError)
     end
   end
 
   describe AisToNmea::Encoder do
-    subject(:encoder) { described_class.new }
-
     it 'routes Position Report message types' do
-      result = encoder.encode(position_report_input)
+      result = encode_with(described_class, position_report_input)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'routes Safety Broadcast messages' do
-      result = encoder.encode(safety_broadcast_input)
+      result = encode_with(described_class, safety_broadcast_input)
       expect(result).to start_with('!AIVDM')
     end
 
     it 'routes ShipStaticData messages' do
-      result = encoder.encode(ship_static_data_input.call)
+      result = encode_with(described_class, ship_static_data_input.call)
       expect(result).to start_with('!AIVDM')
     end
   end
 
   describe AisToNmea::Encoders::PositionReport do
-    subject(:encoder) { described_class.new }
-
     it 'raises UnsupportedMessageTypeError for non-position-report message IDs' do
-      expect { encoder.encode(ship_static_data_input.call) }
+      expect { encode_with(described_class, ship_static_data_input.call) }
         .to raise_error(AisToNmea::UnsupportedMessageTypeError, /PositionReport/)
     end
 
     context 'with valid Position Report messages' do
       position_report_messages.each do |test_case|
         it "handles #{test_case['name']} as String" do
-          expect(encoder.encode(test_case['input'])).to be_a(String)
+          expect(encode_with(described_class, test_case['input'])).to be_a(String)
         end
 
         it "handles #{test_case['name']} with AIVDM prefix" do
-          expect(encoder.encode(test_case['input'])).to match(/^!AIVDM/)
+          expect(encode_with(described_class, test_case['input'])).to match(/^!AIVDM/)
         end
 
         it "handles #{test_case['name']} with checksum suffix" do
-          expect(encoder.encode(test_case['input'])).to match(/\*[0-9A-F]{2}$/)
+          expect(encode_with(described_class, test_case['input'])).to match(/\*[0-9A-F]{2}$/)
         end
 
         it "handles #{test_case['name']} as JSON string result type" do
           json_input = JSON.generate(test_case['input'])
-          expect(encoder.encode(json_input)).to be_a(String)
+          expect(encode_with(described_class, json_input)).to be_a(String)
         end
 
         it "handles #{test_case['name']} as JSON string prefix" do
           json_input = JSON.generate(test_case['input'])
-          expect(encoder.encode(json_input)).to match(/^!AIVDM/)
+          expect(encode_with(described_class, json_input)).to match(/^!AIVDM/)
         end
       end
 
       it 'accepts legacy aliased keys for speed, course and navigation status' do
-        result = encoder.encode(position_report_input(position_alias_input))
+        result = encode_with(described_class, position_report_input(position_alias_input))
         expect(result).to start_with('!AIVDM')
       end
 
       it 'accepts symbol keys from upstream pipelines' do
-        result = encoder.encode(position_symbol_input)
+        result = encode_with(described_class, position_symbol_input)
         expect(result).to start_with('!AIVDM')
       end
 
       it 'accepts explicit optional fields and communication state alias' do
-        result = encoder.encode(position_report_input(position_optional_fields_input))
+        result = encode_with(described_class, position_report_input(position_optional_fields_input))
         expect(result).to start_with('!AIVDM')
       end
 
       it 'accepts Cog equal to 360.0 by normalizing it to 0.0' do
-        normalized_result = described_class.new.encode(position_report_input('Cog' => 360.0))
-        zero_result = described_class.new.encode(position_report_input('Cog' => 0.0))
+        normalized_result = encode_with(described_class, position_report_input('Cog' => 360.0))
+        zero_result = encode_with(described_class, position_report_input('Cog' => 0.0))
 
         expect(normalized_result).to eq(zero_result)
       end
@@ -313,24 +322,24 @@ describe AisToNmea do
         it "raises #{test_case['error_type']} for: #{test_case['name']}" do
           error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
           expect do
-            encoder.encode(test_case['input'])
+            encode_with(described_class, test_case['input'])
           end.to raise_error(error_class)
         end
       end
 
       it 'raises clear COG alias range error when course is invalid' do
-        expect { encoder.encode(position_report_input('Cog' => 400.0, 'NavigationStatus' => 0)) }
+        expect { encode_with(described_class, position_report_input('Cog' => 400.0, 'NavigationStatus' => 0)) }
           .to raise_error(AisToNmea::InvalidFieldError, %r{Cog/CourseOverGround})
       end
 
       it 'rejects invalid Valid flag set to false' do
-        expect { encoder.encode(position_report_input('Valid' => false)) }
+        expect { encode_with(described_class, position_report_input('Valid' => false)) }
           .to raise_error(AisToNmea::InvalidFieldError, /Valid/)
       end
 
       it 'raises MissingFieldError when RepeatIndicator is omitted' do
         input = position_report_input.except('RepeatIndicator')
-        expect { encoder.encode(input) }
+        expect { encode_with(described_class, input) }
           .to raise_error(AisToNmea::MissingFieldError, /RepeatIndicator/)
       end
     end
@@ -338,26 +347,26 @@ describe AisToNmea do
     context 'with invalid input type' do
       it 'raises InvalidJsonError for non-string, non-Hash input' do
         expect do
-          encoder.encode(123)
+          encode_with(described_class, 123)
         end.to raise_error(AisToNmea::InvalidJsonError)
       end
     end
 
     context 'when validating NMEA format' do
       let(:valid_input) { position_report_input }
-      let(:fields) { nmea_fields(encoder.encode(valid_input)) }
+      let(:fields) { nmea_fields(encode_with(described_class, valid_input)) }
 
       it 'returns NMEA sentences starting with !AIVDM' do
-        result = encoder.encode(valid_input)
+        result = encode_with(described_class, valid_input)
         expect(result).to start_with('!AIVDM')
       end
 
       it 'includes checksum after *' do
-        expect(encoder.encode(valid_input).split('*').length).to eq(2)
+        expect(encode_with(described_class, valid_input).split('*').length).to eq(2)
       end
 
       it 'formats checksum as two uppercase hex characters' do
-        checksum = encoder.encode(valid_input).split('*')[1]
+        checksum = encode_with(described_class, valid_input).split('*')[1]
         expect(checksum).to match(/^[0-9A-F]{2}/)
       end
 
@@ -386,18 +395,18 @@ describe AisToNmea do
       end
 
       it 'calculates correct checksums' do
-        expect(nmea_checksum_matches?(encoder.encode(valid_input))).to be(true)
+        expect(nmea_checksum_matches?(encode_with(described_class, valid_input))).to be(true)
       end
     end
 
     context 'when handling multi-part messages' do
       it 'returns multi-part messages separated by newlines' do
-        sentences = encoder.encode(position_report_input).split("\n")
+        sentences = encode_with(described_class, position_report_input).split("\n")
         expect(sentences).to all(start_with('!AIVDM'))
       end
 
       it 'returns sentences with valid checksum suffixes' do
-        sentences = encoder.encode(position_report_input).split("\n")
+        sentences = encode_with(described_class, position_report_input).split("\n")
         expect(sentences).to all(match(/\*[0-9A-F]{2}$/))
       end
     end
@@ -486,65 +495,63 @@ describe AisToNmea do
   end
 
   describe AisToNmea::Encoders::SafetyBroadcastMessage do
-    subject(:encoder) { described_class.new }
-
     context 'with valid SafetyBroadcastMessage fixtures' do
       safety_broadcast_messages.each do |test_case|
         it "handles #{test_case['name']} as String" do
-          expect(encoder.encode(test_case['input'])).to be_a(String)
+          expect(encode_with(described_class, test_case['input'])).to be_a(String)
         end
 
         it "handles #{test_case['name']} with AIVDM prefix" do
-          expect(encoder.encode(test_case['input'])).to start_with('!AIVDM')
+          expect(encode_with(described_class, test_case['input'])).to start_with('!AIVDM')
         end
 
         it "handles #{test_case['name']} with checksum suffix" do
-          expect(encoder.encode(test_case['input'])).to match(/\*[0-9A-F]{2}$/)
+          expect(encode_with(described_class, test_case['input'])).to match(/\*[0-9A-F]{2}$/)
         end
 
         it "handles #{test_case['name']} as JSON string result type" do
           json_input = JSON.generate(test_case['input'])
-          expect(encoder.encode(json_input)).to be_a(String)
+          expect(encode_with(described_class, json_input)).to be_a(String)
         end
 
         it "handles #{test_case['name']} as JSON string prefix" do
           json_input = JSON.generate(test_case['input'])
-          expect(encoder.encode(json_input)).to start_with('!AIVDM')
+          expect(encode_with(described_class, json_input)).to start_with('!AIVDM')
         end
       end
     end
 
     it 'encodes a valid SafetyBroadcastMessage as String' do
       input = safety_broadcast_input('RepeatIndicator' => 0, 'Spare' => 0)
-      expect(encoder.encode(input)).to be_a(String)
+      expect(encode_with(described_class, input)).to be_a(String)
     end
 
     it 'encodes a valid SafetyBroadcastMessage with AIVDM prefix' do
       input = safety_broadcast_input('RepeatIndicator' => 0, 'Spare' => 0)
-      expect(encoder.encode(input)).to start_with('!AIVDM')
+      expect(encode_with(described_class, input)).to start_with('!AIVDM')
     end
 
     it 'encodes a valid SafetyBroadcastMessage with checksum suffix' do
       input = safety_broadcast_input('RepeatIndicator' => 0, 'Spare' => 0)
-      expect(encoder.encode(input)).to match(/\*[0-9A-F]{2}$/)
+      expect(encode_with(described_class, input)).to match(/\*[0-9A-F]{2}$/)
     end
 
     it 'raises MissingFieldError when Text is missing' do
-      expect { encoder.encode(safety_broadcast_input.except('Text')) }.to raise_error(AisToNmea::MissingFieldError)
+      expect { encode_with(described_class, safety_broadcast_input.except('Text')) }.to raise_error(AisToNmea::MissingFieldError)
     end
 
     it 'raises MissingFieldError when RepeatIndicator is missing' do
-      expect { encoder.encode(safety_broadcast_input.except('RepeatIndicator')) }
+      expect { encode_with(described_class, safety_broadcast_input.except('RepeatIndicator')) }
         .to raise_error(AisToNmea::MissingFieldError, /RepeatIndicator/)
     end
 
     it 'raises InvalidFieldError when Valid is false' do
-      expect { encoder.encode(safety_broadcast_input('Valid' => false)) }
+      expect { encode_with(described_class, safety_broadcast_input('Valid' => false)) }
         .to raise_error(AisToNmea::InvalidFieldError, /Valid/)
     end
 
     it 'raises InvalidFieldError for unsupported characters' do
-      expect { encoder.encode(safety_broadcast_input('Text' => 'ALERTE~')) }.to raise_error(AisToNmea::InvalidFieldError)
+      expect { encode_with(described_class, safety_broadcast_input('Text' => 'ALERTE~')) }.to raise_error(AisToNmea::InvalidFieldError)
     end
 
     context 'with invalid SafetyBroadcastMessage fixtures' do
@@ -552,48 +559,47 @@ describe AisToNmea do
         it "raises #{test_case['error_type']} for: #{test_case['name']}" do
           error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
           expect do
-            encoder.encode(test_case['input'])
+            encode_with(described_class, test_case['input'])
           end.to raise_error(error_class)
         end
       end
     end
 
     it 'accepts boundary values for RepeatIndicator and Spare' do
-      result = encoder.encode(
+      result = encode_with(
+        described_class,
         safety_broadcast_input('RepeatIndicator' => 3, 'Spare' => 3, 'Text' => 'BOUNDARY SAFETY MESSAGE')
       )
       expect(result).to start_with('!AIVDM')
     end
 
     it 'accepts Text at the 156-character limit' do
-      result = encoder.encode(safety_broadcast_input('Text' => 'A' * 156))
+      result = encode_with(described_class, safety_broadcast_input('Text' => 'A' * 156))
       expect(result).to start_with('!AIVDM')
     end
 
     it 'accepts nested Message format for SafetyBroadcastMessage' do
-      result = encoder.encode(nested_safety_broadcast_input('NESTED SAFETY MESSAGE'))
+      result = encode_with(described_class, nested_safety_broadcast_input('NESTED SAFETY MESSAGE'))
       expect(result).to start_with('!AIVDM')
     end
   end
 
   describe AisToNmea::Encoders::ShipStaticData do
-    subject(:encoder) { described_class.new }
-
     describe '#encode' do
       it 'encodes a valid ShipStaticData message as String' do
-        expect(encoder.encode(ship_static_data_input.call)).to be_a(String)
+        expect(encode_with(described_class, ship_static_data_input.call)).to be_a(String)
       end
 
       it 'encodes a valid ShipStaticData message with AIVDM prefix' do
-        expect(encoder.encode(ship_static_data_input.call)).to start_with('!AIVDM')
+        expect(encode_with(described_class, ship_static_data_input.call)).to start_with('!AIVDM')
       end
 
       it 'encodes a valid ShipStaticData message with checksum suffix' do
-        expect(encoder.encode(ship_static_data_input.call)).to match(/\*[0-9A-F]{2}$/)
+        expect(encode_with(described_class, ship_static_data_input.call)).to match(/\*[0-9A-F]{2}$/)
       end
 
       it 'raises MissingFieldError when Name is missing' do
-        expect { encoder.encode(ship_static_data_input.call.except('Name')) }
+        expect { encode_with(described_class, ship_static_data_input.call.except('Name')) }
           .to raise_error(AisToNmea::MissingFieldError)
       end
     end

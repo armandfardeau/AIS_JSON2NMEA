@@ -6,8 +6,10 @@ module AisToNmea
     class Base
       attr_reader :message
 
-      def initialize
+      def initialize(data: {}, options: {})
         @message = +''
+        @data = data
+        @options = options
       end
 
       private

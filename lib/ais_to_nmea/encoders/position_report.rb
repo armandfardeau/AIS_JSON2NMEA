@@ -35,8 +35,8 @@ module AisToNmea
       # @raise [UnsupportedMessageTypeError] if message type is not 1, 2, or 3
       # @raise [EncodingError] if AIS encoding fails
       # @raise [MemoryError] if memory allocation fails
-      def encode(input, _options = {})
-        data = MessageType.parse_input(input)
+      def encode
+        data = MessageType.parse_input(@data)
         message_type, message_data = validated_payload(data)
         encode_position_report(message_type, message_data)
       rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
@@ -90,8 +90,7 @@ module AisToNmea
 
       def validated_payload(data)
         message_type = MessageType.detect(data)
-        message_data = data.key?('Message') ? data['Message'] : data
-        return [message_type, message_data] if [1, 2, 3].include?(message_type)
+        return [message_type, data] if [1, 2, 3].include?(message_type)
 
         raise UnsupportedMessageTypeError,
               "MessageID must be 1, 2, or 3 for PositionReport, got: #{message_type}"

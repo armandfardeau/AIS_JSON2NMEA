@@ -24,14 +24,14 @@ module AisToNmea
         @registry[name.to_sym] = encoder_class
       end
 
-      def build(options = {})
-        key = options.fetch(:encoder, :position_report).to_sym
+      def build(data: , options: {}, encoder: nil)
+key = encoder
         encoder_klass = @registry[key]
         raise InvalidFieldError, "Unknown encoder: #{key}" unless encoder_klass
 
         # Resolve lambda if present (lazy-loaded encoder)
         encoder_class = encoder_klass.is_a?(Proc) ? encoder_klass.call : encoder_klass
-        encoder_class.new
+        encoder_class.new(data: data, options: options)
       end
 
       def key_for_message_type(message_type)

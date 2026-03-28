@@ -27,8 +27,8 @@ module AisToNmea
         spare: AisToNmea::MessageParts::ShipStaticData::Spare
       }.freeze
 
-      def encode(input, _options = {})
-        data = MessageType.parse_input(input)
+      def encode
+        data = MessageType.parse_input(@data)
         message_type, message_data = validated_payload(data)
         encode_ship_static_data(message_type, message_data)
       rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
