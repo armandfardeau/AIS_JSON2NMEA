@@ -4,18 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the true heading field for a position report.
-      class Heading
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_int(@data, 'TrueHeading')
-          self
-        end
+      class Heading < Base
+        normalize_value_as :integer
 
         def validate!
           self

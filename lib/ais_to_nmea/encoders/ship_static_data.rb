@@ -4,10 +4,12 @@ module AisToNmea
   module Encoders
     # Encoder dedicated to AIS Ship Static Data (type 5)
     class ShipStaticData < Base
-      REQUIRED_DIMENSION_KEYS = %w[A B C D].freeze
-      REQUIRED_ETA_KEYS = %w[Month Day Hour Minute].freeze
-
+      MESSAGE_TYPES = [5].freeze
       PARTS_MAPPING = {
+        message_id: {
+          class: AisToNmea::MessageParts::Common::MessageId,
+          field: 'MessageID'
+        },
         repeat_indicator: {
           class: AisToNmea::MessageParts::ShipStaticData::RepeatIndicator,
           field: 'RepeatIndicator'
@@ -36,29 +38,51 @@ module AisToNmea
           class: AisToNmea::MessageParts::ShipStaticData::ShipType,
           field: 'ShipType'
         },
-        dimensions: {
-          class: AisToNmea::MessageParts::ShipStaticData::Dimensions,
-          field: 'Dimensions'
-        },
         fix_type: {
           class: AisToNmea::MessageParts::ShipStaticData::FixType,
           field: 'FixType'
         },
-        eta_month: {
-          class: AisToNmea::MessageParts::ShipStaticData::Etas::Month,
-          field: 'ETAMonth'
+        eta: {
+          field: 'Eta',
+          nested: {
+            month: {
+              field: 'Month',
+              class: AisToNmea::MessageParts::ShipStaticData::Etas::Month
+            },
+            day: {
+              field: 'Day',
+              class: AisToNmea::MessageParts::ShipStaticData::Etas::Day
+            },
+            hour: {
+              field: 'Hour',
+              class: AisToNmea::MessageParts::ShipStaticData::Etas::Hour
+            },
+            minute: {
+              field: 'Minute',
+              class: AisToNmea::MessageParts::ShipStaticData::Etas::Minute
+            }
+          }
         },
-        eta_day: {
-          class: AisToNmea::MessageParts::ShipStaticData::Etas::Day,
-          field: 'ETADay'
-        },
-        eta_hour: {
-          class: AisToNmea::MessageParts::ShipStaticData::Etas::Hour,
-          field: 'ETAHour'
-        },
-        eta_minute: {
-          class: AisToNmea::MessageParts::ShipStaticData::Etas::Minute,
-          field: 'ETAMinute'
+        dimension: {
+          field: 'Dimension',
+          nested: {
+            a: {
+              field: 'A',
+              class: AisToNmea::MessageParts::ShipStaticData::Dimensions::A
+            },
+            b: {
+              field: 'B',
+              class: AisToNmea::MessageParts::ShipStaticData::Dimensions::B
+            },
+            c: {
+              field: 'C',
+              class: AisToNmea::MessageParts::ShipStaticData::Dimensions::C
+            },
+            d: {
+              field: 'D',
+              class: AisToNmea::MessageParts::ShipStaticData::Dimensions::D
+            }
+          }
         },
         maximum_static_draught: {
           class: AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught,
@@ -75,80 +99,30 @@ module AisToNmea
         spare: {
           class: AisToNmea::MessageParts::ShipStaticData::Spare,
           field: 'Spare'
+        },
+        valid: {
+          class: AisToNmea::MessageParts::Common::Valid,
+          field: 'Valid'
         }
       }.freeze
 
-      def encode
-        message_type, message_data = validated_payload(@data)
-        encode_ship_static_data(message_type, message_data)
-      rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
-        raise
-      rescue StandardError => e
-        raise EncodingFailureError, e.message
-      end
-
-      private
-
-      def encode_ship_static_data(message_type, data)
-        validate_required_fields!(data)
-        validate_valid_flag!(data)
-        parts = extract_parts_from(data, PARTS_MAPPING)
-        message_id_part = extract_validated_part(AisToNmea::MessageParts::Common::MessageId, message_type)
-        add_ship_static_parts(message_id_part, parts)
+      def encode_message
+        add_packed_parts
 
         payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
         AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
       end
 
-      def add_ship_static_parts(message_id_part, parts)
-        packed_parts = [message_id_part.pack]
+      private
+
+      def add_ship_static_parts(parts)
+        packed_parts = []
         PARTS_MAPPING.each_key do |key|
           part = parts.fetch(key)
-          if key == :dimensions
-            packed_parts.concat(pack_dimensions(part))
-          else
             packed_parts << part.pack
           end
         end
         add_parts(packed_parts)
-      end
-
-      def extract_validated_part(part_class, data)
-        part_class.new(data).extract.validate!
-      end
-
-      def pack_dimensions(dimensions_part)
-        dimensions = dimensions_part.pack
-        [dimensions[:a], dimensions[:b], dimensions[:c], dimensions[:d]]
-      end
-
-      def validated_payload(data)
-        message_type = MessageType.detect(data)
-        message_data = data.key?('Message') ? data['Message'] : data
-        return [message_type, message_data] if message_type == 5
-
-        raise UnsupportedMessageTypeError, "MessageID must be 5 for ShipStaticData, got: #{message_type}"
-      end
-
-      def validate_required_fields!(data)
-        # All fields from PARTS_MAPPING are required
-        required_field_names = PARTS_MAPPING.values.map { |part_map| part_map[:field] }
-        missing_fields = AisToNmea::AisEncoder::Utils::StrictValidation.missing_required_simple_fields(
-          data, required_field_names
-        )
-        missing_fields.concat(collect_nested_field_errors(data))
-
-        AisToNmea::AisEncoder::Utils::StrictValidation.raise_missing_fields!('ShipStaticData', missing_fields.uniq)
-      end
-
-      def collect_nested_field_errors(data)
-        utils = AisToNmea::AisEncoder::Utils::StrictValidation
-        utils.missing_required_nested_fields(data, 'Dimension', REQUIRED_DIMENSION_KEYS) +
-          utils.missing_required_nested_fields(data, 'Eta', REQUIRED_ETA_KEYS)
-      end
-
-      def validate_valid_flag!(data)
-        AisToNmea::AisEncoder::Utils::StrictValidation.validate_required_true_flag!(data, 'ShipStaticData')
       end
     end
   end

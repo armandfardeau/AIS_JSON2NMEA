@@ -4,35 +4,18 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       # Encodes the call sign field for ship static data.
-      class CallSign
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          present, value = AisToNmea::AisEncoder::Utils::Input.value_for_key(@data, 'CallSign')
-          raise MissingFieldError, 'Missing required field: CallSign' unless present
-
-          @value = value
-          self
-        end
+      class CallSign < Base
+        normalize_value_as :string
 
         def validate!
-          raise MissingFieldError, 'Missing required field: CallSign' if @value.nil?
+          return self if @value.is_a?(String) && @value.length <= 7
 
-          @value = @value.to_s
-          self
+          raise InvalidFieldError,
+                "CallSign must be a string with a maximum length of 7 characters (got: #{@value.inspect})"
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::Text.encode_ais_text_fixed(
-            @value,
-            length: 7,
-            field_name: 'CallSign'
-          )
+          AisToNmea::AisEncoder::Utils::Text.encode_ais_text_fixed(@value, length: 7, field_name: 'CallSign')
         end
       end
     end

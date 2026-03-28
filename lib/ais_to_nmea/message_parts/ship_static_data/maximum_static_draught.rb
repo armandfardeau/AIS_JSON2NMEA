@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       # Encodes the maximum static draught field for ship static data.
-      class MaximumStaticDraught
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          present, value = AisToNmea::AisEncoder::Utils::Input.value_for_key(@data, 'MaximumStaticDraught')
-          return 0.0 unless present
-
-          @value = Float(value)
-          self
-        rescue ArgumentError, TypeError
-          raise InvalidFieldError, 'Invalid numeric value for MaximumStaticDraught'
-        end
+      class MaximumStaticDraught < Base
+        normalize_value_as :float
 
         def validate!
           @value = 0.0 if @value.nil?

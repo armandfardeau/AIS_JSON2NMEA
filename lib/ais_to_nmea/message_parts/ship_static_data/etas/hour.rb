@@ -5,13 +5,13 @@ module AisToNmea
     module ShipStaticData
       module Etas
         # Encodes the ETA hour component.
-        class Hour < Eta
-          def extract
-            extract_component('Hour', 24)
-          end
+        class Hour < Base
+          normalize_value_as :integer
 
           def validate!
-            validate_component!(min: 0, max: 24, key: 'Hour')
+            return self if @value.between?(0, 24)
+
+            raise InvalidFieldError, "ETA Hour must be between 0 and 24 (got: #{@value.inspect})"
           end
 
           def pack

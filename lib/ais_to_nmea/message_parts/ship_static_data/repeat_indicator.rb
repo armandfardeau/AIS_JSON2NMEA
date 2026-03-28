@@ -4,18 +4,8 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       # Encodes the repeat indicator for ship static data.
-      class RepeatIndicator
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = 0
-          self
-        end
+      class RepeatIndicator < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 3)

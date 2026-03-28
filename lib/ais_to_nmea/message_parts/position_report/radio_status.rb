@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the radio status field for a position report.
-      class RadioStatus
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            %w[RadioStatus CommunicationState],
-            field_name: 'RadioStatus/CommunicationState',
-            default: 0
-          )
-          self
-        end
+      class RadioStatus < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 524_287)

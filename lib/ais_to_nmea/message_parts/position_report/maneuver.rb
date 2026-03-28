@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the special maneuver indicator for a position report.
-      class Maneuver
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            %w[SpecialManoeuvreIndicator Maneuver],
-            field_name: 'SpecialManoeuvreIndicator/Maneuver',
-            default: 0
-          )
-          self
-        end
+      class Maneuver < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 3)

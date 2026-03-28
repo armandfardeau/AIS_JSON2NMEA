@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module ShipStaticData
       # Encodes the ship type field for ship static data.
-      class ShipType
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            ['Type'],
-            field_name: 'Type',
-            default: 0
-          )
-          self
-        end
+      class ShipType < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 255)

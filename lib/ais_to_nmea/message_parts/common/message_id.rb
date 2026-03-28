@@ -4,20 +4,8 @@ module AisToNmea
   module MessageParts
     module Common
       # Encodes and validates the AIS MessageID field.
-      class MessageId
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = Integer(@data)
-          self
-        rescue ArgumentError, TypeError
-          raise InvalidFieldError, 'Invalid integer value for MessageID'
-        end
+      class MessageId < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 63)

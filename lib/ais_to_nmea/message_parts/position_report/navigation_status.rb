@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the navigation status field for a position report.
-      class NavigationStatus
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            %w[NavigationStatus NavigationalStatus],
-            field_name: 'NavigationStatus/NavigationalStatus',
-            default: 0
-          )
-          self
-        end
+      class NavigationStatus < Base
+        normalize_value_as :integer
 
         def validate!
           self

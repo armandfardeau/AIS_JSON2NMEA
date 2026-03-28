@@ -5,72 +5,48 @@ module AisToNmea
     module Utils
       # Input normalization helpers for reading AIS payload fields.
       module Input
-        def self.value_for_key(data, key)
-          return [true, data[key]] if data.key?(key)
-
-          symbol_key = key.to_sym
-          return [true, data[symbol_key]] if data.key?(symbol_key)
-
-          [false, nil]
-        end
-
-        def self.first_available(data, *keys)
-          keys.each do |key|
-            present, value = value_for_key(data, key)
-            return [key, value] if present
-          end
-
-          [nil, nil]
-        end
-
-        def self.required_int(data, key)
-          present, value = value_for_key(data, key)
-          raise MissingFieldError, "Missing required field: #{key}" unless present
+        def self.required_int(value, key)
+          raise MissingFieldError, "Missing required field: #{key}" if value.nil?
 
           Integer(value)
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid integer value for #{key}"
         end
 
-        def self.required_int_from(data, keys, field_name:)
-          key, value = first_available(data, *keys)
-          raise MissingFieldError, "Missing required field: #{field_name}" if key.nil?
+        def self.required_int_from(value, field_name:)
+          raise MissingFieldError, "Missing required field: #{field_name}" if value.nil?
 
           Integer(value)
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid integer value for #{field_name}"
         end
 
-        def self.optional_int_from(data, keys, field_name:, default:)
-          key, value = first_available(data, *keys)
-          return default if key.nil?
+        def self.optional_int_from(value, field_name:, default:)
+          return default if value.nil?
 
           Integer(value)
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid integer value for #{field_name}"
         end
 
-        def self.required_float(data, key)
-          present, value = value_for_key(data, key)
-          raise MissingFieldError, "Missing required field: #{key}" unless present
+        def self.required_float(value, key)
+          raise MissingFieldError, "Missing required field: #{key}" if value.nil?
 
           Float(value)
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid numeric value for #{key}"
         end
 
-        def self.required_float_from(data, keys, field_name:)
-          key, value = first_available(data, *keys)
-          raise MissingFieldError, "Missing required field: #{field_name}" if key.nil?
+        def self.required_float_from(value, field_name:)
+          raise MissingFieldError, "Missing required field: #{field_name}" if value.nil?
 
           Float(value)
         rescue ArgumentError, TypeError
           raise InvalidFieldError, "Invalid numeric value for #{field_name}"
         end
 
-        def self.optional_bool_from(data, keys, field_name:, default:)
-          key, value = first_available(data, *keys)
-          return default if key.nil?
+        def self.optional_bool_from(value, field_name:, default:)
+          return default if value.nil?
 
           normalize_boolean(value, field_name)
         end
