@@ -42,17 +42,17 @@ base_station_report:
   mmsi:
     actual: source_mmsi
   utc_year:
-    actual: utc_year
+    actual: current_time.year
   utc_month:
-    actual: utc_month
+    actual: current_time.month
   utc_day:
-    actual: utc_day
+    actual: current_time.day
   utc_hour:
-    actual: utc_hour
+    actual: current_time.hour
   utc_minute:
-    actual: utc_min
+    actual: current_time.min
   utc_second:
-    actual: utc_sec
+    actual: current_time.sec
   position_accuracy:
     actual: position_10m_accuracy?
     comparator: bool_int
@@ -62,13 +62,9 @@ base_station_report:
   lat:
     actual: latitude
     comparator: float_tolerance
-  fix_type:
-    actual: position_fixing_device_type
   raim:
     actual: raim?
     comparator: bool_int
-  communication_state:
-    actual: radio_status
 
 ship_static_data:
   message_id:

@@ -8,6 +8,7 @@ RSpec.describe AisToNmea::Encoders::OutputValidator do
   subject(:validator) { described_class }
 
   let(:position_report_fixtures) { fixture_json(message_type: :position_report) }
+  let(:base_station_fixtures) { fixture_json(message_type: :base_station_report) }
   let(:ship_static_fixtures) { fixture_json(message_type: :ship_static_data) }
   let(:safety_broadcast_fixtures) { fixture_json(message_type: :safety_broadcast_message) }
 
@@ -22,6 +23,13 @@ RSpec.describe AisToNmea::Encoders::OutputValidator do
     ship_static_fixtures.fetch('messages').find { |test_case| test_case.dig('input', 'MessageID') == 5 }.fetch('input').dup
   end
 
+  def normalized_base_station_input
+    input = base_station_fixtures.fetch('messages').find { |test_case| test_case.dig('input', 'MessageID') == 4 }.fetch('input').dup
+    input['PositionAccuracy'] = input['PositionAccuracy'] ? 1 : 0 if [true, false].include?(input['PositionAccuracy'])
+    input['Raim'] = input['Raim'] ? 1 : 0 if [true, false].include?(input['Raim'])
+    input
+  end
+
   def safety_broadcast_input(name)
     safety_broadcast_fixtures.fetch('messages').find { |test_case| test_case['name'] == name }.fetch('input')
   end
@@ -34,6 +42,12 @@ RSpec.describe AisToNmea::Encoders::OutputValidator do
 
   it 'validates a ship static data round-trip against the YAML mapping subset' do
     encoder = AisToNmea::Encoders::ShipStaticData.new(data: normalized_ship_static_input)
+
+    expect { validator.validate!(encoder.instance_variable_get(:@data), encoder.encode) }.not_to raise_error
+  end
+
+  it 'validates a base station report round-trip against the YAML mapping' do
+    encoder = AisToNmea::Encoders::BaseStationReport.new(data: normalized_base_station_input)
 
     expect { validator.validate!(encoder.instance_variable_get(:@data), encoder.encode) }.not_to raise_error
   end
