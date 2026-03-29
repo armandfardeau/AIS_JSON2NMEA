@@ -52,6 +52,55 @@ position_report:
     class: AisToNmea::MessageParts::PositionReport::RadioStatus
     field: CommunicationState
 
+base_station_report:
+  message_id: *common_message_id
+  repeat_indicator:
+    class: AisToNmea::MessageParts::PositionReport::RepeatIndicator
+    field: RepeatIndicator
+  mmsi: *common_mmsi
+  utc_year:
+    class: AisToNmea::MessageParts::BaseStationReport::UtcYear
+    field: UtcYear
+  utc_month:
+    class: AisToNmea::MessageParts::BaseStationReport::UtcMonth
+    field: UtcMonth
+  utc_day:
+    class: AisToNmea::MessageParts::BaseStationReport::UtcDay
+    field: UtcDay
+  utc_hour:
+    class: AisToNmea::MessageParts::BaseStationReport::UtcHour
+    field: UtcHour
+  utc_minute:
+    class: AisToNmea::MessageParts::BaseStationReport::UtcMinute
+    field: UtcMinute
+  utc_second:
+    class: AisToNmea::MessageParts::BaseStationReport::UtcSecond
+    field: UtcSecond
+  position_accuracy:
+    class: AisToNmea::MessageParts::PositionReport::PositionAccuracy
+    field: PositionAccuracy
+  lon:
+    class: AisToNmea::MessageParts::PositionReport::Longitude
+    field: Longitude
+  lat:
+    class: AisToNmea::MessageParts::PositionReport::Latitude
+    field: Latitude
+  fix_type:
+    class: AisToNmea::MessageParts::ShipStaticData::FixType
+    field: FixType
+  long_range_enable:
+    class: AisToNmea::MessageParts::BaseStationReport::LongRangeEnable
+    field: LongRangeEnable
+  spare:
+    class: AisToNmea::MessageParts::BaseStationReport::Spare
+    field: Spare
+  raim:
+    class: AisToNmea::MessageParts::PositionReport::Raim
+    field: Raim
+  communication_state:
+    class: AisToNmea::MessageParts::PositionReport::RadioStatus
+    field: CommunicationState
+
 ship_static_data:
   message_id: *common_message_id
   repeat_indicator:

@@ -13,6 +13,7 @@ module SpecSupport
   module Helpers
     MESSAGE_TYPE_FIXTURE_FILES = {
       position_report: 'message_types/position_report.json',
+      base_station_report: 'message_types/base_station_report.json',
       safety_broadcast_message: 'message_types/safety_broadcast_message.json',
       ship_static_data: 'message_types/ship_static_data.json'
     }.freeze

@@ -129,6 +129,34 @@ puts AisToNmea.to_nmea({
 
 ---
 
+## 04b — Base Station Report (Type 4)
+
+```ruby
+require 'ais_to_nmea'
+
+puts AisToNmea.to_nmea({
+  "MessageID"          => 4,
+  "RepeatIndicator"    => 0,
+  "UserID"             => 123456789,
+  "UtcYear"            => 2026,
+  "UtcMonth"           => 3,
+  "UtcDay"             => 29,
+  "UtcHour"            => 12,
+  "UtcMinute"          => 34,
+  "UtcSecond"          => 56,
+  "PositionAccuracy"   => true,
+  "Longitude"          => 2.3522,
+  "Latitude"           => 48.8566,
+  "FixType"            => 1,
+  "LongRangeEnable"    => false,
+  "Spare"              => 0,
+  "Raim"               => false,
+  "CommunicationState" => 0
+})
+```
+
+---
+
 ## 05 — Error Handling
 
 ```ruby

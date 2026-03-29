@@ -6,7 +6,7 @@ Convert AIS (Automatic Identification System) JSON messages into raw NMEA 0183 A
 
 ## Features
 
-- **Supported AIS Message Types**: 1, 2, 3 (Position Reports), 5 (Ship Static Data), 14 (Safety Broadcast Message)
+- **Supported AIS Message Types**: 1, 2, 3 (Position Reports), 4 (Base Station Report), 5 (Ship Static Data), 14 (Safety Broadcast Message)
 - **Multiple Input Formats**: Ruby Hash or JSON string
 - **Valid NMEA Output**: 6-bit encoding, correct fill bits, valid checksums
 - **Multi-part Support**: Automatically splits long messages into multiple NMEA sentences
@@ -98,6 +98,30 @@ nmea = encoder.encode(input_hash)
 ```
 
 ## Input Format
+
+### AIS Base Station Report (Message Type 4)
+
+```json
+{
+  "MessageID": 4,
+  "RepeatIndicator": 0,
+  "UserID": 123456789,
+  "UtcYear": 2026,
+  "UtcMonth": 3,
+  "UtcDay": 29,
+  "UtcHour": 12,
+  "UtcMinute": 34,
+  "UtcSecond": 56,
+  "PositionAccuracy": true,
+  "Longitude": 2.3522,
+  "Latitude": 48.8566,
+  "FixType": 1,
+  "LongRangeEnable": false,
+  "Spare": 0,
+  "Raim": false,
+  "CommunicationState": 0
+}
+```
 
 ### AIS Position Report (Message Types 1, 2, 3)
 
@@ -247,6 +271,7 @@ Examples are split by use case in the [examples](examples) directory:
 - [examples/04_safety_broadcast_message.rb](examples/04_safety_broadcast_message.rb) - Message type 14
 - [examples/05_error_handling.rb](examples/05_error_handling.rb) - Missing field and invalid value cases
 - [examples/06_direct_encoder_usage.rb](examples/06_direct_encoder_usage.rb) - Direct `AisToNmea::Encoder` usage
+- Base station report example input is included in `spec/fixtures/message_types/base_station_report.json`
 
 Run one example:
 
@@ -278,7 +303,7 @@ bundle exec rspec spec/
 
 The gem includes tests for:
 
-- Message types 1, 2, 3, 5 and 14
+- Message types 1, 2, 3, 4, 5 and 14
 - Hash and JSON string inputs
 - Valid NMEA format generation
 - Checksum calculation and validation
@@ -383,13 +408,13 @@ results = messages.map { |msg| encoder.encode(msg) }
 
 ### Current Release
 
-- **Message types**: 1, 2, 3, 5 and 14 are supported
+- **Message types**: 1, 2, 3, 4, 5 and 14 are supported
 - **No decoding**: NMEA → AIS parsing not implemented (output only)
 - **Platform**: Any platform running Ruby 3.2+
 
 ### Future Enhancements
 
-- Support for additional message types (4, 5, 18, 24, etc.)
+- Support for additional message types (18, 24, etc.)
 - NMEA sentence parsing and validation
 - Windows support
 - Performance optimizations
