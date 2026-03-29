@@ -7,24 +7,26 @@ module AisToNmea
   module Encoders
     # Base class shared by all AIS encoder implementations.
     class Base
-      include Mixins::InputParser
-      include Mixins::IntermediateRepresentation
-      include Mixins::StrictValidation
-      include Mixins::Mapping
-
       MAPPING_CONFIG_PATH = File.expand_path('../config/mapping.yml', __dir__).freeze
 
       attr_reader :message
 
       def initialize(data: {}, options: {})
         @message = +''
-        @data = build_ir(parse_input(data), parts_mapping)
+        @data = IntermediateRepresentation.build(InputParser.parse(data), parts_mapping)
         @options = options
+      end
+
+      def parts_mapping
+        @parts_mapping ||= Mapping.parts_mapping(
+          context_name: context_name,
+          mapping_config_path: self.class::MAPPING_CONFIG_PATH
+        )
       end
 
       def encode
         validate_message_type!
-        raise_missing_fields!
+        StrictValidation.raise_missing_fields!(context_name: context_name, data: @data, mapping: parts_mapping)
         encoded_output = encode_message
 
         OutputValidator.validate!(@data, encoded_output)
