@@ -106,6 +106,31 @@ RSpec.describe AisToNmea::Encoders::OutputValidator do
     expect { validator.validate!(encoder.instance_variable_get(:@data), encoder.encode) }.not_to raise_error
   end
 
+  it 'validates position report when timestamp is unavailable sentinel 60' do
+    input = {
+      'MessageID' => 1,
+      'RepeatIndicator' => 0,
+      'UserID' => 701_006_706,
+      'NavigationalStatus' => 0,
+      'RateOfTurn' => 0,
+      'Sog' => 0.0,
+      'PositionAccuracy' => true,
+      'Longitude' => -58.38229833333333,
+      'Latitude' => -34.574115,
+      'Cog' => 218.5,
+      'TrueHeading' => 301,
+      'Timestamp' => 60,
+      'SpecialManoeuvreIndicator' => 0,
+      'Spare' => 0,
+      'Raim' => false,
+      'CommunicationState' => 230_363
+    }
+
+    encoder = AisToNmea::Encoders::PositionReport.new(data: input)
+
+    expect { validator.validate!(encoder.instance_variable_get(:@data), encoder.encode) }.not_to raise_error
+  end
+
   describe '#decode_output' do
     subject(:validator_instance) { described_class.new }
 

@@ -8,7 +8,7 @@ module AisToNmea
       module OutputValidationMatchers
         DEFAULT_FLOAT_TOLERANCE = 1e-6
         HEADING_UNAVAILABLE = 511
-        TIMESTAMP_UNAVAILABLE = 63
+        TIMESTAMP_UNAVAILABLE_RANGE = (60..63)
         COG_UNAVAILABLE = 360.0
         SOG_AVAILABLE_MAX = 102.2
         SOG_UNAVAILABLE = 102.3
@@ -72,9 +72,12 @@ module AisToNmea
         end
 
         def timestamp_value(value)
-          return TIMESTAMP_UNAVAILABLE if value.nil?
+          return :timestamp_unavailable if value.nil?
 
-          Integer(value)
+          parsed_value = Integer(value)
+          return :timestamp_unavailable if TIMESTAMP_UNAVAILABLE_RANGE.cover?(parsed_value)
+
+          parsed_value
         rescue ArgumentError, TypeError
           value
         end
