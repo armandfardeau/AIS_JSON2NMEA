@@ -11,6 +11,8 @@ module AisToNmea
       module OutputValidator
         VALIDATION_CONFIG_PATH = File.expand_path('../../config/validation_mapping.yml', __dir__).freeze
         DEFAULT_FLOAT_TOLERANCE = 1e-6
+        HEADING_UNAVAILABLE = 511
+        TIMESTAMP_UNAVAILABLE = 63
 
         TYPE_MAPPINGS = {
           1 => :position_report,
@@ -52,7 +54,7 @@ module AisToNmea
 
         def validation_mappings
           @validation_mappings ||= begin
-            raw = YAML.safe_load(File.read(VALIDATION_CONFIG_PATH))
+            raw = YAML.safe_load_file(VALIDATION_CONFIG_PATH)
             normalize_validation_mappings(raw)
           rescue Errno::ENOENT => e
             raise InvalidFieldError, "Validation mapping file not found: #{e.message}"
@@ -68,7 +70,8 @@ module AisToNmea
 
           mapping.each_with_object({}) do |(encoder_key, rules), normalized|
             unless rules.is_a?(Hash)
-              raise InvalidFieldError, "Invalid validation mapping for #{encoder_key}: expected Hash, got #{rules.class}"
+              raise InvalidFieldError,
+                    "Invalid validation mapping for #{encoder_key}: expected Hash, got #{rules.class}"
             end
 
             normalized[encoder_key.to_sym] = rules.each_with_object({}) do |(field_name, rule), fields|
@@ -90,7 +93,7 @@ module AisToNmea
           complete_message = nil
           source_decoder(output).each_complete_message { |message| complete_message = message }
 
-          return complete_message if complete_message&.respond_to?(:ais) && complete_message.ais
+          return complete_message if complete_message.respond_to?(:ais) && complete_message.ais
 
           raise InvalidFieldError, 'Unable to decode encoder output for validation'
         rescue Racc::ParseError => e
@@ -101,9 +104,7 @@ module AisToNmea
           path.to_s.split('.').reduce(root) do |value, segment|
             break nil if value.nil?
 
-            unless value.respond_to?(segment)
-              raise InvalidFieldError, "Validation reader not found: #{path}"
-            end
+            raise InvalidFieldError, "Validation reader not found: #{path}" unless value.respond_to?(segment)
 
             value.public_send(segment)
           end
@@ -154,7 +155,7 @@ module AisToNmea
         end
 
         def heading_value(value)
-          return 511 if value.nil?
+          return HEADING_UNAVAILABLE if value.nil?
 
           Integer(value)
         rescue ArgumentError, TypeError
@@ -162,7 +163,7 @@ module AisToNmea
         end
 
         def timestamp_value(value)
-          return 63 if value.nil?
+          return TIMESTAMP_UNAVAILABLE if value.nil?
 
           Integer(value)
         rescue ArgumentError, TypeError

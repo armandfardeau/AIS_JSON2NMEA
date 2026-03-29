@@ -58,7 +58,8 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
     mapping = described_class.parts_mapping
 
     expect(mapping.keys).to eq(
-      %i[message_id repeat_indicator mmsi nav_status rot sog position_accuracy lon lat cog heading timestamp maneuver spare raim radio_status]
+      %i[message_id repeat_indicator mmsi nav_status rot sog position_accuracy lon lat cog heading timestamp maneuver
+         spare raim radio_status]
     )
     expect(mapping.transform_values { |map| map[:field] }).to include(
       message_id: 'MessageID',

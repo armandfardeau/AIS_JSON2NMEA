@@ -12,9 +12,9 @@ message = ExampleHelper.base_position_report(
   true_heading: 320
 )
 
-puts "#{'=' * 70}"
+puts('=' * 70)
 puts 'Using AisToNmea::Encoder directly'
-puts "#{'=' * 70}"
+puts('=' * 70)
 puts 'Input:'
 puts JSON.pretty_generate(message)
 

@@ -8,7 +8,10 @@ module AisToNmea
         normalize_value_as :integer
 
         def validate!
-          self
+          return self if @value&.between?(0, 359) || @value == 511
+
+          raise InvalidFieldError,
+                "True Heading must be between 0 and 359, or 511 for unavailable (got: #{@value.inspect})"
         end
 
         def pack

@@ -44,4 +44,5 @@ hash_with_explicit_encoder = ExampleHelper.base_position_report(
 
 ExampleHelper.print_case('Input format - Ruby hash', hash_input)
 ExampleHelper.print_case('Input format - JSON string (explicit encoder)', json_string_input, encoder: :position_report)
-ExampleHelper.print_case('Input format - hash with explicit encoder', hash_with_explicit_encoder, encoder: :position_report)
+ExampleHelper.print_case('Input format - hash with explicit encoder', hash_with_explicit_encoder,
+                         encoder: :position_report)

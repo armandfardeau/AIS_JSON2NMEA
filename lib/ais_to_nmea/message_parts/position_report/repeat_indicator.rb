@@ -8,7 +8,7 @@ module AisToNmea
         normalize_value_as :integer
 
         def validate!
-          return self if value&.between?(0, 3)
+          return self if @value&.between?(0, 3)
 
           raise InvalidFieldError, "RepeatIndicator must be between 0 and 3 (got: #{@value.inspect})"
         end

@@ -29,10 +29,7 @@ module AisToNmea
         private
 
         def all_parts_mappings
-          @all_parts_mappings ||= YAML.safe_load(
-            File.read(MAPPING_CONFIG_PATH),
-            aliases: true
-          )
+          @all_parts_mappings ||= YAML.safe_load_file(MAPPING_CONFIG_PATH, aliases: true)
         rescue Psych::SyntaxError => e
           raise InvalidFieldError, "Invalid parts mapping YAML: #{e.message}"
         end
@@ -74,9 +71,7 @@ module AisToNmea
             normalized[:class] = constantize(value['class'])
           end
 
-          if value.key?('nested')
-            normalized[:nested] = normalize_mapping(value['nested'], path: "#{path}.nested")
-          end
+          normalized[:nested] = normalize_mapping(value['nested'], path: "#{path}.nested") if value.key?('nested')
 
           if normalized[:nested] && !normalized[:field]
             raise InvalidFieldError, "Invalid nested mapping at #{path}: nested entries require a parent field"
@@ -100,18 +95,15 @@ module AisToNmea
 
       def initialize(data: {}, options: {})
         @message = +''
-        @raw_data = data
         @data = build_data_ir(parse_input(data))
-        @output_ir = nil
         @options = options
       end
 
       def encode
         validate_message_type!
+        # TODO: Uncomment after adding optional field markers to mapping.yml
         # validate_required_fields!
         encode_message
-      rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError => e
-        raise e
       end
 
       private

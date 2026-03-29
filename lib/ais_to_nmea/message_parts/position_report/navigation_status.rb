@@ -8,7 +8,9 @@ module AisToNmea
         normalize_value_as :integer
 
         def validate!
-          self
+          return self if @value&.between?(0, 15)
+
+          raise InvalidFieldError, "Navigation Status must be between 0 and 15 (got: #{@value.inspect})"
         end
 
         def pack

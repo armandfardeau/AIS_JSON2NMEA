@@ -32,14 +32,14 @@ module ExampleHelper
     }
   end
 
-  def print_case(title, payload, **kwargs)
+  def print_case(title, payload, **)
     puts "\n#{'=' * 70}"
     puts title
-    puts "#{'=' * 70}"
+    puts('=' * 70)
     puts 'Input:'
     puts payload.is_a?(String) ? payload : JSON.pretty_generate(payload)
 
-    output = AisToNmea.to_nmea(payload, **kwargs)
+    output = AisToNmea.to_nmea(payload, **)
 
     puts
     puts 'Output (NMEA 0183):'
@@ -49,7 +49,7 @@ module ExampleHelper
   def print_expected_error(title)
     puts "\n#{'=' * 70}"
     puts title
-    puts "#{'=' * 70}"
+    puts('=' * 70)
 
     yield
   rescue AisToNmea::Error => e

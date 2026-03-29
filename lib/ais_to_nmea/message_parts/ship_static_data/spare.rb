@@ -8,9 +8,9 @@ module AisToNmea
         normalize_value_as :bool
 
         def validate!
-          return self unless value.nil?
+          return self unless @value.nil?
 
-          raise InvalidFieldError, "Spare field must be present (got: #{value.inspect})"
+          raise InvalidFieldError, "Spare field must be present (got: #{@value.inspect})"
         end
 
         def pack
