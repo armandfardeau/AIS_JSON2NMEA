@@ -2,34 +2,28 @@
 
 require 'spec_helper'
 
-# rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Layout/LineLength, RSpec/ExampleLength
+# rubocop:disable Layout/LineLength, RSpec/ExampleLength
 
 RSpec.describe AisToNmea::AisEncoder::Utils::OutputValidator do
   subject(:validator) { described_class }
 
-  let(:fixtures) { fixture_json('sample_ais_messages.json') }
+  let(:position_report_fixtures) { fixture_json(message_type: :position_report) }
+  let(:ship_static_fixtures) { fixture_json(message_type: :ship_static_data) }
+  let(:safety_broadcast_fixtures) { fixture_json(message_type: :safety_broadcast_message) }
 
   def normalized_position_report_input(name)
-    input = fixtures.fetch('messages').find { |test_case| test_case['name'] == name }.fetch('input').dup
-    input['SpeedOverGround'] = input.delete('Sog') if input.key?('Sog')
-    input['CourseOverGround'] = input.delete('Cog') if input.key?('Cog')
-    input['RadioStatus'] = input.delete('CommunicationState') if input.key?('CommunicationState')
+    input = position_report_fixtures.fetch('messages').find { |test_case| test_case['name'] == name }.fetch('input').dup
     input['PositionAccuracy'] = input['PositionAccuracy'] ? 1 : 0 if [true, false].include?(input['PositionAccuracy'])
     input['Raim'] = input['Raim'] ? 1 : 0 if [true, false].include?(input['Raim'])
     input
   end
 
   def normalized_ship_static_input
-    input = fixtures.fetch('messages').find { |test_case| test_case.dig('input', 'MessageID') == 5 }.fetch('input').dup
-    input['AISVersion'] = input.delete('AisVersion') if input.key?('AisVersion')
-    input['IMONumber'] = input.delete('ImoNumber') if input.key?('ImoNumber')
-    input['ShipType'] = input.delete('Type') if input.key?('Type')
-    input['DTE'] = input.delete('Dte') if input.key?('Dte')
-    input
+    ship_static_fixtures.fetch('messages').find { |test_case| test_case.dig('input', 'MessageID') == 5 }.fetch('input').dup
   end
 
   def safety_broadcast_input(name)
-    fixtures.fetch('messages').find { |test_case| test_case['name'] == name }.fetch('input')
+    safety_broadcast_fixtures.fetch('messages').find { |test_case| test_case['name'] == name }.fetch('input')
   end
 
   it 'validates a position report round-trip against the YAML mapping' do
@@ -62,4 +56,4 @@ RSpec.describe AisToNmea::AisEncoder::Utils::OutputValidator do
       .to raise_error(AisToNmea::InvalidFieldError, /Validation failed for mmsi/)
   end
 end
-# rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Layout/LineLength, RSpec/ExampleLength
+# rubocop:enable Layout/LineLength, RSpec/ExampleLength

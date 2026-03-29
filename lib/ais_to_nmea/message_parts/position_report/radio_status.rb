@@ -14,7 +14,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 19)
+          pack_uint(19)
         end
       end
     end

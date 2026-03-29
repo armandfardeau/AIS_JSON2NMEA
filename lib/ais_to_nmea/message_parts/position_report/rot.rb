@@ -15,7 +15,7 @@ module AisToNmea
 
         def pack
           encoded_value = @value.negative? ? (256 + @value) : @value
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(encoded_value, 8)
+          pack_uint(8, encoded_value)
         end
       end
     end

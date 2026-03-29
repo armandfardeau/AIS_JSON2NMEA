@@ -5,7 +5,7 @@ require 'spec_helper'
 # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, RSpec/ExampleLength, RSpec/MultipleExpectations
 
 RSpec.describe AisToNmea::Encoders::PositionReport do
-  let(:fixtures) { fixture_json('sample_ais_messages.json') }
+  let(:fixtures) { fixture_json(message_type: :position_report) }
   let(:message_ids) { [1, 2, 3] }
 
   let(:position_report_messages) do
@@ -16,11 +16,7 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
   end
 
   let(:position_report_error_cases) do
-    fixtures.fetch('error_cases').select do |test_case|
-      input = test_case['input']
-      message_id = input.is_a?(Hash) ? input['MessageID'] : nil
-      message_id.nil? || message_ids.include?(message_id)
-    end
+    fixtures.fetch('error_cases')
   end
 
   def normalize_position_report_input(input)

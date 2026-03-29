@@ -5,7 +5,7 @@ require 'spec_helper'
 # rubocop:disable Layout/LineLength, RSpec/ExampleLength, RSpec/MultipleExpectations
 
 RSpec.describe AisToNmea::Encoders::ShipStaticData do
-  let(:fixtures) { fixture_json('sample_ais_messages.json') }
+  let(:fixtures) { fixture_json(message_type: :ship_static_data) }
 
   let(:ship_static_fixture) do
     fixtures.fetch('messages').find do |test_case|

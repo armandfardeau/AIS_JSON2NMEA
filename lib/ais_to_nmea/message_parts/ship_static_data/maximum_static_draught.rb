@@ -16,7 +16,7 @@ module AisToNmea
 
         def pack
           draught_dm = (@value * 10).round
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(draught_dm, 8)
+          pack_uint(8, draught_dm)
         end
       end
     end

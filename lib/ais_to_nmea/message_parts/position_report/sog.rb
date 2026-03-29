@@ -12,7 +12,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint((@value * 10).round, 10)
+          pack_uint(10, (@value * 10).round)
         end
       end
     end

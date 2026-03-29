@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea do
   it 'autoloads BitPacking utility constant' do
-    expect(defined?(AisToNmea::AisEncoder::Utils::BitPacking)).to eq('constant')
+    expect(defined?(AisToNmea::AisEncoder::BitPacking)).to eq('constant')
   end
 
   it 'autoloads StrictValidation utility constant' do

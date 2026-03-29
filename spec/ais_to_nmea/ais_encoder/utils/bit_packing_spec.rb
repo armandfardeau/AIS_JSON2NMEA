@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe AisToNmea::AisEncoder::Utils::BitPacking do
+describe AisToNmea::AisEncoder::BitPacking do
   describe '.pack_uint' do
     it 'packs 0 on full width' do
       expect(described_class.pack_uint(0, 6)).to eq('000000')

@@ -14,7 +14,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_signed((@value * 600_000).round, 28)
+          pack_signed(28, (@value * 600_000).round)
         end
       end
     end

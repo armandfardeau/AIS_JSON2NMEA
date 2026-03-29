@@ -2,7 +2,10 @@
 
 module AisToNmea
   module MessageParts
+    # Base class for AIS message parts, providing common normalization and validation logic.
     class Base
+      include AisToNmea::MessageParts::Mixins::BitPacking
+
       VALUE_NORMALIZER = {
         integer: ->(value) { Integer(value) unless value.nil? },
         float: ->(value) { Float(value) unless value.nil? },

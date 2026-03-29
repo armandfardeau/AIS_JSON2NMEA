@@ -8,7 +8,7 @@ module AisToNmea
         normalize_value_as :bool
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 1)
+          pack_uint(1)
         end
       end
     end
