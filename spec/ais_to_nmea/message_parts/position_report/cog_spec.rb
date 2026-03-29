@@ -7,6 +7,15 @@ RSpec.describe AisToNmea::MessageParts::PositionReport::Cog do
     expect(described_class.new('254.8').value).to eq(254.8)
   end
 
+  it 'accepts 360.0 as unavailable sentinel' do
+    part = described_class.new(360.0)
+    expect(part.validate!).to eq(part)
+  end
+
+  it 'rejects values above 360.0' do
+    expect { described_class.new(360.1).validate! }.to raise_error(AisToNmea::InvalidFieldError)
+  end
+
   it 'accepts a valid value' do
     part = described_class.new(254.8)
     expect(part.validate!).to eq(part)

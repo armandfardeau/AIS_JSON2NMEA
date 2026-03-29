@@ -8,9 +8,10 @@ module AisToNmea
         normalize_value_as :float
 
         def validate!
-          return self if @value&.between?(0.0, 359.9)
+          return self if @value&.between?(0.0, 360.0)
 
-          raise InvalidFieldError, "Course Over Ground must be between 0 and 359.9 (got: #{@value.inspect})"
+          raise InvalidFieldError,
+                "Course Over Ground must be between 0 and 359.9 (or 360.0 for unavailable) (got: #{@value.inspect})"
         end
 
         def pack

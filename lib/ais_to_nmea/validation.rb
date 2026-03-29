@@ -7,7 +7,7 @@ module AisToNmea
       [:lat, -90.0, 90.0, 'Latitude must be between -90 and 90'],
       [:lon, -180.0, 180.0, 'Longitude must be between -180 and 180'],
       [:sog, 0.0, 102.2, 'Sog/SpeedOverGround must be between 0 and 102.2'],
-      [:cog, 0.0, 359.9, 'Cog/CourseOverGround must be between 0 and 359.9'],
+      [:cog, 0.0, 360.0, 'Cog/CourseOverGround must be between 0 and 359.9 (or 360.0 for unavailable)'],
       [:nav_status, 0, 15, 'NavigationStatus/NavigationalStatus must be between 0 and 15']
     ].freeze
 
