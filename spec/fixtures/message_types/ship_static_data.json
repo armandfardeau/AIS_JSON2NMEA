@@ -7,11 +7,11 @@
         "RepeatIndicator": 0,
         "UserID": 636024245,
         "Valid": true,
-        "AISVersion": 0,
-        "IMONumber": 9876543,
+        "AisVersion": 0,
+        "ImoNumber": 9876543,
         "CallSign": "FRA1234",
         "Name": "TEST VESSEL",
-        "ShipType": 70,
+        "Type": 70,
         "Dimension": {
           "A": 50,
           "B": 20,
@@ -27,7 +27,7 @@
         },
         "MaximumStaticDraught": 7.4,
         "Destination": "LE HAVRE",
-        "DTE": false,
+        "Dte": false,
         "Spare": false
       }
     }

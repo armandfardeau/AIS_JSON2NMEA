@@ -63,10 +63,10 @@ ship_static_data:
   mmsi: *common_mmsi
   ais_version:
     class: AisToNmea::MessageParts::ShipStaticData::AisVersion
-    field: AISVersion
+    field: AisVersion
   imo_number:
     class: AisToNmea::MessageParts::ShipStaticData::ImoNumber
-    field: IMONumber
+    field: ImoNumber
   call_sign:
     class: AisToNmea::MessageParts::ShipStaticData::CallSign
     field: CallSign
@@ -75,7 +75,7 @@ ship_static_data:
     field: Name
   ship_type:
     class: AisToNmea::MessageParts::ShipStaticData::ShipType
-    field: ShipType
+    field: Type
   fix_type:
     class: AisToNmea::MessageParts::ShipStaticData::FixType
     field: FixType
@@ -117,7 +117,7 @@ ship_static_data:
     field: Destination
   dte:
     class: AisToNmea::MessageParts::ShipStaticData::Dte
-    field: DTE
+    field: Dte
   spare:
     class: AisToNmea::MessageParts::ShipStaticData::Spare
     field: Spare
