@@ -6,7 +6,7 @@ describe AisToNmea::Validation do
   describe '.validate_ranges!' do
     it 'accepts valid boundary values' do
       expect do
-        described_class.validate_ranges!(lat: -90.0, lon: 180.0, sog: 102.2, cog: 360.0, heading: 511, nav_status: 15)
+        described_class.validate_ranges!(lat: -90.0, lon: 180.0, sog: 102.3, cog: 360.0, heading: 511, nav_status: 15)
       end.not_to raise_error
     end
 
@@ -24,7 +24,7 @@ describe AisToNmea::Validation do
 
     it 'rejects sog out of range' do
       expect do
-        described_class.validate_ranges!(lat: 0.0, lon: 0.0, sog: 102.3, cog: 0.0, heading: 0, nav_status: 0)
+        described_class.validate_ranges!(lat: 0.0, lon: 0.0, sog: 200.1, cog: 0.0, heading: 0, nav_status: 0)
       end.to raise_error(AisToNmea::InvalidFieldError, %r{Sog/SpeedOverGround})
     end
 

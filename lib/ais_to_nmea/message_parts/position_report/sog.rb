@@ -12,7 +12,8 @@ module AisToNmea
         end
 
         def pack
-          pack_uint(10, (@value * 10).round)
+          packed_value = @value > 102.2 ? 1023 : (@value * 10).round
+          pack_uint(10, packed_value)
         end
       end
     end

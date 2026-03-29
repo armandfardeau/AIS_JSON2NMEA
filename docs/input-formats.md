@@ -18,7 +18,7 @@ All inputs can be provided as a **Ruby Hash** or a **JSON string**.
 | `UserID` | Integer | 0–9 999 999 999 | MMSI |
 | `Latitude` | Float | -90.0 to 90.0 | Decimal degrees |
 | `Longitude` | Float | -180.0 to 180.0 | Decimal degrees |
-| `SpeedOverGround` | Float | 0.0 to 102.2 | Knots |
+| `SpeedOverGround` | Float | 0.0 to 200.0 | Knots (values above 102.2 are encoded as 102.3/unavailable) |
 | `CourseOverGround` | Float | 0.0 to 359.9 | Degrees |
 | `TrueHeading` | Integer | 0–359 (or 511) | 511 = not available |
 

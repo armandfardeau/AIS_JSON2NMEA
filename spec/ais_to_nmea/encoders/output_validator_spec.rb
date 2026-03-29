@@ -56,6 +56,56 @@ RSpec.describe AisToNmea::Encoders::OutputValidator do
       .to raise_error(AisToNmea::InvalidFieldError, /Validation failed for mmsi/)
   end
 
+  it 'validates position report when COG is unavailable sentinel 360.0' do
+    input = {
+      'MessageID' => 1,
+      'RepeatIndicator' => 0,
+      'UserID' => 710_008_251,
+      'NavigationalStatus' => 0,
+      'RateOfTurn' => -128,
+      'Sog' => 0.0,
+      'PositionAccuracy' => true,
+      'Longitude' => -59.92232833333333,
+      'Latitude' => -3.1211866666666666,
+      'Cog' => 360.0,
+      'TrueHeading' => 511,
+      'Timestamp' => 33,
+      'SpecialManoeuvreIndicator' => 0,
+      'Spare' => 0,
+      'Raim' => true,
+      'CommunicationState' => 49_172
+    }
+
+    encoder = AisToNmea::Encoders::PositionReport.new(data: input)
+
+    expect { validator.validate!(encoder.instance_variable_get(:@data), encoder.encode) }.not_to raise_error
+  end
+
+  it 'validates position report when SOG above 102.2 is encoded as unavailable sentinel 102.3' do
+    input = {
+      'MessageID' => 1,
+      'RepeatIndicator' => 0,
+      'UserID' => 710_008_252,
+      'NavigationalStatus' => 0,
+      'RateOfTurn' => -128,
+      'Sog' => 200.0,
+      'PositionAccuracy' => true,
+      'Longitude' => -59.92232833333333,
+      'Latitude' => -3.1211866666666666,
+      'Cog' => 120.0,
+      'TrueHeading' => 120,
+      'Timestamp' => 33,
+      'SpecialManoeuvreIndicator' => 0,
+      'Spare' => 0,
+      'Raim' => true,
+      'CommunicationState' => 49_172
+    }
+
+    encoder = AisToNmea::Encoders::PositionReport.new(data: input)
+
+    expect { validator.validate!(encoder.instance_variable_get(:@data), encoder.encode) }.not_to raise_error
+  end
+
   describe '#decode_output' do
     subject(:validator_instance) { described_class.new }
 

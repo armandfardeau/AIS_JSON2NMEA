@@ -9,8 +9,11 @@ module AisToNmea
         DEFAULT_FLOAT_TOLERANCE = 1e-6
         HEADING_UNAVAILABLE = 511
         TIMESTAMP_UNAVAILABLE = 63
+        COG_UNAVAILABLE = 360.0
+        SOG_AVAILABLE_MAX = 102.2
+        SOG_UNAVAILABLE = 102.3
 
-        # rubocop:disable Metrics/MethodLength
+        # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
         def values_match?(expected, actual, rule)
           comparator = rule.fetch(:comparator)
 
@@ -27,11 +30,15 @@ module AisToNmea
             heading_value(expected) == heading_value(actual)
           when :timestamp_sentinel
             timestamp_value(expected) == timestamp_value(actual)
+          when :cog_sentinel
+            cog_values_match?(expected, actual, rule[:tolerance])
+          when :sog_sentinel
+            sog_values_match?(expected, actual, rule[:tolerance])
           else
             raise InvalidFieldError, "Unknown validation comparator: #{comparator}"
           end
         end
-        # rubocop:enable Metrics/MethodLength
+        # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
 
         def float_values_match?(expected, actual, tolerance)
           return expected == actual if expected.nil? || actual.nil?
@@ -70,6 +77,31 @@ module AisToNmea
           Integer(value)
         rescue ArgumentError, TypeError
           value
+        end
+
+        def cog_values_match?(expected, actual, tolerance)
+          (cog_value(expected) - cog_value(actual)).abs <= (tolerance || DEFAULT_FLOAT_TOLERANCE)
+        rescue ArgumentError, TypeError
+          false
+        end
+
+        def cog_value(value)
+          return COG_UNAVAILABLE if value.nil?
+
+          Float(value)
+        end
+
+        def sog_values_match?(expected, actual, tolerance)
+          expected_sog = Float(expected)
+          actual_sog = Float(actual)
+
+          if expected_sog > SOG_AVAILABLE_MAX
+            (SOG_UNAVAILABLE - actual_sog).abs <= (tolerance || DEFAULT_FLOAT_TOLERANCE)
+          else
+            (expected_sog - actual_sog).abs <= (tolerance || DEFAULT_FLOAT_TOLERANCE)
+          end
+        rescue ArgumentError, TypeError
+          false
         end
       end
     end

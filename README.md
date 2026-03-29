@@ -157,7 +157,7 @@ Field notes for message type 14:
 | UserID | Integer | 0-9999999999 | Yes | MMSI (Maritime Mobile Service Identity) |
 | Latitude | Float | -90.0 to 90.0 | Yes | Degrees, decimal |
 | Longitude | Float | -180.0 to 180.0 | Yes | Degrees, decimal |
-| SpeedOverGround | Float | 0.0 to 102.2 | Yes | Knots |
+| SpeedOverGround | Float | 0.0 to 200.0 | Yes | Knots (values above 102.2 are encoded as 102.3/unavailable) |
 | CourseOverGround | Float | 0.0 to 359.9 | Yes | Degrees |
 | TrueHeading | Integer | 0-359 | Yes | Degrees (511 = not available) |
 | NavigationStatus | Integer | 0-15 | No | Default: 0 (Under way using engine) |

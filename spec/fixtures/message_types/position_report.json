@@ -136,6 +136,28 @@
       }
     },
     {
+      "name": "High speed input encoded as unavailable",
+      "input": {
+        "MessageID": 1,
+        "RepeatIndicator": 0,
+        "UserID": 444444445,
+        "Valid": true,
+        "NavigationalStatus": 0,
+        "RateOfTurn": 128,
+        "Latitude": 60.0,
+        "Longitude": 25.0,
+        "Sog": 200.0,
+        "PositionAccuracy": false,
+        "Cog": 359.9,
+        "TrueHeading": 359,
+        "Timestamp": 0,
+        "SpecialManoeuvreIndicator": 0,
+        "Spare": 0,
+        "Raim": false,
+        "CommunicationState": 0
+      }
+    },
+    {
       "name": "Complete PositionReport with explicit optional fields",
       "input": {
         "MessageID": 1,

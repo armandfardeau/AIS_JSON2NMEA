@@ -9,7 +9,7 @@ position_report:
     actual: navigational_status
   sog:
     actual: speed_over_ground
-    comparator: float_tolerance
+    comparator: sog_sentinel
   position_accuracy:
     actual: position_10m_accuracy?
     comparator: bool_int
@@ -21,7 +21,7 @@ position_report:
     comparator: float_tolerance
   cog:
     actual: course_over_ground
-    comparator: float_tolerance
+    comparator: cog_sentinel
   heading:
     actual: true_heading
     comparator: heading_sentinel
