@@ -19,8 +19,8 @@ module AisToNmea
           data.send(field).nil? ? field : nil
         end
 
-        def raise_missing_fields!(context_name = self.class.name.split('::').last, data = @data,
-                                  mapping = self.class.parts_mapping)
+        def raise_missing_fields!(context_name = self.context_name, data = @data,
+                                  mapping = parts_mapping)
           missing_fields = missing_required_fields(data, mapping)
           return if missing_fields.empty?
 

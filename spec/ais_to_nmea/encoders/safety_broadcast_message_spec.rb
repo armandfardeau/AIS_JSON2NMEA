@@ -5,6 +5,8 @@ require 'spec_helper'
 # rubocop:disable RSpec/MultipleExpectations
 
 RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
+  subject(:encoder) { described_class.new(data: valid_input) }
+
   let(:valid_input) do
     {
       'MessageID' => 14,
@@ -25,13 +27,13 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
   end
 
   it 'declares the expected mapping keys' do
-    expect(described_class.parts_mapping.keys).to eq(
+    expect(encoder.parts_mapping.keys).to eq(
       %i[message_id repeat_indicator mmsi spare text]
     )
   end
 
   it 'uses the expected source fields in the mapping' do
-    expect(described_class.parts_mapping.transform_values { |map| map[:field] }).to eq(
+    expect(encoder.parts_mapping.transform_values { |map| map[:field] }).to eq(
       message_id: 'MessageID',
       repeat_indicator: 'RepeatIndicator',
       mmsi: 'UserID',
@@ -41,19 +43,18 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
   end
 
   it 'preserves the decoded safety text' do
-    output = described_class.new(data: valid_input).encode
+    output = encoder.encode
     decoded = NMEAPlus::Decoder.new.parse(output).ais
 
     expect(decoded.text.strip).to eq(valid_input['Text'])
   end
 
   it 'resolves mapping classes from YAML' do
-    expect(described_class.parts_mapping[:message_id][:class]).to eq(AisToNmea::MessageParts::Common::MessageId)
-    expect(described_class.parts_mapping[:text][:class]).to eq(AisToNmea::MessageParts::SafetyBroadcastMessage::Text)
+    expect(encoder.parts_mapping[:message_id][:class]).to eq(AisToNmea::MessageParts::Common::MessageId)
+    expect(encoder.parts_mapping[:text][:class]).to eq(AisToNmea::MessageParts::SafetyBroadcastMessage::Text)
   end
 
   it 'delegates to encode_message when MessageID is supported' do
-    encoder = described_class.new(data: valid_input)
     allow(encoder).to receive(:encode_message).and_call_original
 
     output = encoder.encode

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::Encoders::PositionReport do
+  subject(:encoder) { described_class.new(data: {}) }
+
   let(:fixtures) { fixture_json(message_type: :position_report) }
   let(:message_ids) { [1, 2, 3] }
   let(:expected_fields) do
@@ -55,7 +57,7 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
   end
 
   it 'loads parts mapping from YAML with expected keys and fields', :aggregate_failures do
-    mapping = described_class.parts_mapping
+    mapping = encoder.parts_mapping
 
     expect(mapping.keys).to eq(expected_fields)
     expect(mapping.transform_values { |map| map[:field] }).to include(

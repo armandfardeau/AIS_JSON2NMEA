@@ -5,6 +5,8 @@ require 'spec_helper'
 # rubocop:disable Layout/LineLength, RSpec/MultipleExpectations
 
 RSpec.describe AisToNmea::Encoders::ShipStaticData do
+  subject(:encoder) { described_class.new(data: normalize_ship_static_data_input(ship_static_fixture['input'])) }
+
   let(:fixtures) { fixture_json(message_type: :ship_static_data) }
 
   let(:ship_static_fixture) do
@@ -40,7 +42,7 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
   end
 
   it 'loads parts mapping from YAML including nested sections' do
-    mapping = described_class.parts_mapping
+    mapping = encoder.parts_mapping
 
     expect(mapping.keys).to include(:eta, :dimension, :dte)
     expect(mapping[:message_id][:field]).to eq('MessageID')
@@ -52,7 +54,6 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
   end
 
   it 'accepts normalized ship static fixture input and delegates to encode_message' do
-    encoder = described_class.new(data: normalize_ship_static_data_input(ship_static_fixture['input']))
     allow(encoder).to receive(:encode_message).and_call_original
 
     output = encoder.encode
