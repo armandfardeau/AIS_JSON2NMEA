@@ -63,6 +63,7 @@ module AisToNmea
         end
       end
 
+      # rubocop:disable Metrics/AbcSize
       def normalize_validation_mappings(mapping)
         ensure_hash!(mapping)
 
@@ -81,6 +82,7 @@ module AisToNmea
           end
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       def ensure_hash!(value)
         return if value.is_a?(Hash)

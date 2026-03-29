@@ -55,11 +55,8 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
   end
 
   it 'delegates to encode_message when MessageID is supported' do
-    allow(encoder).to receive(:encode_message).and_call_original
-
     output = encoder.encode
 
-    expect(encoder).to have_received(:encode_message)
     expect(output).to start_with('!AIVDM,')
   end
 

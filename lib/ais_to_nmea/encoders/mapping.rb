@@ -49,7 +49,7 @@ module AisToNmea
         end
       end
 
-      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       def normalize_mapping_entry(value, path:)
         ensure_hash!(value, path: path)
         normalized = {}
@@ -74,7 +74,7 @@ module AisToNmea
 
         normalized
       end
-      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
       def ensure_hash!(value = nil, path:)
         return if value.is_a?(Hash)
