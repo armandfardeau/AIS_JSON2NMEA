@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-# rubocop:disable Layout/LineLength, RSpec/ExampleLength, RSpec/MultipleExpectations
+# rubocop:disable Layout/LineLength, RSpec/MultipleExpectations
 
 RSpec.describe AisToNmea::Encoders::ShipStaticData do
   let(:fixtures) { fixture_json(message_type: :ship_static_data) }
@@ -61,15 +61,18 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
     expect(output).to start_with('!AIVDM,')
   end
 
-  it 'accepts fixture input provided as a JSON string' do
-    json_input = JSON.generate(normalize_ship_static_data_input(ship_static_fixture['input']))
-    encoder = described_class.new(data: json_input)
-    allow(encoder).to receive(:encode_message).and_call_original
+  context 'with a json string' do
+    let(:json_input) { JSON.generate(normalize_ship_static_data_input(ship_static_fixture['input'])) }
+    let(:encoder) { described_class.new(data: json_input) }
 
-    output = encoder.encode
+    it 'accepts fixture input provided as a JSON string' do
+      allow(encoder).to receive(:encode_message).and_call_original
 
-    expect(encoder).to have_received(:encode_message)
-    expect(output).to start_with('!AIVDM,')
+      output = encoder.encode
+
+      expect(encoder).to have_received(:encode_message)
+      expect(output).to start_with('!AIVDM,')
+    end
   end
 
   it 'encodes a valid fixture end-to-end without stubbing' do
@@ -85,4 +88,4 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
     expect { encoder.encode }.to raise_error(AisToNmea::UnsupportedMessageTypeError)
   end
 end
-# rubocop:enable Layout/LineLength, RSpec/ExampleLength, RSpec/MultipleExpectations
+# rubocop:enable Layout/LineLength, RSpec/MultipleExpectations

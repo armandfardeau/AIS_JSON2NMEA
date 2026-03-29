@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-# rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations
+# rubocop:disable RSpec/MultipleExpectations
 
 RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
   let(:valid_input) do
@@ -96,4 +96,4 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
       .to raise_error(AisToNmea::InvalidJsonError, /Input must be a JSON string or Hash/)
   end
 end
-# rubocop:enable RSpec/ExampleLength, RSpec/MultipleExpectations
+# rubocop:enable RSpec/MultipleExpectations

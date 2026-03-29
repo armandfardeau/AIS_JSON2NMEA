@@ -2,8 +2,6 @@
 
 require 'spec_helper'
 
-# rubocop:disable RSpec/ExampleLength
-
 RSpec.describe AisToNmea do
   let(:position_report_input) do
     {
@@ -28,13 +26,8 @@ RSpec.describe AisToNmea do
   end
 
   describe AisToNmea::EncoderFactory do
-    it 'builds position report encoder' do
-      encoder = described_class.build(data: position_report_input, encoder: :position_report)
-      expect(encoder).to be_a(AisToNmea::Encoders::PositionReport)
-    end
-
-    it 'supports custom registered encoder' do
-      custom = Class.new do
+    let(:custom_encoder) do
+      Class.new do
         def initialize(data: nil, options: {})
           @data = data
           @options = options
@@ -44,8 +37,15 @@ RSpec.describe AisToNmea do
           "!AIVDM,1,1,0,A,CUSTOMPAYLOAD,0*00\n"
         end
       end
+    end
 
-      described_class.register(:custom, custom)
+    it 'builds position report encoder' do
+      encoder = described_class.build(data: position_report_input, encoder: :position_report)
+      expect(encoder).to be_a(AisToNmea::Encoders::PositionReport)
+    end
+
+    it 'supports custom registered encoder' do
+      described_class.register(:custom, custom_encoder)
       encoder = described_class.build(data: {}, encoder: :custom)
       expect(encoder.encode).to start_with('!AIVDM')
     end
@@ -56,4 +56,3 @@ RSpec.describe AisToNmea do
     end
   end
 end
-# rubocop:enable RSpec/ExampleLength

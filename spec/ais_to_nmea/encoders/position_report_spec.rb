@@ -2,11 +2,13 @@
 
 require 'spec_helper'
 
-# rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations
-
 RSpec.describe AisToNmea::Encoders::PositionReport do
   let(:fixtures) { fixture_json(message_type: :position_report) }
   let(:message_ids) { [1, 2, 3] }
+  let(:expected_fields) do
+    %i[message_id repeat_indicator mmsi nav_status rot sog position_accuracy lon lat cog heading timestamp maneuver
+       spare raim radio_status]
+  end
 
   let(:position_report_messages) do
     fixtures.fetch('messages').select do |test_case|
@@ -47,18 +49,15 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
     expect(described_class).not_to be_nil
   end
 
-  it 'loads position report fixtures' do
+  it 'loads position report fixtures', :aggregate_failures do
     expect(position_report_messages).not_to be_empty
     expect(position_report_error_cases).not_to be_empty
   end
 
-  it 'loads parts mapping from YAML with expected keys and fields' do
+  it 'loads parts mapping from YAML with expected keys and fields', :aggregate_failures do
     mapping = described_class.parts_mapping
 
-    expect(mapping.keys).to eq(
-      %i[message_id repeat_indicator mmsi nav_status rot sog position_accuracy lon lat cog heading timestamp maneuver
-         spare raim radio_status]
-    )
+    expect(mapping.keys).to eq(expected_fields)
     expect(mapping.transform_values { |map| map[:field] }).to include(
       message_id: 'MessageID',
       mmsi: 'UserID',
@@ -77,7 +76,7 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
       end
     end
 
-    it 'calls #encode_message for each valid fixture when message type is supported' do
+    it 'calls #encode_message for each valid fixture when message type is supported', :aggregate_failures do
       position_report_messages.each do |test_case|
         encoder = described_class.new(data: normalize_position_report_input(test_case['input']))
         allow(encoder).to receive(:encode_message).and_call_original
@@ -89,7 +88,7 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
       end
     end
 
-    it 'encodes valid fixtures end-to-end without stubbing' do
+    it 'encodes valid fixtures end-to-end without stubbing', :aggregate_failures do
       position_report_messages.each do |test_case|
         output = encode_with_new_instance(test_case['input'])
 
@@ -107,7 +106,7 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
       end
     end
 
-    it 'raises UnsupportedMessageTypeError for unsupported MessageID fixture' do
+    it 'raises UnsupportedMessageTypeError for unsupported MessageID fixture', :aggregate_failures do
       test_case = fixtures.fetch('error_cases').find { |tc| tc['name'] == 'Invalid MessageID (4)' }
 
       expect(test_case).not_to be_nil
@@ -116,7 +115,7 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
       end.to raise_error(AisToNmea::UnsupportedMessageTypeError)
     end
 
-    it 'raises InvalidJsonError for invalid JSON string fixture' do
+    it 'raises InvalidJsonError for invalid JSON string fixture', :aggregate_failures do
       test_case = fixtures.fetch('error_cases').find { |tc| tc['name'] == 'Invalid JSON string' }
 
       expect(test_case).not_to be_nil
@@ -126,4 +125,3 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
     end
   end
 end
-# rubocop:enable, RSpec/ExampleLength, RSpec/MultipleExpectations

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-# rubocop:disable Layout/LineLength, RSpec/ExampleLength
+# rubocop:disable Layout/LineLength
 
 RSpec.describe AisToNmea::Encoders::OutputValidator do
   subject(:validator) { described_class }
@@ -56,4 +56,4 @@ RSpec.describe AisToNmea::Encoders::OutputValidator do
       .to raise_error(AisToNmea::InvalidFieldError, /Validation failed for mmsi/)
   end
 end
-# rubocop:enable Layout/LineLength, RSpec/ExampleLength
+# rubocop:enable Layout/LineLength

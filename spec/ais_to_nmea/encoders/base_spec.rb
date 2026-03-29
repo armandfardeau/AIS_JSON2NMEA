@@ -2,8 +2,6 @@
 
 require 'spec_helper'
 
-# rubocop:disable RSpec/ExampleLength
-
 RSpec.describe AisToNmea::Encoders::Base do
   it 'is defined' do
     expect(described_class).not_to be_nil
@@ -42,4 +40,3 @@ RSpec.describe AisToNmea::Encoders::Base do
     end
   end
 end
-# rubocop:enable RSpec/ExampleLength
