@@ -23,7 +23,7 @@ position_report:
     field: RateOfTurn
   sog:
     class: AisToNmea::MessageParts::PositionReport::Sog
-    field: SpeedOverGround
+    field: Sog
   position_accuracy:
     class: AisToNmea::MessageParts::PositionReport::PositionAccuracy
     field: PositionAccuracy
@@ -35,7 +35,7 @@ position_report:
     field: Latitude
   cog:
     class: AisToNmea::MessageParts::PositionReport::Cog
-    field: CourseOverGround
+    field: Cog
   heading:
     class: AisToNmea::MessageParts::PositionReport::Heading
     field: TrueHeading
@@ -53,7 +53,7 @@ position_report:
     field: Raim
   radio_status:
     class: AisToNmea::MessageParts::PositionReport::RadioStatus
-    field: RadioStatus
+    field: CommunicationState
 
 ship_static_data:
   message_id: *common_message_id

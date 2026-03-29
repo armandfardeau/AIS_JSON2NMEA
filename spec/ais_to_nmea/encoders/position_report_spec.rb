@@ -60,8 +60,8 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
       message_id: 'MessageID',
       mmsi: 'UserID',
       nav_status: 'NavigationalStatus',
-      sog: 'SpeedOverGround',
-      cog: 'CourseOverGround'
+      sog: 'Sog',
+      cog: 'Cog'
     )
     expect(mapping[:message_id][:class]).to eq(AisToNmea::MessageParts::Common::MessageId)
   end

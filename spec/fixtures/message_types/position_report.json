@@ -11,15 +11,15 @@
         "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       }
     },
     {
@@ -35,15 +35,15 @@
           "RateOfTurn": 128,
           "Latitude": 51.5074,
           "Longitude": -0.1278,
-          "SpeedOverGround": 8.5,
+          "Sog": 8.5,
           "PositionAccuracy": false,
-          "CourseOverGround": 123.4,
+          "Cog": 123.4,
           "TrueHeading": 120,
           "Timestamp": 0,
           "SpecialManoeuvreIndicator": 0,
           "Spare": 0,
           "Raim": false,
-          "RadioStatus": 0
+          "CommunicationState": 0
         }
       }
     },
@@ -58,15 +58,15 @@
         "RateOfTurn": 128,
         "Latitude": 40.7128,
         "Longitude": -74.006,
-        "SpeedOverGround": 15.8,
+        "Sog": 15.8,
         "PositionAccuracy": false,
-        "CourseOverGround": 45.5,
+        "Cog": 45.5,
         "TrueHeading": 46,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       }
     },
     {
@@ -80,15 +80,15 @@
         "RateOfTurn": 128,
         "Latitude": 35.6762,
         "Longitude": 139.6503,
-        "SpeedOverGround": 0.0,
+        "Sog": 0.0,
         "PositionAccuracy": false,
-        "CourseOverGround": 0.0,
+        "Cog": 0.0,
         "TrueHeading": 511,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       }
     },
     {
@@ -102,15 +102,15 @@
         "RateOfTurn": 128,
         "Latitude": 0.0,
         "Longitude": 0.0,
-        "SpeedOverGround": 0.1,
+        "Sog": 0.1,
         "PositionAccuracy": false,
-        "CourseOverGround": 180.0,
+        "Cog": 180.0,
         "TrueHeading": 180,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       }
     },
     {
@@ -124,15 +124,15 @@
         "RateOfTurn": 128,
         "Latitude": 60.0,
         "Longitude": 25.0,
-        "SpeedOverGround": 102.2,
+        "Sog": 102.2,
         "PositionAccuracy": false,
-        "CourseOverGround": 359.9,
+        "Cog": 359.9,
         "TrueHeading": 359,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       }
     },
     {
@@ -144,17 +144,17 @@
         "Valid": true,
         "NavigationalStatus": 5,
         "RateOfTurn": 64,
-        "SpeedOverGround": 14.2,
+        "Sog": 14.2,
         "PositionAccuracy": true,
         "Longitude": 2.1501,
         "Latitude": 41.3902,
-        "CourseOverGround": 89.4,
+        "Cog": 89.4,
         "TrueHeading": 90,
         "Timestamp": 58,
         "SpecialManoeuvreIndicator": 1,
         "Spare": 3,
         "Raim": true,
-        "RadioStatus": 123456
+        "CommunicationState": 123456
       }
     },
     {
@@ -166,17 +166,17 @@
         "Valid": 1,
         "NavigationalStatus": 15,
         "RateOfTurn": 255,
-        "SpeedOverGround": 0.0,
+        "Sog": 0.0,
         "PositionAccuracy": false,
         "Longitude": 180.0,
         "Latitude": -90.0,
-        "CourseOverGround": 0.0,
+        "Cog": 0.0,
         "TrueHeading": 511,
         "Timestamp": 63,
         "SpecialManoeuvreIndicator": 3,
         "Spare": 7,
         "Raim": 0,
-        "RadioStatus": 524287
+        "CommunicationState": 524287
       }
     }
   ],
@@ -191,15 +191,15 @@
         "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       },
       "error_type": "MissingFieldError"
     },
@@ -213,15 +213,15 @@
         "NavigationalStatus": 0,
         "RateOfTurn": 128,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       },
       "error_type": "MissingFieldError"
     },
@@ -232,8 +232,8 @@
         "UserID": 123456789,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
-        "CourseOverGround": 254.8,
+        "Sog": 12.3,
+        "Cog": 254.8,
         "TrueHeading": 255
       },
       "error_type": "UnsupportedMessageTypeError"
@@ -249,15 +249,15 @@
         "RateOfTurn": 128,
         "Latitude": 95.0,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       },
       "error_type": "InvalidFieldError"
     },
@@ -272,15 +272,15 @@
         "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 190.0,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       },
       "error_type": "InvalidFieldError"
     },
@@ -295,15 +295,15 @@
         "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0
+        "CommunicationState": 0
       },
       "error_type": "InvalidFieldError"
     },
@@ -318,15 +318,15 @@
         "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 600000
+        "CommunicationState": 600000
       },
       "error_type": "InvalidFieldError"
     },
@@ -340,15 +340,15 @@
         "NavigationalStatus": 0,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
         "Raim": false,
-        "RadioStatus": 0,
+        "CommunicationState": 0,
         "RateOfTurn": 300
       },
       "error_type": "InvalidFieldError"
@@ -364,14 +364,14 @@
         "RateOfTurn": 128,
         "Latitude": 48.8566,
         "Longitude": 2.3522,
-        "SpeedOverGround": 12.3,
+        "Sog": 12.3,
         "PositionAccuracy": false,
-        "CourseOverGround": 254.8,
+        "Cog": 254.8,
         "TrueHeading": 255,
         "Timestamp": 0,
         "SpecialManoeuvreIndicator": 0,
         "Spare": 0,
-        "RadioStatus": 0,
+        "CommunicationState": 0,
         "Raim": "maybe"
       },
       "error_type": "InvalidFieldError"
