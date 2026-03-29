@@ -14,11 +14,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::Text.encode_ais_text_fixed(
-            @value,
-            length: 20,
-            field_name: 'Name'
-          )
+          encode_ais_text_fixed(length: 20, field_name: 'Name')
         end
       end
     end

@@ -15,7 +15,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::Text.encode_ais_text_fixed(@value, length: 7, field_name: 'CallSign')
+          encode_ais_text_fixed(length: 7, field_name: 'CallSign')
         end
       end
     end

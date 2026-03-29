@@ -14,7 +14,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::Text.encode_ais_text(@value, max_length: 156)
+          encode_ais_text(max_length: 156)
         end
       end
     end
