@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe AisToNmea::AisEncoder::Text do
+describe AisToNmea::Encodings::Text do
   describe '.encode_ais_text' do
     it 'encodes uppercase characters to 6-bit chunks' do
       bits = described_class.encode_ais_text('AB', max_length: 10)

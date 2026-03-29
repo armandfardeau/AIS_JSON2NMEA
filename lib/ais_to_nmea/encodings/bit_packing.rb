@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AisToNmea
-  module AisEncoder
+  module Encodings
     # Bit packing helpers for AIS field serialization.
     module BitPacking
       def self.pack_uint(value, width)

@@ -11,8 +11,8 @@ module AisToNmea
         validate_position_ranges!(parts)
         add_packed_parts(parts)
 
-        payload, fill_bits = AisToNmea::AisEncoder::SixBit.encode(message)
-        AisToNmea::AisEncoder::Nmea.build_sentences(payload, fill_bits)
+        payload, fill_bits = AisToNmea::Encodings::SixBit.encode(message)
+        AisToNmea::Encodings::Nmea.build_sentences(payload, fill_bits)
       end
 
       private

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe AisToNmea::AisEncoder::Nmea do
+describe AisToNmea::Encodings::Nmea do
   describe '.checksum' do
     it 'computes XOR checksum as uppercase hex' do
       expect(described_class.checksum('ABC')).to eq('40')

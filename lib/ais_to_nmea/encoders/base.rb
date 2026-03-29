@@ -115,8 +115,8 @@ module AisToNmea
       def encode_message
         add_packed_parts
 
-        payload, fill_bits = AisToNmea::AisEncoder::SixBit.encode(message)
-        AisToNmea::AisEncoder::Nmea.build_sentences(payload, fill_bits)
+        payload, fill_bits = AisToNmea::Encodings::SixBit.encode(message)
+        AisToNmea::Encodings::Nmea.build_sentences(payload, fill_bits)
       end
 
       private

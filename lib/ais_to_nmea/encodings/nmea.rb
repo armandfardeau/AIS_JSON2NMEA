@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AisToNmea
-  module AisEncoder
+  module Encodings
     # Helpers for building NMEA 0183 AIVDM sentences.
     module Nmea
       def self.build_sentences(payload, fill_bits)

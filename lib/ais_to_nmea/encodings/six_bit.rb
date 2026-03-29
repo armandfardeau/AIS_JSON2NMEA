@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AisToNmea
-  module AisEncoder
+  module Encodings
     # AIS six-bit encoding helpers.
     module SixBit
       def self.encode(bit_string)

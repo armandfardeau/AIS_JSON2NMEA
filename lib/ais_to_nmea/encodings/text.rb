@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AisToNmea
-  module AisEncoder
+  module Encodings
     # Text encoding helpers for AIS six-bit character payloads.
     module Text
       AIS_CHARSET = '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^- !"#$%&\'()*+,-./0123456789:;<=>?'
