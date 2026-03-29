@@ -7,6 +7,11 @@ RSpec.describe AisToNmea::MessageParts::PositionReport::PositionAccuracy do
     expect(described_class.new('1').value).to eq(1)
   end
 
+  it 'normalizes boolean inputs', :aggregate_failures do
+    expect(described_class.new(true).value).to eq(1)
+    expect(described_class.new(false).value).to eq(0)
+  end
+
   it 'accepts a valid value' do
     part = described_class.new(1)
     expect(part.validate!).to eq(part)

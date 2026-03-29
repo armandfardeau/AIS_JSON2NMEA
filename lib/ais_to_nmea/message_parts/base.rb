@@ -12,8 +12,11 @@ module AisToNmea
         float: ->(value) { Float(value) unless value.nil? },
         string: ->(value) { value.to_s unless value.nil? },
         bool: lambda { |value|
-          unless value.nil?
-            value.nil? ? 0 : 1
+          case value
+          when nil then nil
+          when true, 1, '1', 'true', 'TRUE', 'True' then 1
+          when false, 0, '0', 'false', 'FALSE', 'False' then 0
+          else Integer(value)
           end
         },
         default: ->(value) { value }

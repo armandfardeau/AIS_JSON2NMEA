@@ -5,7 +5,7 @@ module AisToNmea
     module PositionReport
       # Encodes the RAIM flag for a position report.
       class Raim < Base
-        normalize_value_as :integer
+        normalize_value_as :bool
 
         def validate!
           return self if @value.between?(0, 1)

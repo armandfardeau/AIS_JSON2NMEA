@@ -5,7 +5,7 @@ module AisToNmea
     module PositionReport
       # Encodes the position accuracy flag for a position report.
       class PositionAccuracy < Base
-        normalize_value_as :integer
+        normalize_value_as :bool
 
         def validate!
           return self if @value.between?(0, 1)
