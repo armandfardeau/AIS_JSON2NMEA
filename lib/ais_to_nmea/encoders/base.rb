@@ -112,6 +112,13 @@ module AisToNmea
         encoded_output
       end
 
+      def encode_message
+        add_packed_parts
+
+        payload, fill_bits = AisToNmea::AisEncoder::SixBit.encode(message)
+        AisToNmea::AisEncoder::Nmea.build_sentences(payload, fill_bits)
+      end
+
       private
 
       def extract_parts!(data = @data, mapping = context_mapping)

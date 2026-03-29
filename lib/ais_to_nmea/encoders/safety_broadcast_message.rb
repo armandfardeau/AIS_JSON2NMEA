@@ -5,13 +5,6 @@ module AisToNmea
     # Encoder dedicated to AIS Safety Broadcast Message (type 14)
     class SafetyBroadcastMessage < Base
       MESSAGE_TYPES = [14].freeze
-
-      def encode_message
-        add_packed_parts
-
-        payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
-        AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
-      end
     end
   end
 end

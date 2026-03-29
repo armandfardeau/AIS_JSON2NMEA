@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe AisToNmea::AisEncoder::Utils::Validation do
+describe AisToNmea::Validation do
   describe '.validate_ranges!' do
     it 'accepts valid boundary values' do
       expect do

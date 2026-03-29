@@ -5,13 +5,6 @@ module AisToNmea
     # Encoder dedicated to AIS Ship Static Data (type 5)
     class ShipStaticData < Base
       MESSAGE_TYPES = [5].freeze
-
-      def encode_message
-        add_packed_parts
-
-        payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
-        AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
-      end
     end
   end
 end

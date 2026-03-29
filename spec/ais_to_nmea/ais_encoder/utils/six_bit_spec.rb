@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe AisToNmea::AisEncoder::Utils::SixBit do
+describe AisToNmea::AisEncoder::SixBit do
   describe '.char' do
     it 'maps value 0 to ASCII 48 (0)' do
       expect(described_class.char(0)).to eq('0')

@@ -12,7 +12,7 @@ RSpec.describe AisToNmea do
   end
 
   it 'autoloads Nmea utility constant' do
-    expect(defined?(AisToNmea::AisEncoder::Utils::Nmea)).to eq('constant')
+    expect(defined?(AisToNmea::AisEncoder::Nmea)).to eq('constant')
   end
 
   it 'keeps encoder registry initialized' do

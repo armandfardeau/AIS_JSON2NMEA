@@ -11,14 +11,14 @@ module AisToNmea
         validate_position_ranges!(parts)
         add_packed_parts(parts)
 
-        payload, fill_bits = AisToNmea::AisEncoder::Utils::SixBit.encode(message)
-        AisToNmea::AisEncoder::Utils::Nmea.build_sentences(payload, fill_bits)
+        payload, fill_bits = AisToNmea::AisEncoder::SixBit.encode(message)
+        AisToNmea::AisEncoder::Nmea.build_sentences(payload, fill_bits)
       end
 
       private
 
       def validate_position_ranges!(parts)
-        AisToNmea::AisEncoder::Utils::Validation.validate_ranges!(
+        AisToNmea::Validation.validate_ranges!(
           lat: parts[:lat].value,
           lon: parts[:lon].value,
           sog: parts[:sog].value,
