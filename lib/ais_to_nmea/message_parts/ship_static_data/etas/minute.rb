@@ -9,9 +9,9 @@ module AisToNmea
           normalize_value_as :integer
 
           def validate!
-            return self if @value.between?(0, 59)
+            return self if @value.between?(0, 60)
 
-            raise InvalidFieldError, "ETA Minute must be between 0 and 59 (got: #{@value.inspect})"
+            raise InvalidFieldError, "ETA Minute must be between 0 and 60 (got: #{@value.inspect})"
           end
 
           def pack

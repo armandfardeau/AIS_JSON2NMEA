@@ -13,7 +13,7 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::Etas::Minute do
   end
 
   it 'rejects an invalid value' do
-    expect { described_class.new(60).validate! }.to raise_error(AisToNmea::InvalidFieldError)
+    expect { described_class.new(61).validate! }.to raise_error(AisToNmea::InvalidFieldError)
   end
 
   describe '#pack' do
