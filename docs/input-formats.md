@@ -15,7 +15,7 @@ All inputs can be provided as a **Ruby Hash** or a **JSON string**.
 | Field | Type | Valid Range | Notes |
 |-------|------|-------------|-------|
 | `MessageID` | Integer | 4 | AIS message type |
-| `UserID` | Integer | 0–9 999 999 999 | MMSI |
+| `UserID` | Integer | 0–1 073 741 823 | MMSI (30-bit User ID) |
 | `UtcYear` | Integer | 0–9999 | UTC year |
 | `UtcMonth` | Integer | 0–12 | UTC month |
 | `UtcDay` | Integer | 0–31 | UTC day |
