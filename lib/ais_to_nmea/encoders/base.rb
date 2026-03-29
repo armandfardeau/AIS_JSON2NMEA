@@ -9,6 +9,7 @@ module AisToNmea
     class Base
       include Mixins::InputParser
       include Mixins::IntermediateRepresentation
+      include Mixins::StrictValidation
 
       MAPPING_CONFIG_PATH = File.expand_path('../config/mapping.yml', __dir__).freeze
 
@@ -154,8 +155,7 @@ module AisToNmea
       end
 
       def validate_required_fields!
-        AisToNmea::AisEncoder::Utils::StrictValidation.raise_missing_fields!(self.class.name.split('::').last, @data,
-                                                                             self.class.parts_mapping)
+        raise_missing_fields!(self.class.name.split('::').last, @data, self.class.parts_mapping)
       end
     end
   end

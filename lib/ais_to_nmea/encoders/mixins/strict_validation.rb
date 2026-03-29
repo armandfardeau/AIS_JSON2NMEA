@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module AisToNmea
-  module AisEncoder
-    module Utils
+  module Encoders
+    module Mixins
       # Strict field validation helpers for JSON payload encoders.
       module StrictValidation
-        def self.missing_required_fields(data, mapping)
+        def missing_required_fields(data, mapping)
           mapping.map do |key, values|
             if values[:nested]
               missing_required_fields(data.send(key), values[:nested])
@@ -15,11 +15,11 @@ module AisToNmea
           end.flatten.compact
         end
 
-        def self.missing_required_field(data, field)
+        def missing_required_field(data, field)
           data.send(field).nil? ? field : nil
         end
 
-        def self.raise_missing_fields!(context_name, data, mapping)
+        def raise_missing_fields!(context_name, data, mapping)
           missing_fields = missing_required_fields(data, mapping)
           return if missing_fields.empty?
 
