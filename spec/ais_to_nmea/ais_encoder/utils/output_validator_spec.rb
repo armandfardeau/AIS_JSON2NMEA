@@ -4,7 +4,7 @@ require 'spec_helper'
 
 # rubocop:disable Layout/LineLength, RSpec/ExampleLength
 
-RSpec.describe AisToNmea::AisEncoder::Utils::OutputValidator do
+RSpec.describe AisToNmea::Encoders::OutputValidator do
   subject(:validator) { described_class }
 
   let(:position_report_fixtures) { fixture_json(message_type: :position_report) }

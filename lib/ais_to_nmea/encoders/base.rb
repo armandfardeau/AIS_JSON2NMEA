@@ -105,7 +105,7 @@ module AisToNmea
         validate_required_fields!
         encoded_output = encode_message
 
-        AisToNmea::AisEncoder::Utils::OutputValidator.validate!(@data, encoded_output)
+        OutputValidator.validate!(@data, encoded_output)
 
         encoded_output
       end
