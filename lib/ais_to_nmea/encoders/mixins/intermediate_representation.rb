@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module AisToNmea
-  module AisEncoder
-    module Utils
+  module Encoders
+    module Mixins
       # Base class shared by all AIS encoder implementations.
       module IntermediateRepresentation
         # Build an intermediate representation of the data based on the provided mapping.
@@ -10,10 +10,10 @@ module AisToNmea
         # @param data [Hash] The input data hash
         # @param mapping [Hash] The mapping that defines how to extract fields from the data
         # @return [Struct] A structured representation of the data based on the mapping
-        def self.build(data, mapping)
+        def build_ir(data, mapping)
           data = mapping.values.map do |mapping|
             if mapping[:nested]
-              build(data[mapping[:field]], mapping[:nested])
+              build_ir(data[mapping[:field]], mapping[:nested])
             else
               data[mapping[:field]]
             end

@@ -8,6 +8,7 @@ module AisToNmea
     # Base class shared by all AIS encoder implementations.
     class Base
       include Mixins::InputParser
+      include Mixins::IntermediateRepresentation
 
       MAPPING_CONFIG_PATH = File.expand_path('../config/mapping.yml', __dir__).freeze
 
@@ -95,7 +96,7 @@ module AisToNmea
 
       def initialize(data: {}, options: {})
         @message = +''
-        @data = AisToNmea::AisEncoder::Utils::IntermediateRepresentation.build(parse_input(data), self.class.parts_mapping)
+        @data = build_ir(parse_input(data), self.class.parts_mapping)
         @options = options
       end
 
