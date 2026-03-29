@@ -16,6 +16,7 @@ module AisToNmea
         1 => :position_report,
         2 => :position_report,
         3 => :position_report,
+        4 => :base_station_report,
         5 => :ship_static_data,
         14 => :safety_broadcast_message
       }.freeze

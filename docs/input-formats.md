@@ -8,6 +8,61 @@ All inputs can be provided as a **Ruby Hash** or a **JSON string**.
 
 ---
 
+## Base Station Report — Message Type 4
+
+### Required Fields
+
+| Field | Type | Valid Range | Notes |
+|-------|------|-------------|-------|
+| `MessageID` | Integer | 4 | AIS message type |
+| `UserID` | Integer | 0–9 999 999 999 | MMSI |
+| `UtcYear` | Integer | 0–9999 | UTC year |
+| `UtcMonth` | Integer | 0–12 | UTC month |
+| `UtcDay` | Integer | 0–31 | UTC day |
+| `UtcHour` | Integer | 0–24 | UTC hour |
+| `UtcMinute` | Integer | 0–59 | UTC minute |
+| `UtcSecond` | Integer | 0–63 | UTC second |
+| `PositionAccuracy` | Integer or Boolean | 0–1 / false-true | Position accuracy flag |
+| `Longitude` | Float | -180.0 to 180.0 | Decimal degrees |
+| `Latitude` | Float | -90.0 to 90.0 | Decimal degrees |
+| `FixType` | Integer | 0–15 | Position fixing device type |
+| `LongRangeEnable` | Integer or Boolean | 0–1 / false-true | Accepted for schema compatibility |
+| `Spare` | Integer | 0–1023 | Reserved bits |
+| `Raim` | Integer or Boolean | 0–1 / false-true | RAIM flag |
+| `CommunicationState` | Integer | 0–524287 | SOTDMA state |
+
+### Optional Fields
+
+| Field | Type | Valid Range | Default |
+|-------|------|-------------|---------|
+| `RepeatIndicator` | Integer | 0–3 | 0 |
+
+### Example
+
+```json
+{
+  "MessageID": 4,
+  "RepeatIndicator": 0,
+  "UserID": 123456789,
+  "UtcYear": 2026,
+  "UtcMonth": 3,
+  "UtcDay": 29,
+  "UtcHour": 12,
+  "UtcMinute": 34,
+  "UtcSecond": 56,
+  "PositionAccuracy": true,
+  "Longitude": 2.3522,
+  "Latitude": 48.8566,
+  "FixType": 1,
+  "LongRangeEnable": false,
+  "Spare": 0,
+  "Raim": false,
+  "CommunicationState": 0
+}
+```
+
+---
+
 ## Position Report — Message Types 1, 2, 3
 
 ### Required Fields

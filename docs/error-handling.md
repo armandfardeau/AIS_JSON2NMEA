@@ -26,7 +26,7 @@ AisToNmea::Error
 | `InvalidJsonError` | Input string is not valid JSON |
 | `MissingFieldError` | A required field is absent from the input |
 | `InvalidFieldError` | A field value is outside its valid range |
-| `UnsupportedMessageTypeError` | `MessageID` is not one of 1, 2, 3, 5, 14 |
+| `UnsupportedMessageTypeError` | `MessageID` is not one of 1, 2, 3, 4, 5, 14 |
 | `EncodingError` | Failure during AIS bit-packing or 6-bit armoring |
 | `EncodingFailureError` | Unexpected internal error during encoding (subclass of `EncodingError`) |
 | `MemoryError` | Memory allocation failure |

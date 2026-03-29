@@ -34,6 +34,42 @@ position_report:
     actual: raim?
     comparator: bool_int
 
+base_station_report:
+  message_id:
+    actual: message_type
+  repeat_indicator:
+    actual: repeat_indicator
+  mmsi:
+    actual: source_mmsi
+  utc_year:
+    actual: utc_year
+  utc_month:
+    actual: utc_month
+  utc_day:
+    actual: utc_day
+  utc_hour:
+    actual: utc_hour
+  utc_minute:
+    actual: utc_min
+  utc_second:
+    actual: utc_sec
+  position_accuracy:
+    actual: position_10m_accuracy?
+    comparator: bool_int
+  lon:
+    actual: longitude
+    comparator: float_tolerance
+  lat:
+    actual: latitude
+    comparator: float_tolerance
+  fix_type:
+    actual: position_fixing_device_type
+  raim:
+    actual: raim?
+    comparator: bool_int
+  communication_state:
+    actual: radio_status
+
 ship_static_data:
   message_id:
     actual: message_type

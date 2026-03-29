@@ -1,0 +1,102 @@
+{
+    "messages": [
+        {
+            "name": "Type 4 - BaseStationReport complete",
+            "input": {
+                "MessageID": 4,
+                "RepeatIndicator": 0,
+                "UserID": 123456789,
+                "Valid": true,
+                "UtcYear": 2026,
+                "UtcMonth": 3,
+                "UtcDay": 29,
+                "UtcHour": 12,
+                "UtcMinute": 34,
+                "UtcSecond": 56,
+                "PositionAccuracy": true,
+                "Longitude": 2.3522,
+                "Latitude": 48.8566,
+                "FixType": 1,
+                "LongRangeEnable": false,
+                "Spare": 0,
+                "Raim": false,
+                "CommunicationState": 0
+            }
+        },
+        {
+            "name": "Type 4 - BaseStationReport nested Message",
+            "input": {
+                "MessageType": "BaseStationReport",
+                "Message": {
+                    "MessageID": 4,
+                    "RepeatIndicator": 1,
+                    "UserID": 987654321,
+                    "Valid": true,
+                    "UtcYear": 2025,
+                    "UtcMonth": 12,
+                    "UtcDay": 31,
+                    "UtcHour": 23,
+                    "UtcMinute": 59,
+                    "UtcSecond": 60,
+                    "PositionAccuracy": false,
+                    "Longitude": -0.1278,
+                    "Latitude": 51.5074,
+                    "FixType": 8,
+                    "LongRangeEnable": true,
+                    "Spare": 511,
+                    "Raim": true,
+                    "CommunicationState": 123456
+                }
+            }
+        }
+    ],
+    "error_cases": [
+        {
+            "name": "Type 4 - Missing UtcYear",
+            "input": {
+                "MessageID": 4,
+                "RepeatIndicator": 0,
+                "UserID": 123456789,
+                "Valid": true,
+                "UtcMonth": 3,
+                "UtcDay": 29,
+                "UtcHour": 12,
+                "UtcMinute": 34,
+                "UtcSecond": 56,
+                "PositionAccuracy": true,
+                "Longitude": 2.3522,
+                "Latitude": 48.8566,
+                "FixType": 1,
+                "LongRangeEnable": false,
+                "Spare": 0,
+                "Raim": false,
+                "CommunicationState": 0
+            },
+            "error_type": "MissingFieldError"
+        },
+        {
+            "name": "Type 4 - FixType out of range",
+            "input": {
+                "MessageID": 4,
+                "RepeatIndicator": 0,
+                "UserID": 123456789,
+                "Valid": true,
+                "UtcYear": 2026,
+                "UtcMonth": 3,
+                "UtcDay": 29,
+                "UtcHour": 12,
+                "UtcMinute": 34,
+                "UtcSecond": 56,
+                "PositionAccuracy": true,
+                "Longitude": 2.3522,
+                "Latitude": 48.8566,
+                "FixType": 20,
+                "LongRangeEnable": false,
+                "Spare": 0,
+                "Raim": false,
+                "CommunicationState": 0
+            },
+            "error_type": "InvalidFieldError"
+        }
+    ]
+}
