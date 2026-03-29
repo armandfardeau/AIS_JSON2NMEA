@@ -10,7 +10,9 @@ module AisToNmea
         validate_message_type!
         StrictValidation.raise_missing_fields!(context_name: context_name, data: @data, mapping: parts_mapping)
 
-        encode_message
+        encoded_output = encode_message
+        OutputValidator.validate!(context_name: context_name, data: @data, encoded_output: encoded_output)
+        encoded_output
       end
     end
   end
