@@ -14,6 +14,8 @@ RSpec.describe AisToNmea::Encoders::BaseStationReport do
     end
   end
 
+  let(:base_station_error_cases) { fixtures.fetch('error_cases') }
+
   def normalize_input(input)
     return input unless input.is_a?(Hash)
 
@@ -81,5 +83,23 @@ RSpec.describe AisToNmea::Encoders::BaseStationReport do
 
     expect { described_class.new(data: invalid_input).encode }
       .to raise_error(AisToNmea::UnsupportedMessageTypeError)
+  end
+
+  context 'with invalid fixtures' do
+    it 'maps all declared fixture error types to existing AisToNmea errors' do
+      base_station_error_cases.each do |test_case|
+        expect { Object.const_get("AisToNmea::#{test_case['error_type']}") }
+          .not_to raise_error, "fixture failed: #{test_case['name']}"
+      end
+    end
+
+    it 'raises the declared error for each error fixture', :aggregate_failures do
+      base_station_error_cases.each do |test_case|
+        error_class = Object.const_get("AisToNmea::#{test_case['error_type']}")
+
+        expect { encode_with_new_instance(test_case['input']) }
+          .to raise_error(error_class), "fixture failed: #{test_case['name']}"
+      end
+    end
   end
 end

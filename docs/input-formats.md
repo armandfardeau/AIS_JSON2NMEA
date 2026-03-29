@@ -30,12 +30,7 @@ All inputs can be provided as a **Ruby Hash** or a **JSON string**.
 | `Spare` | Integer | 0–1023 | Reserved bits |
 | `Raim` | Integer or Boolean | 0–1 / false-true | RAIM flag |
 | `CommunicationState` | Integer | 0–524287 | SOTDMA state |
-
-### Optional Fields
-
-| Field | Type | Valid Range | Default |
-|-------|------|-------------|---------|
-| `RepeatIndicator` | Integer | 0–3 | 0 |
+| `RepeatIndicator` | Integer | 0–3 | Number of times message has been repeated |
 
 ### Example
 
