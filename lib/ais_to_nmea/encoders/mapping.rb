@@ -49,6 +49,7 @@ module AisToNmea
         end
       end
 
+      # rubocop:disable Metrics/MethodLength
       def normalize_mapping_entry(value, path:)
         ensure_hash!(value, path: path)
         normalized = {}
@@ -60,18 +61,20 @@ module AisToNmea
           normalized[:class] = constantize(value['class'])
         end
 
-        normalized[:nested] = normalize_mapping(value['nested'], path: "#{path}.nested") if value.key?('nested')
+        if value.key?('nested')
+          normalized[:nested] = normalize_mapping(value['nested'], path: "#{path}.nested")
 
-        if normalized[:nested] && !normalized[:field]
-          raise InvalidFieldError, "Invalid nested mapping at #{path}: nested entries require a parent field"
-        end
-
-        if !normalized[:nested] && !normalized[:class]
+          unless normalized[:field]
+            raise InvalidFieldError,
+                  "Invalid nested mapping at #{path}: nested entries require a parent field"
+          end
+        elsif !normalized[:class]
           raise InvalidFieldError, "Invalid mapping at #{path}: define either class or nested"
         end
 
         normalized
       end
+      # rubocop:enable Metrics/MethodLength
 
       def ensure_hash!(value = nil, path:)
         return if value.is_a?(Hash)

@@ -9,6 +9,8 @@ module AisToNmea
         DEFAULT_FLOAT_TOLERANCE = 1e-6
         HEADING_UNAVAILABLE = 511
         TIMESTAMP_UNAVAILABLE = 63
+
+        # rubocop:disable Metrics/MethodLength
         def values_match?(expected, actual, rule)
           comparator = rule.fetch(:comparator)
 
@@ -29,6 +31,7 @@ module AisToNmea
             raise InvalidFieldError, "Unknown validation comparator: #{comparator}"
           end
         end
+        # rubocop:enable Metrics/MethodLength
 
         def float_values_match?(expected, actual, tolerance)
           return expected == actual if expected.nil? || actual.nil?

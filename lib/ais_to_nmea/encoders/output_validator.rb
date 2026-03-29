@@ -64,21 +64,14 @@ module AisToNmea
       end
 
       def normalize_validation_mappings(mapping)
-        unless mapping.is_a?(Hash)
-          raise InvalidFieldError, "Invalid validation mapping structure: expected Hash, got #{mapping.class}"
-        end
+        ensure_hash!(mapping)
 
         mapping.each_with_object({}) do |(encoder_key, rules), normalized|
-          unless rules.is_a?(Hash)
-            raise InvalidFieldError,
-                  "Invalid validation mapping for #{encoder_key}: expected Hash, got #{rules.class}"
-          end
+          ensure_hash!(rules)
 
           normalized[encoder_key.to_sym] = rules.each_with_object({}) do |(field_name, rule), fields|
-            unless rule.is_a?(Hash) && rule['actual'].is_a?(String)
-              raise InvalidFieldError,
-                    "Invalid validation rule for #{encoder_key}.#{field_name}: expected an actual reader path"
-            end
+            ensure_hash!(rule)
+            ensure_rule!(rule['actual'], "Missing 'actual' for #{encoder_key}.#{field_name}")
 
             fields[field_name.to_sym] = {
               actual: rule.fetch('actual'),
@@ -87,6 +80,18 @@ module AisToNmea
             }
           end
         end
+      end
+
+      def ensure_hash!(value)
+        return if value.is_a?(Hash)
+
+        raise InvalidFieldError, "Invalid structure: expected Hash, got #{value.class}"
+      end
+
+      def ensure_rule!(rule, error_message)
+        return if rule.is_a?(String)
+
+        raise InvalidFieldError, "#{error_message}: expected String, got #{rule.class}"
       end
 
       def decode_output(output)

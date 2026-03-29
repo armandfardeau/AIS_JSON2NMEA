@@ -9,7 +9,7 @@ require 'json'
 
 # Helper methods for AIS to NMEA examples, including test data generation and output formatting.
 module ExampleHelper
-  # rubocop:disable Metrics/ParameterLists
+  # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
   def self.base_position_report(message_id: 1, user_id: 123_456_789, latitude: 48.8566, longitude: 2.3522,
                                 speed_over_ground: 12.3, course_over_ground: 254.8, true_heading: 255)
     {
@@ -31,7 +31,7 @@ module ExampleHelper
       'RadioStatus' => 0
     }
   end
-  # rubocop:enable Metrics/ParameterLists
+  # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
 
   def self.print_case(title, payload, **)
     puts "\n#{'=' * 70}"

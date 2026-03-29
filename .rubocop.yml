@@ -24,3 +24,7 @@ RSpec/ExampleLength:
 
 Naming/VariableNumber:
   EnforcedStyle: snake_case
+
+
+Metrics/MethodLength:
+  Max: 15
