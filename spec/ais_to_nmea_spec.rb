@@ -26,6 +26,12 @@ RSpec.describe AisToNmea do
   end
 
   describe AisToNmea::EncoderFactory do
+    around do |example|
+      registry = described_class.instance_variable_get(:@registry).dup
+      example.run
+      described_class.instance_variable_set(:@registry, registry)
+    end
+
     let(:custom_encoder) do
       Class.new do
         def initialize(data: nil)
