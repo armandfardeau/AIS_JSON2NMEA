@@ -7,11 +7,10 @@ rescue LoadError
 end
 require 'json'
 
+# Helper methods for AIS to NMEA examples, including test data generation and output formatting.
 module ExampleHelper
-  module_function
-
-  def base_position_report(message_id: 1, user_id: 123_456_789, latitude: 48.8566, longitude: 2.3522,
-                           speed_over_ground: 12.3, course_over_ground: 254.8, true_heading: 255)
+  def self.base_position_report(message_id: 1, user_id: 123_456_789, latitude: 48.8566, longitude: 2.3522,
+                                speed_over_ground: 12.3, course_over_ground: 254.8, true_heading: 255)
     {
       'MessageID' => message_id,
       'RepeatIndicator' => 0,
@@ -32,7 +31,7 @@ module ExampleHelper
     }
   end
 
-  def print_case(title, payload, **)
+  def self.print_case(title, payload, **)
     puts "\n#{'=' * 70}"
     puts title
     puts('=' * 70)
@@ -46,7 +45,7 @@ module ExampleHelper
     puts output
   end
 
-  def print_expected_error(title)
+  def self.print_expected_error(title)
     puts "\n#{'=' * 70}"
     puts title
     puts('=' * 70)

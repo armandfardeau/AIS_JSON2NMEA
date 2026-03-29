@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-# rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, RSpec/ExampleLength, RSpec/MultipleExpectations
+# rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations
 
 RSpec.describe AisToNmea::Encoders::PositionReport do
   let(:fixtures) { fixture_json(message_type: :position_report) }
@@ -126,4 +126,4 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
     end
   end
 end
-# rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, RSpec/ExampleLength, RSpec/MultipleExpectations
+# rubocop:enable, RSpec/ExampleLength, RSpec/MultipleExpectations
