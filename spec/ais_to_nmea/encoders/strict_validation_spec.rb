@@ -4,10 +4,17 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea::Encoders::StrictValidation do
   describe '.missing_required_fields' do
-    it 'returns missing fields across nested mappings' do
-      position = Struct.new(:latitude, :longitude).new(nil, -122.4194)
-      data = Struct.new(:message_id, :position).new(nil, position)
-      mapping = {
+    let(:data) do
+      Struct.new(:message_id, :position).new(
+        message_id,
+        Struct.new(:latitude, :longitude).new(latitude, longitude)
+      )
+    end
+    let(:message_id) { nil }
+    let(:latitude) { nil }
+    let(:longitude) { 10.0 }
+    let(:mapping) do
+      {
         message_id: { field: 'message_id', class: Integer },
         position: {
           field: 'position',
@@ -17,7 +24,9 @@ RSpec.describe AisToNmea::Encoders::StrictValidation do
           }
         }
       }
+    end
 
+    it 'returns missing fields across nested mappings' do
       expect(described_class.missing_required_fields(data, mapping)).to eq(%i[message_id latitude])
     end
   end

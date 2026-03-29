@@ -31,17 +31,6 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 12
 
-# Offense count: 3
-# Configuration parameters: Max, CountAsOne.
-RSpec/ExampleLength:
-  Exclude:
-    - 'spec/ais_to_nmea/encoders/mapping_spec.rb'
-    - 'spec/ais_to_nmea/encoders/strict_validation_spec.rb'
-
-# Offense count: 1
-RSpec/MultipleExpectations:
-  Max: 7
-
 # Offense count: 4
 RSpec/SubjectStub:
   Exclude:

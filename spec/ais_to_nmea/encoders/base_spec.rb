@@ -21,7 +21,7 @@ RSpec.describe AisToNmea::Encoders::Base do
       )
     end
 
-    it 'memoizes mapping lookup results' do
+    it 'memoizes mapping lookup results', :aggregate_failures do
       allow(AisToNmea::Encoders::Mapping).to receive(:parts_mapping).and_return({ message_id: {} })
 
       first = encoder.parts_mapping

@@ -20,7 +20,7 @@ Style/Documentation:
     - 'test/**/*'
 
 RSpec/ExampleLength:
-  Max: 10
+  Max: 12
 
 Naming/VariableNumber:
   EnforcedStyle: snake_case
