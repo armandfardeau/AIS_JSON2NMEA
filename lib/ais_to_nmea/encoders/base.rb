@@ -10,6 +10,7 @@ module AisToNmea
       include Mixins::InputParser
       include Mixins::IntermediateRepresentation
       include Mixins::StrictValidation
+      include Mixins::Context
 
       MAPPING_CONFIG_PATH = File.expand_path('../config/mapping.yml', __dir__).freeze
 
@@ -97,13 +98,13 @@ module AisToNmea
 
       def initialize(data: {}, options: {})
         @message = +''
-        @data = build_ir(parse_input(data), self.class.parts_mapping)
+        @data = build_ir(parse_input(data), context_mapping)
         @options = options
       end
 
       def encode
         validate_message_type!
-        validate_required_fields!
+        raise_missing_fields!
         encoded_output = encode_message
 
         OutputValidator.validate!(@data, encoded_output)
@@ -113,7 +114,7 @@ module AisToNmea
 
       private
 
-      def extract_parts!(data = @data, mapping = self.class.parts_mapping)
+      def extract_parts!(data = @data, mapping = context_mapping)
         mapping.each_with_object({}) do |(key, part_map), parts|
           parts[key] = if part_map[:nested]
                          nested_data = data.send(key)
@@ -148,14 +149,10 @@ module AisToNmea
       end
 
       def validate_message_type!
-        return if self.class::MESSAGE_TYPES.include?(@data.message_id)
+        return if context_mapping_message_types.include?(@data.message_id)
 
         raise UnsupportedMessageTypeError,
-              "MessageID must be one of #{self.class::MESSAGE_TYPES.join(', ')} for #{self.class.name.split('::').last}, got: #{@data.message_id}"
-      end
-
-      def validate_required_fields!
-        raise_missing_fields!(self.class.name.split('::').last, @data, self.class.parts_mapping)
+              "MessageID must be one of #{context_mapping_message_types.join(', ')} for #{context_name}, got: #{@data.message_id}"
       end
     end
   end
