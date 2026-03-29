@@ -66,5 +66,42 @@ RSpec.describe AisToNmea::Encoders::Mapping do
         end.to raise_error(AisToNmea::InvalidFieldError, /define either class or nested/)
       end
     end
+
+    context 'with nested entry missing parent field' do
+      let(:mapping_config) do
+        {
+          'position_report' => {
+            'position' => {
+              'nested' => {
+                'latitude' => {
+                  'field' => 'Latitude',
+                  'class' => 'AisToNmea::MessageParts::PositionReport::Latitude'
+                }
+              }
+            }
+          }
+        }
+      end
+
+      it 'raises InvalidFieldError when nested mapping has no field at parent level' do
+        expect do
+          described_class.parts_mapping(context_name: context_name, mapping_config_path: mapping_config_path)
+        end.to raise_error(AisToNmea::InvalidFieldError, /nested entries require a parent field/)
+      end
+    end
+
+    context 'when yaml parsing fails' do
+      before do
+        allow(YAML).to receive(:safe_load_file)
+          .with(mapping_config_path, aliases: true)
+          .and_raise(Psych::SyntaxError.new(mapping_config_path, 1, 1, 0, 'syntax error', 'invalid mapping'))
+      end
+
+      it 'raises InvalidFieldError with yaml parse context' do
+        expect do
+          described_class.parts_mapping(context_name: context_name, mapping_config_path: mapping_config_path)
+        end.to raise_error(AisToNmea::InvalidFieldError, /Invalid parts mapping YAML/)
+      end
+    end
   end
 end

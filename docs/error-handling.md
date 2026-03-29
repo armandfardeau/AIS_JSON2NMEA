@@ -14,7 +14,9 @@ AisToNmea::Error
 ├── AisToNmea::MissingFieldError
 ├── AisToNmea::InvalidFieldError
 ├── AisToNmea::UnsupportedMessageTypeError
-└── AisToNmea::EncodingError
+├── AisToNmea::EncodingError
+│   └── AisToNmea::EncodingFailureError
+└── AisToNmea::MemoryError
 ```
 
 ## Exception Reference
@@ -26,6 +28,8 @@ AisToNmea::Error
 | `InvalidFieldError` | A field value is outside its valid range |
 | `UnsupportedMessageTypeError` | `MessageID` is not one of 1, 2, 3, 5, 14 |
 | `EncodingError` | Failure during AIS bit-packing or 6-bit armoring |
+| `EncodingFailureError` | Unexpected internal error during encoding (subclass of `EncodingError`) |
+| `MemoryError` | Memory allocation failure |
 
 ## Example
 
@@ -45,8 +49,8 @@ input = {
 begin
   AisToNmea.to_nmea(input)
 rescue AisToNmea::MissingFieldError => e
-  puts "Missing field: #{e.message}"
-  # => Missing field: Missing required field: Latitude
+  puts e.message
+  # => Missing required field: Latitude
 rescue AisToNmea::InvalidFieldError => e
   puts "Invalid value: #{e.message}"
 rescue AisToNmea::UnsupportedMessageTypeError => e

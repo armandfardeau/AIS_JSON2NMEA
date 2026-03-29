@@ -4,7 +4,7 @@ title: API Reference
 
 # API Reference
 
-## `AisToNmea.to_nmea(input, options = {})`
+## `AisToNmea.to_nmea(data, options: {}, encoder: nil)`
 
 Top-level convenience method for converting AIS JSON to NMEA.
 
@@ -12,8 +12,9 @@ Top-level convenience method for converting AIS JSON to NMEA.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `input` | `String` or `Hash` | JSON string or Ruby Hash containing an AIS message |
+| `data` | `String` or `Hash` | JSON string or Ruby Hash containing an AIS message |
 | `options` | `Hash` | Reserved for future use |
+| `encoder` | `Symbol` or `nil` | Encoder key (e.g. `:position_report`); skips `MessageID` auto-detection when set |
 
 **Returns:** `String` — one or more NMEA sentences joined with `\n` for multi-part messages.
 
@@ -26,6 +27,7 @@ Top-level convenience method for converting AIS JSON to NMEA.
 | `AisToNmea::InvalidFieldError` | A field value is out of valid range |
 | `AisToNmea::UnsupportedMessageTypeError` | `MessageID` is not supported |
 | `AisToNmea::EncodingError` | Failure during AIS bit-packing or 6-bit armoring |
+| `AisToNmea::EncodingFailureError` | Unexpected internal error; subclass of `EncodingError` |
 
 **Example**
 
@@ -45,22 +47,27 @@ nmea = AisToNmea.to_nmea({
 
 ## `AisToNmea::Encoder`
 
-Direct encoder class for reuse across multiple messages.
+Direct encoder class for encoding a single message.
 
-### `Encoder.new`
+### `Encoder.new(data:, options: {})`
 
-Creates a new encoder instance. Prefer this for batch processing — instantiation cost is paid once.
+Creates a new encoder for the given message. `data` accepts the same String or Hash as `AisToNmea.to_nmea`.
 
-### `#encode(input, options = {})`
+### `#encode`
 
-Same signature and return value as `AisToNmea.to_nmea`.
+Encodes the message provided at construction. Returns the same String as `AisToNmea.to_nmea`.
 
 **Example**
 
 ```ruby
-encoder = AisToNmea::Encoder.new
+# Single message
+result = AisToNmea::Encoder.new(data: message).encode
 
-results = messages.map { |msg| encoder.encode(msg) }
+# Batch — one Encoder per message
+results = messages.map { |msg| AisToNmea::Encoder.new(data: msg).encode }
+
+# Batch — bypass MessageID auto-detection for known types
+results = messages.map { |msg| AisToNmea.to_nmea(msg, encoder: :position_report) }
 ```
 
 ---

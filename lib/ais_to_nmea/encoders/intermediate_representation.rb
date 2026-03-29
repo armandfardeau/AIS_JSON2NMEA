@@ -14,11 +14,13 @@ module AisToNmea
       end
 
       def build
+        source_data = @data.is_a?(Hash) ? @data : {}
+
         values = @mapping.values.map do |part_mapping|
           if part_mapping[:nested]
-            self.class.build(@data[part_mapping[:field]], part_mapping[:nested])
+            self.class.build(source_data[part_mapping[:field]], part_mapping[:nested])
           else
-            @data[part_mapping[:field]]
+            source_data[part_mapping[:field]]
           end
         end
 

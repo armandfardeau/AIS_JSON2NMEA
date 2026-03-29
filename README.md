@@ -2,6 +2,8 @@
 
 Convert AIS (Automatic Identification System) JSON messages into raw NMEA 0183 AIS sentences using a pure Ruby encoder.
 
+📖 **[Full Documentation](https://armandfardeau.github.io/AIS_JSON2NMEA/)**
+
 ## Features
 
 - **Supported AIS Message Types**: 1, 2, 3 (Position Reports), 5 (Ship Static Data), 14 (Safety Broadcast Message)

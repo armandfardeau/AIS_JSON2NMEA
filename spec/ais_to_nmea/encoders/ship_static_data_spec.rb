@@ -70,6 +70,23 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
     end
   end
 
+  context 'with legacy ship static keys' do
+    let(:legacy_input) do
+      normalized = ship_static_fixture['input'].dup
+      normalized['AisVersion'] = normalized.delete('AISVersion')
+      normalized['ImoNumber'] = normalized.delete('IMONumber')
+      normalized['Type'] = normalized.delete('ShipType')
+      normalized['Dte'] = normalized.delete('DTE')
+      normalized
+    end
+
+    it 'normalizes legacy keys before encoding' do
+      output = encode_with_new_instance(legacy_input)
+
+      expect(output).to start_with('!AIVDM,')
+    end
+  end
+
   it 'encodes a valid fixture end-to-end without stubbing' do
     output = encode_with_new_instance(ship_static_fixture['input'])
 
@@ -81,6 +98,23 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
     encoder = described_class.new(data: normalize_ship_static_data_input(ship_static_fixture['input']).merge('MessageID' => 14))
 
     expect { encoder.encode }.to raise_error(AisToNmea::UnsupportedMessageTypeError)
+  end
+
+  it 'raises InvalidJsonError for malformed JSON input' do
+    expect { described_class.new(data: '{invalid json}') }
+      .to raise_error(AisToNmea::InvalidJsonError, /Invalid JSON/)
+  end
+
+  it 'raises InvalidJsonError for unsupported input type' do
+    expect { described_class.new(data: 123) }
+      .to raise_error(AisToNmea::InvalidJsonError, /Input must be a JSON string or Hash/)
+  end
+
+  it 'raises MissingFieldError when required nested fields are missing' do
+    input = normalize_ship_static_data_input(ship_static_fixture['input']).merge('Eta' => nil)
+
+    expect { described_class.new(data: input).encode }
+      .to raise_error(AisToNmea::MissingFieldError, /Missing required field\(s\) for ShipStaticData/)
   end
 end
 # rubocop:enable Layout/LineLength, RSpec/MultipleExpectations

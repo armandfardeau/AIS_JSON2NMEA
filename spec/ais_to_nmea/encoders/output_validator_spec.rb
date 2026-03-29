@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-# rubocop:disable Layout/LineLength
+# rubocop:disable Layout/LineLength, RSpec/ExampleLength
 
 RSpec.describe AisToNmea::Encoders::OutputValidator do
   subject(:validator) { described_class }
@@ -55,5 +55,44 @@ RSpec.describe AisToNmea::Encoders::OutputValidator do
     expect { validator.validate!(mismatched_data, output) }
       .to raise_error(AisToNmea::InvalidFieldError, /Validation failed for mmsi/)
   end
+
+  describe '#decode_output' do
+    subject(:validator_instance) { described_class.new }
+
+    let(:output) { '!AIVDM,1,1,,A,13aG?P001oP>H2POFfR5?wvt0000,0*13\n' }
+
+    it 'falls back to NMEAPlus::Decoder when SourceDecoder yields no complete message' do
+      source_decoder = instance_double(NMEAPlus::SourceDecoder)
+      parsed_message_class = Class.new do
+        def ais; end
+      end
+      parsed_message = instance_double(parsed_message_class)
+      decoder = instance_double(NMEAPlus::Decoder)
+      ais_payload = instance_double(Object)
+
+      allow(parsed_message).to receive(:ais).and_return(ais_payload)
+      allow(source_decoder).to receive(:each_complete_message)
+      allow(NMEAPlus::SourceDecoder).to receive(:new).with(instance_of(StringIO)).and_return(source_decoder)
+      allow(NMEAPlus::Decoder).to receive(:new).and_return(decoder)
+      allow(decoder).to receive(:parse).with(output).and_return(parsed_message)
+
+      expect(validator_instance.decode_output(output)).to eq(parsed_message)
+    end
+
+    it 'raises InvalidFieldError when output cannot be decoded' do
+      source_decoder = instance_double(NMEAPlus::SourceDecoder)
+      parsed_message_class = Class.new
+      parsed_message = instance_double(parsed_message_class)
+      decoder = instance_double(NMEAPlus::Decoder)
+
+      allow(source_decoder).to receive(:each_complete_message)
+      allow(NMEAPlus::SourceDecoder).to receive(:new).with(instance_of(StringIO)).and_return(source_decoder)
+      allow(NMEAPlus::Decoder).to receive(:new).and_return(decoder)
+      allow(decoder).to receive(:parse).with(output).and_return(parsed_message)
+
+      expect { validator_instance.decode_output(output) }
+        .to raise_error(AisToNmea::InvalidFieldError, /Unable to decode encoder output for validation/)
+    end
+  end
 end
-# rubocop:enable Layout/LineLength
+# rubocop:enable Layout/LineLength, RSpec/ExampleLength
