@@ -30,8 +30,4 @@ RSpec.describe AisToNmea::Error do
   it 'links encoding failure to encoding error' do
     expect(AisToNmea::EncodingFailureError.superclass).to eq(AisToNmea::EncodingError)
   end
-
-  it 'links memory error to the base error' do
-    expect(AisToNmea::MemoryError.superclass).to eq(described_class)
-  end
 end

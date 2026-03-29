@@ -11,10 +11,9 @@ module AisToNmea
 
       attr_reader :message
 
-      def initialize(data: {}, options: {})
+      def initialize(data: {})
         @message = +''
         @data = IntermediateRepresentation.build(InputParser.parse(data), parts_mapping)
-        @options = options
       end
 
       def parts_mapping

@@ -14,13 +14,12 @@ module AisToNmea
   # Convenience method for simple usage
   #
   # @param data [Hash] JSON string or Ruby Hash
-  # @param options [Hash] Additional options
   # @return [String] NMEA sentence(s)
-  def self.to_nmea(data, options: {}, encoder: nil)
+  def self.to_nmea(data, encoder: nil)
     if encoder
-      EncoderFactory.build(data: data, options: options, encoder: encoder).encode
+      EncoderFactory.build(data: data, encoder: encoder).encode
     else
-      Encoder.new(data: data, options: options).encode
+      Encoder.new(data: data).encode
     end
   end
 end

@@ -21,7 +21,4 @@ module AisToNmea
 
   # Raised when an unexpected internal encoding exception occurs
   class EncodingFailureError < EncodingError; end
-
-  # Raised when memory allocation fails
-  class MemoryError < Error; end
 end

@@ -28,9 +28,8 @@ RSpec.describe AisToNmea do
   describe AisToNmea::EncoderFactory do
     let(:custom_encoder) do
       Class.new do
-        def initialize(data: nil, options: {})
+        def initialize(data: nil)
           @data = data
-          @options = options
         end
 
         def encode
