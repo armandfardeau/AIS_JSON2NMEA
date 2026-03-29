@@ -9,7 +9,6 @@ module AisToNmea
     class Base
       include Mixins::InputParser
       include Mixins::IntermediateRepresentation
-      include Mixins::Context
       include Mixins::StrictValidation
       include Mixins::Mapping
 
@@ -83,6 +82,10 @@ module AisToNmea
               <<~MESSAGE.chomp
                 MessageID must be one of #{self.class::MESSAGE_TYPES.join(', ')} for #{self.class.name}, got: #{@data.message_id}
               MESSAGE
+      end
+
+      def context_name
+        self.class.name.split('::').last
       end
     end
   end
