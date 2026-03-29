@@ -7,8 +7,6 @@ module AisToNmea
   module Encoders
     # Base class shared by all AIS encoder implementations.
     class Base
-      include AisToNmea::AisEncoder::Utils::OutputValidator
-
       MAPPING_CONFIG_PATH = File.expand_path('../config/mapping.yml', __dir__).freeze
 
       class << self
@@ -95,15 +93,20 @@ module AisToNmea
 
       def initialize(data: {}, options: {})
         @message = +''
-        @data = build_data_ir(parse_input(data))
+        @data = AisToNmea::AisEncoder::Utils::IntermediateRepresentation.build(
+          AisToNmea::AisEncoder::Utils::InputParser.parse_input(data), self.class.parts_mapping
+        )
         @options = options
       end
 
       def encode
         validate_message_type!
-        # TODO: Uncomment after adding optional field markers to mapping.yml
-        # validate_required_fields!
-        encode_message
+        validate_required_fields!
+        encoded_output = encode_message
+
+        AisToNmea::AisEncoder::Utils::OutputValidator.validate!(@data, encoded_output)
+
+        encoded_output
       end
 
       private
@@ -140,41 +143,6 @@ module AisToNmea
             Array(part.pack)
           end
         end
-      end
-
-      # Build an intermediate representation of the data based on the provided mapping.
-      # This allows for easier access to nested fields and a more structured way to handle the data.
-      # @param data [Hash] The input data hash
-      # @param mapping [Hash] The mapping that defines how to extract fields from the data
-      # @return [Struct] A structured representation of the data based on the mapping
-      def build_data_ir(data, mapping = self.class.parts_mapping)
-        data = mapping.values.map do |mapping|
-          if mapping[:nested]
-            build_data_ir(data[mapping[:field]], mapping[:nested])
-          else
-            data[mapping[:field]]
-          end
-        end
-
-        Struct.new(*mapping.keys).new(*data)
-      end
-
-      # Parse JSON string or Hash input
-      #
-      # @param input [String, Hash] JSON string or Ruby Hash
-      # @return [Hash] Parsed data
-      # @raise [InvalidJsonError] if input is invalid JSON
-      def parse_input(input)
-        return input if input.is_a?(Hash)
-        return parse_json_input(input) if input.is_a?(String)
-
-        raise InvalidJsonError, 'Input must be a JSON string or Hash'
-      end
-
-      def parse_json_input(input)
-        JSON.parse(input)
-      rescue JSON::ParserError => e
-        raise InvalidJsonError, "Invalid JSON: #{e.message}"
       end
 
       def validate_message_type!

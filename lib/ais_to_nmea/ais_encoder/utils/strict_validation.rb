@@ -16,7 +16,7 @@ module AisToNmea
         end
 
         def self.missing_required_field(data, field)
-          data.send(field) ? nil : field
+          data.send(field).nil? ? field : nil
         end
 
         def self.raise_missing_fields!(context_name, data, mapping)

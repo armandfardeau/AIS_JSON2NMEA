@@ -3,11 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::AisEncoder::Utils::OutputValidator do
-  subject(:validator) do
-    Class.new do
-      include AisToNmea::AisEncoder::Utils::OutputValidator
-    end.new
-  end
+  subject(:validator) { described_class }
 
   let(:fixtures) { fixture_json('sample_ais_messages.json') }
 
@@ -47,7 +43,9 @@ RSpec.describe AisToNmea::AisEncoder::Utils::OutputValidator do
   end
 
   it 'validates a safety broadcast message round-trip against the YAML mapping' do
-    encoder = AisToNmea::Encoders::SafetyBroadcastMessage.new(data: safety_broadcast_input('Type 14 - SafetyBroadcastMessage complete'))
+    encoder = AisToNmea::Encoders::SafetyBroadcastMessage.new(
+      data: safety_broadcast_input('Type 14 - SafetyBroadcastMessage complete')
+    )
 
     expect { validator.validate!(encoder.instance_variable_get(:@data), encoder.encode) }.not_to raise_error
   end

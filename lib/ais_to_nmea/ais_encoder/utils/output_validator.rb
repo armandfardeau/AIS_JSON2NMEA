@@ -8,7 +8,7 @@ module AisToNmea
   module AisEncoder
     module Utils
       # Utility class for validating output values before encoding.
-      module OutputValidator
+      class OutputValidator
         VALIDATION_CONFIG_PATH = File.expand_path('../../config/validation_mapping.yml', __dir__).freeze
         DEFAULT_FLOAT_TOLERANCE = 1e-6
         HEADING_UNAVAILABLE = 511
@@ -21,6 +21,10 @@ module AisToNmea
           5 => :ship_static_data,
           14 => :safety_broadcast_message
         }.freeze
+
+        def self.validate!(data, output)
+          new.validate!(data, output)
+        end
 
         def validate!(data, output)
           decoded_message = decode_output(output)
@@ -35,8 +39,6 @@ module AisToNmea
             raise InvalidFieldError,
                   "Validation failed for #{field_name}: expected #{expected_value.inspect}, got #{actual_value.inspect}"
           end
-
-          true
         end
 
         def source_decoder(output)
@@ -92,6 +94,11 @@ module AisToNmea
         def decode_output(output)
           complete_message = nil
           source_decoder(output).each_complete_message { |message| complete_message = message }
+
+          if complete_message.nil?
+            parsed_message = NMEAPlus::Decoder.new.parse(output)
+            complete_message = parsed_message if parsed_message.respond_to?(:ais) && parsed_message.ais
+          end
 
           return complete_message if complete_message.respond_to?(:ais) && complete_message.ais
 

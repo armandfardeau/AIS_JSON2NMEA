@@ -51,17 +51,23 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
 
   it 'accepts normalized ship static fixture input and delegates to encode_message' do
     encoder = described_class.new(data: normalize_ship_static_data_input(ship_static_fixture['input']))
-    allow(encoder).to receive(:encode_message).and_return('stubbed')
+    allow(encoder).to receive(:encode_message).and_call_original
 
-    expect(encoder.encode).to eq('stubbed')
+    output = encoder.encode
+
+    expect(encoder).to have_received(:encode_message)
+    expect(output).to start_with('!AIVDM,')
   end
 
   it 'accepts fixture input provided as a JSON string' do
     json_input = JSON.generate(normalize_ship_static_data_input(ship_static_fixture['input']))
     encoder = described_class.new(data: json_input)
-    allow(encoder).to receive(:encode_message).and_return('stubbed')
+    allow(encoder).to receive(:encode_message).and_call_original
 
-    expect(encoder.encode).to eq('stubbed')
+    output = encoder.encode
+
+    expect(encoder).to have_received(:encode_message)
+    expect(output).to start_with('!AIVDM,')
   end
 
   it 'encodes a valid fixture end-to-end without stubbing' do

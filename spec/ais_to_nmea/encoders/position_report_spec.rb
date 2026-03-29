@@ -82,9 +82,12 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
     it 'calls #encode_message for each valid fixture when message type is supported' do
       position_report_messages.each do |test_case|
         encoder = described_class.new(data: normalize_position_report_input(test_case['input']))
-        allow(encoder).to receive(:encode_message).and_return('stubbed')
+        allow(encoder).to receive(:encode_message).and_call_original
 
-        expect(encoder.encode).to eq('stubbed'), "fixture failed: #{test_case['name']}"
+        output = encoder.encode
+
+        expect(encoder).to have_received(:encode_message), "fixture failed: #{test_case['name']}"
+        expect(output).to start_with('!AIVDM,'), "fixture failed: #{test_case['name']}"
       end
     end
 

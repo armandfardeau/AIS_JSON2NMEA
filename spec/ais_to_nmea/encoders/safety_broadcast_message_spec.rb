@@ -52,16 +52,22 @@ RSpec.describe AisToNmea::Encoders::SafetyBroadcastMessage do
 
   it 'delegates to encode_message when MessageID is supported' do
     encoder = described_class.new(data: valid_input)
-    allow(encoder).to receive(:encode_message).and_return('!AIVDM,1,1,0,A,TEST,0*00')
+    allow(encoder).to receive(:encode_message).and_call_original
 
-    expect(encoder.encode).to eq('!AIVDM,1,1,0,A,TEST,0*00')
+    output = encoder.encode
+
+    expect(encoder).to have_received(:encode_message)
+    expect(output).to start_with('!AIVDM,')
   end
 
   it 'accepts JSON string input' do
     encoder = described_class.new(data: JSON.generate(valid_input))
-    allow(encoder).to receive(:encode_message).and_return('stubbed')
+    allow(encoder).to receive(:encode_message).and_call_original
 
-    expect(encoder.encode).to eq('stubbed')
+    output = encoder.encode
+
+    expect(encoder).to have_received(:encode_message)
+    expect(output).to start_with('!AIVDM,')
   end
 
   it 'encodes end-to-end without stubbing' do
