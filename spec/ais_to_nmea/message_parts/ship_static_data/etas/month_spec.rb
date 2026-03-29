@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::Etas::Month do
   end
 
   describe '#pack' do
-    subject { described_class.new(12) }
+    subject(:message_part) { described_class.new(12) }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack).to eq('1100')
+      expect(message_part.pack).to eq('1100')
     end
   end
 end

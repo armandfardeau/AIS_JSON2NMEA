@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+# rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Layout/LineLength, RSpec/ExampleLength
+
 RSpec.describe AisToNmea::AisEncoder::Utils::OutputValidator do
   subject(:validator) { described_class }
 
@@ -60,3 +62,4 @@ RSpec.describe AisToNmea::AisEncoder::Utils::OutputValidator do
       .to raise_error(AisToNmea::InvalidFieldError, /Validation failed for mmsi/)
   end
 end
+# rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Layout/LineLength, RSpec/ExampleLength

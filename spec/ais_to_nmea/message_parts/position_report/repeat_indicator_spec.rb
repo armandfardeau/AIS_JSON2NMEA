@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::PositionReport::RepeatIndicator do
   end
 
   describe '#pack' do
-    subject { described_class.new(2) }
+    subject(:message_part) { described_class.new(2) }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack).to eq('10')
+      expect(message_part.pack).to eq('10')
     end
   end
 end

@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::PositionReport::Latitude do
   end
 
   describe '#pack' do
-    subject { described_class.new(48.8566) }
+    subject(:message_part) { described_class.new(48.8566) }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(27)
+      expect(message_part.pack.length).to eq(27)
     end
   end
 end

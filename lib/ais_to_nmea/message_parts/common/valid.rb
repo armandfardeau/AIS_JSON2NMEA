@@ -8,6 +8,7 @@ module AisToNmea
         attr_reader :value
 
         def initialize(value = nil)
+          super
           @value = value
         end
 

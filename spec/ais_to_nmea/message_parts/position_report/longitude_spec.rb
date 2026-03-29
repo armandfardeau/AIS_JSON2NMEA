@@ -13,10 +13,10 @@ RSpec.describe AisToNmea::MessageParts::PositionReport::Longitude do
   end
 
   describe '#pack' do
-    subject { described_class.new(2.3522) }
+    subject(:message_part) { described_class.new(2.3522) }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(28)
+      expect(message_part.pack.length).to eq(28)
     end
   end
 end

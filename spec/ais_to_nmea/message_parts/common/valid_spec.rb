@@ -11,6 +11,11 @@ RSpec.describe AisToNmea::MessageParts::Common::Valid do
   it 'accepts a valid value' do
     part = described_class.new(false)
     expect(part.validate!).to eq(part)
+  end
+
+  it 'normalizes false as string after validation' do
+    part = described_class.new(false)
+    part.validate!
     expect(part.value).to eq('false')
   end
 
@@ -19,10 +24,10 @@ RSpec.describe AisToNmea::MessageParts::Common::Valid do
   end
 
   describe '#pack' do
-    subject { described_class.new('A') }
+    subject(:message_part) { described_class.new('A') }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(42)
+      expect(message_part.pack.length).to eq(42)
     end
   end
 end

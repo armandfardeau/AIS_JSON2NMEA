@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::ImoNumber do
   end
 
   describe '#pack' do
-    subject { described_class.new(1_234_567) }
+    subject(:message_part) { described_class.new(1_234_567) }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(30)
+      expect(message_part.pack.length).to eq(30)
     end
   end
 end

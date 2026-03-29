@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::SafetyBroadcastMessage::Text do
   end
 
   describe '#pack' do
-    subject { described_class.new('OK') }
+    subject(:message_part) { described_class.new('OK') }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(12)
+      expect(message_part.pack.length).to eq(12)
     end
   end
 end

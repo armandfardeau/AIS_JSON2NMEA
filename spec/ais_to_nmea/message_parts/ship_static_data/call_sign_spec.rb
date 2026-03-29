@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::CallSign do
   end
 
   describe '#pack' do
-    subject { described_class.new('ABC123') }
+    subject(:message_part) { described_class.new('ABC123') }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(42)
+      expect(message_part.pack.length).to eq(42)
     end
   end
 end

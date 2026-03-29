@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+# rubocop:disable Layout/LineLength, RSpec/ExampleLength, RSpec/MultipleExpectations
+
 RSpec.describe AisToNmea::Encoders::ShipStaticData do
   let(:fixtures) { fixture_json('sample_ais_messages.json') }
 
@@ -83,3 +85,4 @@ RSpec.describe AisToNmea::Encoders::ShipStaticData do
     expect { encoder.encode }.to raise_error(AisToNmea::UnsupportedMessageTypeError)
   end
 end
+# rubocop:enable Layout/LineLength, RSpec/ExampleLength, RSpec/MultipleExpectations

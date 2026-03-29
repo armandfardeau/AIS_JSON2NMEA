@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::Destination do
   end
 
   describe '#pack' do
-    subject { described_class.new('HAMBURG') }
+    subject(:message_part) { described_class.new('HAMBURG') }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(120)
+      expect(message_part.pack.length).to eq(120)
     end
   end
 end

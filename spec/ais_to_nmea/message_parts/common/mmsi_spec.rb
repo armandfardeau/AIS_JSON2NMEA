@@ -17,10 +17,10 @@ RSpec.describe AisToNmea::MessageParts::Common::Mmsi do
   end
 
   describe '#pack' do
-    subject { described_class.new(123_456_789) }
+    subject(:message_part) { described_class.new(123_456_789) }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(30)
+      expect(message_part.pack.length).to eq(30)
     end
   end
 end

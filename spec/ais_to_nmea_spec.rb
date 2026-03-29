@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+# rubocop:disable RSpec/ExampleLength
+
 RSpec.describe AisToNmea do
   let(:position_report_input) do
     {
@@ -54,3 +56,4 @@ RSpec.describe AisToNmea do
     end
   end
 end
+# rubocop:enable RSpec/ExampleLength

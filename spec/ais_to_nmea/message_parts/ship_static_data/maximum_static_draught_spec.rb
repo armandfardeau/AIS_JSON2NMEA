@@ -10,6 +10,11 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught do
   it 'accepts a valid value' do
     part = described_class.new(nil)
     expect(part.validate!).to eq(part)
+  end
+
+  it 'normalizes nil to default draught value' do
+    part = described_class.new(nil)
+    part.validate!
     expect(part.value).to eq(0.0)
   end
 
@@ -18,10 +23,10 @@ RSpec.describe AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught do
   end
 
   describe '#pack' do
-    subject { described_class.new(7.4) }
+    subject(:message_part) { described_class.new(7.4) }
 
     it 'packs value into AIS bits' do
-      expect(subject.pack.length).to eq(8)
+      expect(message_part.pack.length).to eq(8)
     end
   end
 end
