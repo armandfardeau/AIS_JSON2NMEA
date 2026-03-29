@@ -28,10 +28,6 @@ RSpec.describe AisToNmea::Encoders::PositionReport do
 
     normalized = input.dup
 
-    normalized['SpeedOverGround'] = normalized.delete('Sog') if normalized.key?('Sog')
-    normalized['CourseOverGround'] = normalized.delete('Cog') if normalized.key?('Cog')
-    normalized['RadioStatus'] = normalized.delete('CommunicationState') if normalized.key?('CommunicationState')
-
     if [true, false].include?(normalized['PositionAccuracy'])
       normalized['PositionAccuracy'] = normalized['PositionAccuracy'] ? 1 : 0
     end

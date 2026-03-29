@@ -50,26 +50,13 @@ module AisToNmea
       end
 
       def normalize_mapping_entry(value, path:)
-        unless value.is_a?(Hash)
-          raise InvalidFieldError,
-                "Invalid mapping entry at #{path}: expected Hash, got #{value.class}"
-        end
-
+        ensure_hash!(value, path: path)
         normalized = {}
-
-        if value.key?('field') && !value['field'].is_a?(String)
-          raise InvalidFieldError,
-                "Invalid field at #{path}.field: expected String, got #{value['field'].class}"
-        end
-
+        ensure_field_validity!(value, path: path)
         normalized[:field] = value['field'] if value.key?('field')
 
         if value.key?('class')
-          unless value['class'].is_a?(String)
-            raise InvalidFieldError,
-                  "Invalid class at #{path}.class: expected String, got #{value['class'].class}"
-          end
-
+          ensure_class_validity!(value, path: path)
           normalized[:class] = constantize(value['class'])
         end
 
@@ -84,6 +71,25 @@ module AisToNmea
         end
 
         normalized
+      end
+
+      def ensure_hash!(value = nil, path:)
+        return if value.is_a?(Hash)
+
+        raise InvalidFieldError,
+              "Invalid mapping entry at #{path}: expected Hash, got #{value.class}"
+      end
+
+      def ensure_field_validity!(value, path:)
+        return unless value.key?('field') && !value['field'].is_a?(String)
+
+        raise InvalidFieldError, "Invalid field at #{path}.field: expected String, got #{value['field'].class}"
+      end
+
+      def ensure_class_validity!(value, path:)
+        return if value['class'].is_a?(String)
+
+        raise InvalidFieldError, "Invalid class at #{path}.class: expected String, got #{value['class'].class}"
       end
 
       def constantize(class_name)
