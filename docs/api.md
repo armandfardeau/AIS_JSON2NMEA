@@ -4,7 +4,7 @@ title: API Reference
 
 # API Reference
 
-## `AisToNmea.to_nmea(data, options: {}, encoder: nil)`
+## `AisToNmea.to_nmea(data, encoder: nil)`
 
 Top-level convenience method for converting AIS JSON to NMEA.
 
@@ -13,7 +13,6 @@ Top-level convenience method for converting AIS JSON to NMEA.
 | Name | Type | Description |
 |------|------|-------------|
 | `data` | `String` or `Hash` | JSON string or Ruby Hash containing an AIS message |
-| `options` | `Hash` | Reserved for future use |
 | `encoder` | `Symbol` or `nil` | Encoder key (e.g. `:position_report`); skips `MessageID` auto-detection when set |
 
 **Returns:** `String` — one or more NMEA sentences joined with `\n` for multi-part messages.
@@ -49,7 +48,7 @@ nmea = AisToNmea.to_nmea({
 
 Direct encoder class for encoding a single message.
 
-### `Encoder.new(data:, options: {})`
+### `Encoder.new(data:)`
 
 Creates a new encoder for the given message. `data` accepts the same String or Hash as `AisToNmea.to_nmea`.
 

@@ -3,16 +3,15 @@
 module AisToNmea
   # Generic encoder that dispatches to a message-specific encoder.
   class Encoder
-    def initialize(data:, options: {})
+    def initialize(data:)
       @data = data
-      @options = options
     end
 
     def encode
       message_type = MessageType.detect(@data)
       encoder_key = EncoderFactory.key_for_message_type(message_type)
 
-      EncoderFactory.build(data: @data, options: @options, encoder: encoder_key).encode
+      EncoderFactory.build(data: @data, encoder: encoder_key).encode
     rescue InvalidJsonError, MissingFieldError, InvalidFieldError, UnsupportedMessageTypeError
       raise
     rescue StandardError => e

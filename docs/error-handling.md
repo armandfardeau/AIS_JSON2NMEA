@@ -14,9 +14,8 @@ AisToNmea::Error
 ├── AisToNmea::MissingFieldError
 ├── AisToNmea::InvalidFieldError
 ├── AisToNmea::UnsupportedMessageTypeError
-├── AisToNmea::EncodingError
-│   └── AisToNmea::EncodingFailureError
-└── AisToNmea::MemoryError
+└── AisToNmea::EncodingError
+    └── AisToNmea::EncodingFailureError
 ```
 
 ## Exception Reference
@@ -29,7 +28,6 @@ AisToNmea::Error
 | `UnsupportedMessageTypeError` | `MessageID` is not one of 1, 2, 3, 5, 14 |
 | `EncodingError` | Failure during AIS bit-packing or 6-bit armoring |
 | `EncodingFailureError` | Unexpected internal error during encoding (subclass of `EncodingError`) |
-| `MemoryError` | Memory allocation failure |
 
 ## Example
 

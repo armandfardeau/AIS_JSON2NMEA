@@ -5,9 +5,6 @@ common:
   mmsi: &common_mmsi
     class: AisToNmea::MessageParts::Common::Mmsi
     field: UserID
-  valid: &common_valid
-    class: AisToNmea::MessageParts::Common::Valid
-    field: Valid
 
 position_report:
   message_id: *common_message_id

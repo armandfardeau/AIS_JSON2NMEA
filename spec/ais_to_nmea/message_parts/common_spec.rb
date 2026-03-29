@@ -19,9 +19,5 @@ RSpec.describe AisToNmea::MessageParts::Common do
     it 'defines Mmsi' do
       expect(described_class::Mmsi).to be < AisToNmea::MessageParts::Base
     end
-
-    it 'defines Valid' do
-      expect(described_class::Valid).to be < AisToNmea::MessageParts::Base
-    end
   end
 end
