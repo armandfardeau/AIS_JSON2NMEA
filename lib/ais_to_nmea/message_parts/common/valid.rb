@@ -5,17 +5,11 @@ module AisToNmea
     module Common
       # Encodes the valid field for common data.
       class Valid < Base
-        attr_reader :value
-
-        def initialize(value = nil)
-          super
-          @value = value
-        end
+        normalize_value_as :string
 
         def validate!
           raise MissingFieldError, 'Missing required field: Valid' if @value.nil?
 
-          @value = @value.to_s
           self
         end
 
