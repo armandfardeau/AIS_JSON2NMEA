@@ -21,11 +21,6 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Max: 25
 
-# Offense count: 1
-# Configuration parameters: CountKeywordArgs, MaxOptionalParameters.
-Metrics/ParameterLists:
-  Max: 7
-
 # Offense count: 4
 RSpec/SubjectStub:
   Exclude:
