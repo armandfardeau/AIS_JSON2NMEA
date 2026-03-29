@@ -55,7 +55,8 @@ module AisToNmea
 
         def normalize_mapping_entry(value, path:)
           unless value.is_a?(Hash)
-            raise InvalidFieldError, "Invalid mapping entry at #{path}: expected Hash, got #{value.class}"
+            raise InvalidFieldError,
+                  "Invalid mapping entry at #{path}: expected Hash, got #{value.class}"
           end
 
           normalized = {}
@@ -159,7 +160,9 @@ module AisToNmea
         return if context_mapping_message_types.include?(@data.message_id)
 
         raise UnsupportedMessageTypeError,
-              "MessageID must be one of #{context_mapping_message_types.join(', ')} for #{context_name}, got: #{@data.message_id}"
+              <<~MESSAGE.chomp
+                MessageID must be one of #{context_mapping_message_types.join(', ')} for #{context_name}, got: #{@data.message_id}
+              MESSAGE
       end
     end
   end
