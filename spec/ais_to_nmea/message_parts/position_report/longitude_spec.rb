@@ -3,7 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Longitude do
-  it 'is defined' do
-    expect(described_class).not_to be_nil
+  it 'normalizes the input value' do
+    expect(described_class.new('2.3522').value).to eq(2.3522)
+  end
+
+  it 'accepts a valid value' do
+    part = described_class.new(2.3522)
+    expect(part.validate!).to eq(part)
+  end
+
+  describe '#pack' do
+    subject(:message_part) { described_class.new(2.3522) }
+
+    it 'packs value into AIS bits' do
+      expect(message_part.pack.length).to eq(28)
+    end
   end
 end

@@ -5,17 +5,17 @@ module AisToNmea
     module ShipStaticData
       module Etas
         # Encodes the ETA minute component.
-        class Minute < Eta
-          def extract
-            extract_component('Minute', 60)
-          end
+        class Minute < Base
+          normalize_value_as :integer
 
           def validate!
-            validate_component!(min: 0, max: 60, key: 'Minute')
+            return self if @value.between?(0, 59)
+
+            raise InvalidFieldError, "ETA Minute must be between 0 and 59 (got: #{@value.inspect})"
           end
 
           def pack
-            AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 6)
+            pack_uint(6)
           end
         end
       end

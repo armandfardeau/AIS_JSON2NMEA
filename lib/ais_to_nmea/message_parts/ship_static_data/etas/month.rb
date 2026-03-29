@@ -5,17 +5,16 @@ module AisToNmea
     module ShipStaticData
       module Etas
         # Encodes the ETA month component.
-        class Month < Eta
-          def extract
-            extract_component('Month', 0)
-          end
-
+        class Month < Base
+          normalize_value_as :integer
           def validate!
-            validate_component!(min: 0, max: 12, key: 'Month')
+            return self if @value.between?(0, 12)
+
+            raise InvalidFieldError, "ETA Month must be between 0 and 12 (got: #{@value.inspect})"
           end
 
           def pack
-            AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 4)
+            pack_uint(4)
           end
         end
       end

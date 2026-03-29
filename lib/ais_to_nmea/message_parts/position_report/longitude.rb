@@ -4,25 +4,17 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the longitude field for a position report.
-      class Longitude
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_float(@data, 'Longitude')
-          self
-        end
+      class Longitude < Base
+        normalize_value_as :float
 
         def validate!
-          self
+          return self if @value&.between?(-180.0, 180.0)
+
+          raise InvalidFieldError, "Longitude must be between -180 and 180 (got: #{@value.inspect})"
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_signed((@value * 600_000).round, 28)
+          pack_signed(28, (@value * 600_000).round)
         end
       end
     end

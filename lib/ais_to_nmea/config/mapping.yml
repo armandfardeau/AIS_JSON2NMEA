@@ -1,0 +1,136 @@
+common:
+  message_id: &common_message_id
+    class: AisToNmea::MessageParts::Common::MessageId
+    field: MessageID
+  mmsi: &common_mmsi
+    class: AisToNmea::MessageParts::Common::Mmsi
+    field: UserID
+  valid: &common_valid
+    class: AisToNmea::MessageParts::Common::Valid
+    field: Valid
+
+position_report:
+  message_id: *common_message_id
+  repeat_indicator:
+    class: AisToNmea::MessageParts::PositionReport::RepeatIndicator
+    field: RepeatIndicator
+  mmsi: *common_mmsi
+  nav_status:
+    class: AisToNmea::MessageParts::PositionReport::NavigationStatus
+    field: NavigationalStatus
+  rot:
+    class: AisToNmea::MessageParts::PositionReport::Rot
+    field: RateOfTurn
+  sog:
+    class: AisToNmea::MessageParts::PositionReport::Sog
+    field: SpeedOverGround
+  position_accuracy:
+    class: AisToNmea::MessageParts::PositionReport::PositionAccuracy
+    field: PositionAccuracy
+  lon:
+    class: AisToNmea::MessageParts::PositionReport::Longitude
+    field: Longitude
+  lat:
+    class: AisToNmea::MessageParts::PositionReport::Latitude
+    field: Latitude
+  cog:
+    class: AisToNmea::MessageParts::PositionReport::Cog
+    field: CourseOverGround
+  heading:
+    class: AisToNmea::MessageParts::PositionReport::Heading
+    field: TrueHeading
+  timestamp:
+    class: AisToNmea::MessageParts::PositionReport::Timestamp
+    field: Timestamp
+  maneuver:
+    class: AisToNmea::MessageParts::PositionReport::Maneuver
+    field: SpecialManoeuvreIndicator
+  spare:
+    class: AisToNmea::MessageParts::PositionReport::Spare
+    field: Spare
+  raim:
+    class: AisToNmea::MessageParts::PositionReport::Raim
+    field: Raim
+  radio_status:
+    class: AisToNmea::MessageParts::PositionReport::RadioStatus
+    field: RadioStatus
+
+ship_static_data:
+  message_id: *common_message_id
+  repeat_indicator:
+    class: AisToNmea::MessageParts::ShipStaticData::RepeatIndicator
+    field: RepeatIndicator
+  mmsi: *common_mmsi
+  ais_version:
+    class: AisToNmea::MessageParts::ShipStaticData::AisVersion
+    field: AISVersion
+  imo_number:
+    class: AisToNmea::MessageParts::ShipStaticData::ImoNumber
+    field: IMONumber
+  call_sign:
+    class: AisToNmea::MessageParts::ShipStaticData::CallSign
+    field: CallSign
+  name:
+    class: AisToNmea::MessageParts::ShipStaticData::Name
+    field: Name
+  ship_type:
+    class: AisToNmea::MessageParts::ShipStaticData::ShipType
+    field: ShipType
+  fix_type:
+    class: AisToNmea::MessageParts::ShipStaticData::FixType
+    field: FixType
+  eta:
+    field: Eta
+    nested:
+      month:
+        field: Month
+        class: AisToNmea::MessageParts::ShipStaticData::Etas::Month
+      day:
+        field: Day
+        class: AisToNmea::MessageParts::ShipStaticData::Etas::Day
+      hour:
+        field: Hour
+        class: AisToNmea::MessageParts::ShipStaticData::Etas::Hour
+      minute:
+        field: Minute
+        class: AisToNmea::MessageParts::ShipStaticData::Etas::Minute
+  dimension:
+    field: Dimension
+    nested:
+      a:
+        field: A
+        class: AisToNmea::MessageParts::ShipStaticData::Dimensions::A
+      b:
+        field: B
+        class: AisToNmea::MessageParts::ShipStaticData::Dimensions::B
+      c:
+        field: C
+        class: AisToNmea::MessageParts::ShipStaticData::Dimensions::C
+      d:
+        field: D
+        class: AisToNmea::MessageParts::ShipStaticData::Dimensions::D
+  maximum_static_draught:
+    class: AisToNmea::MessageParts::ShipStaticData::MaximumStaticDraught
+    field: MaximumStaticDraught
+  destination:
+    class: AisToNmea::MessageParts::ShipStaticData::Destination
+    field: Destination
+  dte:
+    class: AisToNmea::MessageParts::ShipStaticData::Dte
+    field: DTE
+  spare:
+    class: AisToNmea::MessageParts::ShipStaticData::Spare
+    field: Spare
+
+safety_broadcast_message:
+  message_id: *common_message_id
+  repeat_indicator:
+    class: AisToNmea::MessageParts::SafetyBroadcastMessage::RepeatIndicator
+    field: RepeatIndicator
+  mmsi: *common_mmsi
+  spare:
+    class: AisToNmea::MessageParts::SafetyBroadcastMessage::Spare
+    field: Spare
+  text:
+    class: AisToNmea::MessageParts::SafetyBroadcastMessage::Text
+    field: Text

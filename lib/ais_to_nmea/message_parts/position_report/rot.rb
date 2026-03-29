@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the rate of turn field for a position report.
-      class Rot
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            %w[RateOfTurn Rot],
-            field_name: 'RateOfTurn/Rot',
-            default: 128
-          )
-          self
-        end
+      class Rot < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(-128, 255)
@@ -30,7 +15,7 @@ module AisToNmea
 
         def pack
           encoded_value = @value.negative? ? (256 + @value) : @value
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(encoded_value, 8)
+          pack_uint(8, encoded_value)
         end
       end
     end

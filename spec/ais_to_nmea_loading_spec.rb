@@ -4,15 +4,15 @@ require 'spec_helper'
 
 RSpec.describe AisToNmea do
   it 'autoloads BitPacking utility constant' do
-    expect(defined?(AisToNmea::AisEncoder::Utils::BitPacking)).to eq('constant')
+    expect(defined?(AisToNmea::Encodings::BitPacking)).to eq('constant')
   end
 
-  it 'autoloads Input utility constant' do
-    expect(defined?(AisToNmea::AisEncoder::Utils::Input)).to eq('constant')
+  it 'autoloads StrictValidation utility constant' do
+    expect(defined?(AisToNmea::Encoders::StrictValidation)).to eq('constant')
   end
 
   it 'autoloads Nmea utility constant' do
-    expect(defined?(AisToNmea::AisEncoder::Utils::Nmea)).to eq('constant')
+    expect(defined?(AisToNmea::Encodings::Nmea)).to eq('constant')
   end
 
   it 'keeps encoder registry initialized' do

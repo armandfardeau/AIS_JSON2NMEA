@@ -4,29 +4,15 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the speed over ground field for a position report.
-      class Sog
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_float_from(
-            @data,
-            %w[Sog SpeedOverGround],
-            field_name: 'Sog/SpeedOverGround'
-          )
-          self
-        end
+      class Sog < Base
+        normalize_value_as :float
 
         def validate!
           self
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint((@value * 10).round, 10)
+          pack_uint(10, (@value * 10).round)
         end
       end
     end

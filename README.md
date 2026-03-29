@@ -2,6 +2,8 @@
 
 Convert AIS (Automatic Identification System) JSON messages into raw NMEA 0183 AIS sentences using a pure Ruby encoder.
 
+📖 **[Full Documentation](https://armandfardeau.github.io/AIS_JSON2NMEA/)**
+
 ## Features
 
 - **Supported AIS Message Types**: 1, 2, 3 (Position Reports), 5 (Ship Static Data), 14 (Safety Broadcast Message)
@@ -237,18 +239,25 @@ end
 
 ## Examples
 
-See [examples/basic_usage.rb](examples/basic_usage.rb) for comprehensive examples including:
+Examples are split by use case in the [examples](examples) directory:
 
-- Hash input
-- JSON string input
-- Message types 1, 2, 3, 5 and 14
-- Error handling
-- Direct encoder usage
+- [examples/01_position_reports.rb](examples/01_position_reports.rb) - Message types 1, 2, 3
+- [examples/02_input_formats.rb](examples/02_input_formats.rb) - Hash and JSON string inputs (with explicit encoder for JSON)
+- [examples/03_ship_static_data.rb](examples/03_ship_static_data.rb) - Message type 5
+- [examples/04_safety_broadcast_message.rb](examples/04_safety_broadcast_message.rb) - Message type 14
+- [examples/05_error_handling.rb](examples/05_error_handling.rb) - Missing field and invalid value cases
+- [examples/06_direct_encoder_usage.rb](examples/06_direct_encoder_usage.rb) - Direct `AisToNmea::Encoder` usage
 
-Run examples:
+Run one example:
 
 ```bash
-bundle exec ruby -Ilib examples/basic_usage.rb
+bundle exec ruby -Ilib examples/01_position_reports.rb
+```
+
+Run all examples:
+
+```bash
+for f in examples/[0-9][0-9]_*.rb; do bundle exec ruby -Ilib "$f"; done
 ```
 
 ## Testing

@@ -1,0 +1,36 @@
+{
+  "messages": [
+    {
+      "name": "Type 5 - ShipStaticData complete",
+      "input": {
+        "MessageID": 5,
+        "RepeatIndicator": 0,
+        "UserID": 636024245,
+        "Valid": true,
+        "AISVersion": 0,
+        "IMONumber": 9876543,
+        "CallSign": "FRA1234",
+        "Name": "TEST VESSEL",
+        "ShipType": 70,
+        "Dimension": {
+          "A": 50,
+          "B": 20,
+          "C": 5,
+          "D": 5
+        },
+        "FixType": 1,
+        "Eta": {
+          "Month": 12,
+          "Day": 31,
+          "Hour": 23,
+          "Minute": 59
+        },
+        "MaximumStaticDraught": 7.4,
+        "Destination": "LE HAVRE",
+        "DTE": false,
+        "Spare": false
+      }
+    }
+  ],
+  "error_cases": []
+}

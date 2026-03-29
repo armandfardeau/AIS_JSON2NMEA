@@ -1,0 +1,134 @@
+{
+  "messages": [
+    {
+      "name": "Type 14 - SafetyBroadcastMessage minimal",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
+        "Text": "SECURITE NAVIGATION"
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage complete",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 2,
+        "UserID": 636024245,
+        "Valid": true,
+        "Spare": 1,
+        "Text": "ROCKS REPORTED 2NM EAST OF FAIRWAY"
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage nested Message",
+      "input": {
+        "MessageType": "SafetyBroadcastMessage",
+        "Message": {
+          "MessageID": 14,
+          "RepeatIndicator": 1,
+          "UserID": 987654321,
+          "Valid": true,
+          "Spare": 0,
+          "Text": "SHALLOW WATER AHEAD"
+        }
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage max text length",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "UserID": 111222333,
+        "Valid": true,
+        "Spare": 0,
+        "Text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "name": "Type 14 - SafetyBroadcastMessage valid charset punctuation",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "UserID": 444555666,
+        "Valid": true,
+        "Spare": 0,
+        "Text": "DANGER AHEAD = KEEP CLEAR ?"
+      }
+    }
+  ],
+  "error_cases": [
+    {
+      "name": "Type 14 - Missing UserID",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "Valid": true,
+        "Spare": 0,
+        "Text": "SECURITE NAVIGATION"
+      },
+      "error_type": "MissingFieldError"
+    },
+    {
+      "name": "Type 14 - Missing Text",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0
+      },
+      "error_type": "MissingFieldError"
+    },
+    {
+      "name": "Type 14 - Text too long",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
+        "Text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Type 14 - Unsupported character in Text",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
+        "Text": "ALERTE~"
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Type 14 - RepeatIndicator out of range",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 4,
+        "UserID": 123456789,
+        "Valid": true,
+        "Spare": 0,
+        "Text": "SECURITE NAVIGATION"
+      },
+      "error_type": "InvalidFieldError"
+    },
+    {
+      "name": "Type 14 - Spare out of range",
+      "input": {
+        "MessageID": 14,
+        "RepeatIndicator": 0,
+        "UserID": 123456789,
+        "Valid": true,
+        "Spare": 4,
+        "Text": "SECURITE NAVIGATION"
+      },
+      "error_type": "InvalidFieldError"
+    }
+  ]
+}

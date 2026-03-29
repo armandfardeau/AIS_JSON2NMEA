@@ -13,14 +13,14 @@ require_relative 'ais_to_nmea/error'
 module AisToNmea
   # Convenience method for simple usage
   #
-  # @param input [String, Hash] JSON string or Ruby Hash
+  # @param data [Hash] JSON string or Ruby Hash
   # @param options [Hash] Additional options
   # @return [String] NMEA sentence(s)
-  def self.to_nmea(input, options = {})
-    if options.key?(:encoder)
-      EncoderFactory.build(options).encode(input, options)
+  def self.to_nmea(data, options: {}, encoder: nil)
+    if encoder
+      EncoderFactory.build(data: data, options: options, encoder: encoder).encode
     else
-      Encoder.new.encode(input, options)
+      Encoder.new(data: data, options: options).encode
     end
   end
 end

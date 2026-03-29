@@ -4,30 +4,17 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the course over ground field for a position report.
-      class Cog
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_float_from(
-            @data,
-            %w[Cog CourseOverGround],
-            field_name: 'Cog/CourseOverGround'
-          )
-          @value = 0.0 if @value == 360.0
-          self
-        end
+      class Cog < Base
+        normalize_value_as :float
 
         def validate!
-          self
+          return self if @value&.between?(0.0, 359.9)
+
+          raise InvalidFieldError, "Course Over Ground must be between 0 and 359.9 (got: #{@value.inspect})"
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint((@value * 10).round, 12)
+          pack_uint(12, (@value * 10).round)
         end
       end
     end

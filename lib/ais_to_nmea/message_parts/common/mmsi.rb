@@ -4,18 +4,8 @@ module AisToNmea
   module MessageParts
     module Common
       # Encodes and validates the AIS MMSI/UserID field.
-      class Mmsi
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_int(@data, 'UserID')
-          self
-        end
+      class Mmsi < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 1_073_741_823)
@@ -24,7 +14,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 30)
+          pack_uint(30)
         end
       end
     end

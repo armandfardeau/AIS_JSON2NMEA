@@ -3,22 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::PositionReport::Rot do
-  it 'is defined' do
-    expect(described_class).not_to be_nil
+  it 'normalizes the input value' do
+    expect(described_class.new('-10').value).to eq(-10)
   end
 
-  it 'accepts -128 and packs it as 10000000' do
-    rot = described_class.new(nil, -128)
-
-    expect(rot.validate!.pack).to eq('10000000')
+  it 'accepts a valid value' do
+    part = described_class.new(-10)
+    expect(part.validate!).to eq(part)
   end
 
-  it 'rejects values below -128' do
-    rot = described_class.new(nil, -129)
+  it 'rejects an invalid value' do
+    expect { described_class.new(-129).validate! }.to raise_error(AisToNmea::InvalidFieldError)
+  end
 
-    expect { rot.validate! }.to raise_error(
-      AisToNmea::InvalidFieldError,
-      /Rot must be between -128 and 255/
-    )
+  describe '#pack' do
+    subject(:message_part) { described_class.new(-10) }
+
+    it 'packs value into AIS bits' do
+      expect(message_part.pack).to eq('11110110')
+    end
   end
 end

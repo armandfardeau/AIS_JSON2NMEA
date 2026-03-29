@@ -4,30 +4,17 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the navigation status field for a position report.
-      class NavigationStatus
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            %w[NavigationStatus NavigationalStatus],
-            field_name: 'NavigationStatus/NavigationalStatus',
-            default: 0
-          )
-          self
-        end
+      class NavigationStatus < Base
+        normalize_value_as :integer
 
         def validate!
-          self
+          return self if @value&.between?(0, 15)
+
+          raise InvalidFieldError, "Navigation Status must be between 0 and 15 (got: #{@value.inspect})"
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 4)
+          pack_uint(4)
         end
       end
     end

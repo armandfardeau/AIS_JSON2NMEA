@@ -4,18 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the latitude field for a position report.
-      class Latitude
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.required_float(@data, 'Latitude')
-          self
-        end
+      class Latitude < Base
+        normalize_value_as :float
 
         def validate!
           unless @value.between?(-90.0, 90.0)
@@ -26,7 +16,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_signed((value * 600_000).round, 27)
+          pack_signed(27, (@value * 600_000).round)
         end
       end
     end

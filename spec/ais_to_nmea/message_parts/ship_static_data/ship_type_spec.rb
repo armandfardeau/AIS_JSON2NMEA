@@ -3,7 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe AisToNmea::MessageParts::ShipStaticData::ShipType do
-  it 'is defined' do
-    expect(described_class).not_to be_nil
+  it 'normalizes the input value' do
+    expect(described_class.new('70').value).to eq(70)
+  end
+
+  it 'accepts a valid value' do
+    part = described_class.new(70)
+    expect(part.validate!).to eq(part)
+  end
+
+  it 'rejects an invalid value' do
+    expect { described_class.new(256).validate! }.to raise_error(AisToNmea::InvalidFieldError)
+  end
+
+  describe '#pack' do
+    subject(:ship_type) { described_class.new(70) }
+
+    it 'packs value into AIS bits' do
+      expect(ship_type.pack.length).to eq(8)
+    end
   end
 end

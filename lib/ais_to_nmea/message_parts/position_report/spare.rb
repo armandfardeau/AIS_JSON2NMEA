@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the spare bits for a position report.
-      class Spare
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            ['Spare'],
-            field_name: 'Spare',
-            default: 0
-          )
-          self
-        end
+      class Spare < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 7)
@@ -29,7 +14,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 3)
+          pack_uint(3)
         end
       end
     end

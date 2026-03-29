@@ -4,23 +4,8 @@ module AisToNmea
   module MessageParts
     module PositionReport
       # Encodes the UTC second timestamp for a position report.
-      class Timestamp
-        attr_reader :value
-
-        def initialize(data = nil, value = nil)
-          @data = data
-          @value = value
-        end
-
-        def extract
-          @value = AisToNmea::AisEncoder::Utils::Input.optional_int_from(
-            @data,
-            ['Timestamp'],
-            field_name: 'Timestamp',
-            default: 0
-          )
-          self
-        end
+      class Timestamp < Base
+        normalize_value_as :integer
 
         def validate!
           return self if @value.between?(0, 63)
@@ -29,7 +14,7 @@ module AisToNmea
         end
 
         def pack
-          AisToNmea::AisEncoder::Utils::BitPacking.pack_uint(@value, 6)
+          pack_uint(6)
         end
       end
     end

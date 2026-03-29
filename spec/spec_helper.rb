@@ -11,9 +11,28 @@ require 'json'
 
 module SpecSupport
   module Helpers
-    def fixture_json(file_name)
+    MESSAGE_TYPE_FIXTURE_FILES = {
+      position_report: 'message_types/position_report.json',
+      safety_broadcast_message: 'message_types/safety_broadcast_message.json',
+      ship_static_data: 'message_types/ship_static_data.json'
+    }.freeze
+
+    def fixture_json(file_name = nil, message_type: nil)
+      return fixture_json_for_message_type(message_type) if message_type
+
+      raise ArgumentError, 'file_name is required when message_type is not provided' if file_name.nil?
+
       path = File.join(__dir__, 'fixtures', file_name)
       JSON.parse(File.read(path))
+    end
+
+    def fixture_json_for_message_type(message_type)
+      fixture_file = MESSAGE_TYPE_FIXTURE_FILES.fetch(message_type.to_sym) do
+        valid_types = MESSAGE_TYPE_FIXTURE_FILES.keys.join(', ')
+        raise ArgumentError, "Unknown message_type: #{message_type.inspect}. Expected one of: #{valid_types}"
+      end
+
+      fixture_json(fixture_file)
     end
 
     def expect_bit_string(value, width)
