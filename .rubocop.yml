@@ -21,3 +21,6 @@ Style/Documentation:
 
 RSpec/ExampleLength:
   Max: 10
+
+Naming/VariableNumber:
+  EnforcedStyle: snake_case

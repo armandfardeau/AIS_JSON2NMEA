@@ -35,19 +35,3 @@ Metrics/ParameterLists:
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/PerceivedComplexity:
   Max: 12
-
-# Offense count: 1
-# Configuration parameters: Mode, AllowedMethods, AllowedPatterns, AllowBangMethods, WaywardPredicates.
-# AllowedMethods: call
-# WaywardPredicates: infinite?, nonzero?
-Naming/PredicateMethod:
-  Exclude:
-    - 'lib/ais_to_nmea/encoders/output_validator.rb'
-
-# Offense count: 3
-# Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers, AllowedPatterns.
-# SupportedStyles: snake_case, normalcase, non_integer
-# AllowedIdentifiers: TLS1_1, TLS1_2, capture3, iso8601, rfc1123_date, rfc822, rfc2822, rfc3339, x86_64
-Naming/VariableNumber:
-  Exclude:
-    - 'examples/01_position_reports.rb'

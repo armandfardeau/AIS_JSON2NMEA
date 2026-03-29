@@ -127,7 +127,7 @@ module AisToNmea
         when :normalized_string
           normalize_string(expected) == normalize_string(actual)
         when :bool_int
-          boolean_like(expected) == boolean_like(actual)
+          boolean_like?(expected) == boolean_like?(actual)
         when :heading_sentinel
           heading_value(expected) == heading_value(actual)
         when :timestamp_sentinel
@@ -149,7 +149,7 @@ module AisToNmea
         value.to_s.strip
       end
 
-      def boolean_like(value)
+      def boolean_like?(value)
         case value
         when true, 1, '1', 'true', 'TRUE'
           true
